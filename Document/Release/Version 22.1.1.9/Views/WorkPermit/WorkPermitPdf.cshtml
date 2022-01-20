@@ -1,0 +1,2790 @@
+﻿@using System.Data;
+@{
+    ViewBag.Title = "LetterReport";
+    int icnt = 0;
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+    ISOStd.Models.WorkPermitModelsList objInList = new ISOStd.Models.WorkPermitModelsList();
+    ISOStd.Models.WorkPermitModels objModel = new ISOStd.Models.WorkPermitModels();
+    if (ViewBag.objInList != null)
+    {
+        objInList = ViewBag.objInList;
+        icnt = objInList.PermitList.Count;
+    }
+    if (ViewBag.Rating != null)
+    {
+        dsrating = ViewBag.Rating;
+    }
+    Dictionary<string, string> dicObjHydroList = new Dictionary<string, string>();
+    Dictionary<string, string> dicExcvHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicExcvSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicExcvSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotTypeList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotWelfareList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicFalseHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicFalseSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicFalseSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicShaftHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicShaftSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicShaftSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicPneumaticList = new Dictionary<string, string>();
+    Dictionary<string, string> dicElectricalList = new Dictionary<string, string>();
+    Dictionary<string, string> dicConfinedList = new Dictionary<string, string>();
+
+
+    if (ViewBag.dicObjConfinedList != null)
+    {
+        dicConfinedList = ViewBag.dicObjConfinedList;
+    }
+    if (ViewBag.dicObjHydroList != null)
+    {
+        dicObjHydroList = ViewBag.dicObjHydroList;
+    }
+
+    if (ViewBag.dicExcvHazardList != null)
+    {
+        dicExcvHazardList = ViewBag.dicExcvHazardList;
+    }
+    if (ViewBag.dicExcvSiteList != null)
+    {
+        dicExcvSiteList = ViewBag.dicExcvSiteList;
+    }
+    if (ViewBag.dicExcvSafetyList != null)
+    {
+        dicExcvSafetyList = ViewBag.dicExcvSafetyList;
+    }
+    if (ViewBag.dicHotTypeList != null)
+    {
+        dicHotTypeList = ViewBag.dicHotTypeList;
+    }
+    if (ViewBag.dicHotHazardList != null)
+    {
+        dicHotHazardList = ViewBag.dicHotHazardList;
+    }
+    if (ViewBag.dicHotWelfareList != null)
+    {
+        dicHotWelfareList = ViewBag.dicHotWelfareList;
+    }
+    if (ViewBag.dicHotSiteList != null)
+    {
+        dicHotSiteList = ViewBag.dicHotSiteList;
+    }
+    if (ViewBag.dicHotSafetyList != null)
+    {
+        dicHotSafetyList = ViewBag.dicHotSafetyList;
+    }
+    if (ViewBag.dicFalseHazardList != null)
+    {
+        dicFalseHazardList = ViewBag.dicFalseHazardList;
+    }
+    if (ViewBag.dicFalseSiteList != null)
+    {
+        dicFalseSiteList = ViewBag.dicFalseSiteList;
+    }
+    if (ViewBag.dicFalseSafetyList != null)
+    {
+        dicFalseSafetyList = ViewBag.dicFalseSafetyList;
+    }
+    if (ViewBag.dicShaftHazardList != null)
+    {
+        dicShaftHazardList = ViewBag.dicShaftHazardList;
+    }
+    if (ViewBag.dicShaftSiteList != null)
+    {
+        dicShaftSiteList = ViewBag.dicShaftSiteList;
+    }
+    if (ViewBag.dicShaftSafetyList != null)
+    {
+        dicShaftSafetyList = ViewBag.dicShaftSafetyList;
+    }
+    if (ViewBag.dicPneumaticList != null)
+    {
+        dicPneumaticList = ViewBag.dicPneumaticList;
+    }
+    if (ViewBag.dicElectricalList != null)
+    {
+        dicElectricalList = ViewBag.dicElectricalList;
+    }
+    if (ViewBag.Permit != null)
+    {
+        objModel = ViewBag.Permit;
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+}
+<style>
+    table tr td {
+        border-collapse: collapse;
+        border: 1px solid black;
+    }
+</style>
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+    <div style="width:100%;">
+        <table style="border:1px solid" @*class="table table-lg table-bordered"*@>
+            <tr class="row">
+                <td colspan="2">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            @*<tr style="border:1px solid">
+                    <td colspan="2" style="border:1px solid">
+                          <p align="left"> <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+                    </td>
+                </tr>*@
+            <tr style="border:1px solid;background-color: #4cc4dd;">
+                <td style="border:1px solid">
+                    <span style="font-size:large;"><b>@objModel.permit_type</b></span>
+                </td>
+                <td style="border:1px solid">
+                    Permit No:&nbsp;&nbsp;&nbsp;@objModel.permitno<br />
+                    Date:&nbsp;&nbsp;&nbsp;  @if (objModel.date_submitted > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objModel.date_submitted.ToString("dd/MM/yyyy")
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="border:1px solid;border-style: solid;background-color: #4cc4dd;font-weight:bold">
+        SECTION 1 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)
+    </p>
+
+    <table style=" border-collapse: collapse;">
+
+        <tr>
+            <td style="border:1px solid">
+                <div class="display-label">
+                    Area
+
+                </div>
+            </td>
+            <td style="border:1px solid">
+                <div class="display-field">
+                    <input type="hidden" id="permit_type" name="permit_type" value="@objModel.permit_type" />
+                    @objModel.area
+                </div>
+            </td>
+            <td style="border:1px solid">
+                <div class="display-label">
+                    Start Date
+                </div>
+            </td>
+            <td style="border:1px solid">
+                <div class="display-field">
+                    @if (objModel.start_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objModel.start_date.ToString("dd/MM/yyyy hh:mm:ss")
+                    }
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="display-label">
+                    Permit Number
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.permitno
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Finish Date
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (objModel.finish_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objModel.finish_date.ToString("dd/MM/yyyy hh:mm:ss")
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Job Performer
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.job_performer
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    No of Days
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.no_days
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Contractor
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.contractor
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    RP Name
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.resp_pers
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Division
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.branch
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Location
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.location
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Contact No
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.contactno
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Department
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.dept
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Section
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.section
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Section
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.resp_section
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Equipment
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.equipment
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Job No.
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.jobno
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Access Level
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.access_level
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Work Order
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.workorder
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    No of Person
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objModel.no_person
+                </div>
+            </td>
+            <td>
+                <div class="display-label" id="pressure" style="display:none">
+                    Pressure utilised
+                </div>
+                <div class="display-label" id="con1" style="display:none">
+                    Type of work to be done
+                </div>
+            </td>
+            <td>
+                <div class="display-field" id="pressures" style="display:none">
+                    @objModel.pressure
+                </div>
+                <div class="display-field" id="con2" style="display:none">
+                    @if (ViewBag.work != null)
+                    {
+                        foreach (var item in ViewBag.work)
+                        {
+                            if (item == objModel.work_type)
+                            {
+                                <input type="checkbox" checked value='@item' />@item
+                            }
+                            else
+                            {
+                                <input type="checkbox" value='@item' />@item
+                            }
+                        }
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <div class="display-label">
+                    Description of work
+                </div>
+                <div class="display-field">
+                    @Html.Raw(HttpUtility.HtmlDecode(objModel.description))
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Documents/ Drawings
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (ViewBag.YesNo != null)
+                    {
+                        foreach (var item in ViewBag.YesNo)
+                        {
+                            if (item == objModel.drawings)
+                            {
+                                <input type="checkbox" name="drawings" checked value='@item' />@item
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="drawings" value='@item' />@item
+                            }
+                        }
+                    }
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Rescue Plan in Place
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (ViewBag.YesNo != null)
+                    {
+                        foreach (var item in ViewBag.YesNo)
+                        {
+                            if (item == objModel.rescue_plan)
+                            {
+                                <input type="checkbox" name="rescue_plan" checked value='@item' />@item
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="rescue_plan" value='@item' />@item
+                            }
+                        }
+                    }
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Method Statement & RA
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (ViewBag.YesNo != null)
+                    {
+                        foreach (var item in ViewBag.YesNo)
+                        {
+                            if (item == objModel.method_state)
+                            {
+                                <input type="checkbox" name="method_state" checked value='@item' />@item
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="method_state" value='@item' />@item
+                            }
+                        }
+                    }
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Simultaneous work at different levels
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (ViewBag.YesNo != null)
+                    {
+                        foreach (var item in ViewBag.YesNo)
+                        {
+                            if (item == objModel.work_level)
+                            {
+                                <input type="checkbox" name="work_level" checked value='@item' />@item
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="work_level" value='@item' />@item
+                            }
+                        }
+                    }
+                </div>
+            </td>
+
+        </tr>
+
+
+    </table>
+
+    <div id="hydro" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">Safety Related Checks</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.HydroTest != null)
+            {
+                int iSrno = 0, cnt1 = 0;
+                foreach (var item in ViewBag.HydroTest)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt1 = cnt1 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question1 @item.Value" name="question1 @item.Value" value="@item.Value" />
+                        </td>
+                        @if (dicObjHydroList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.objHydroList != null)
+                                    {
+
+                                        if (dicObjHydroList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings1 @item.Value" name="id_ratings1 @item.Value" class="id_ratings1 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings1 @item.Value" name="id_ratings1 @item.Value" class="id_ratings1 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="radio" id="id_ratings1 @item.Value" name="id_ratings1 @item.Value"
+                                               class="id_ratings @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt1" name="cnt1" value="@cnt1" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+    <div id="confined" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Confined != null)
+            {
+                int iSrno = 0, cnt18 = 0;
+                foreach (var item in ViewBag.Confined)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt18 = cnt18 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question18 @item.Value" name="question18 @item.Value" value="@item.Value" />
+                        </td>
+                        @if (dicConfinedList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.objConfinedList != null)
+                                    {
+
+                                        if (dicConfinedList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings18 @item.Value" name="id_ratings18 @item.Value" class="id_ratings18 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings18 @item.Value" name="id_ratings18 @item.Value" class="id_ratings18 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings18 @item.Value" name="id_ratings18 @item.Value"
+                                               class="id_ratings @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt18" name="cnt18" value="@cnt18" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+    <div id="excavation" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">A. Hazards Identified</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Hazard != null)
+            {
+                int iSrno = 0, cnt2 = 0;
+                foreach (var item in ViewBag.Hazard)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt2 = cnt2 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question2 @item.Value" name="question2 @item.Value" value="@item.Value" />
+                        </td>
+                        @if (dicExcvHazardList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.ExcvHazardList != null)
+                                    {
+
+                                        if (dicExcvHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings2 @item.Value" name="id_ratings2 @item.Value" class="id_ratings2 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings2 @item.Value" name="id_ratings2 @item.Value" class="id_ratings2 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings2 @item.Value" name="id_ratings2 @item.Value"
+                                               class="id_ratings @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt2" name="cnt2" value="@cnt2" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">B. Work Site Precautions</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.WorkSite != null)
+            {
+                int iSrno = 0, cnt3 = 0;
+                foreach (var item in ViewBag.WorkSite)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt3 = cnt3 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question3 @item.Value" name="question3 @item.Value" value="@item.Value" />
+                        </td>
+                        @if (dicExcvSiteList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.ExcvSiteList != null)
+                                    {
+
+                                        if (dicExcvSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings3 @item.Value" name="id_ratings3 @item.Value" class="id_ratings3 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings3 @item.Value" name="id_ratings3 @item.Value" class="id_ratings3 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings3 @item.Value" name="id_ratings3 @item.Value"
+                                               class="id_ratings3 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt3" name="cnt3" value="@cnt3" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">C. Personal Protection and Safety Equipment</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Safety != null)
+            {
+                int iSrno = 0, cnt4 = 0;
+                foreach (var item in ViewBag.Safety)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt4 = cnt4 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question4 @item.Value" name="question4 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicExcvSafetyList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.ExcvSafetyList != null)
+                                    {
+
+                                        if (dicExcvSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings4 @item.Value" name="id_ratings4 @item.Value" class="id_ratings4 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings4 @item.Value" name="id_ratings4 @item.Value" class="id_ratings4 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings4 @item.Value" name="id_ratings4 @item.Value"
+                                               class="id_ratings4 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt4" name="cnt4" value="@cnt4" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+
+
+
+    <div id="hotwork" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;">Type of work</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.HotType != null)
+            {
+                int iSrno = 0, cnt5 = 0;
+                foreach (var item in ViewBag.HotType)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt5 = cnt5 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question5 @item.Value" name="question5 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicHotTypeList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.HotTypeList != null)
+                                    {
+
+                                        if (dicHotTypeList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings5 @item.Value" name="id_ratings5 @item.Value" class="id_ratings4 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings5 @item.Value" name="id_ratings5 @item.Value" class="id_ratings4 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings5 @item.Value" name="id_ratings5 @item.Value"
+                                               class="id_ratings5 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt5" name="cnt5" value="@cnt5" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;">Hazards Identified</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.HotHazard != null)
+            {
+                int iSrno = 0, cnt6 = 0;
+                foreach (var item in ViewBag.HotHazard)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt6 = cnt6 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question6 @item.Value" name="question6 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicHotHazardList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.HotHazardList != null)
+                                    {
+
+                                        if (dicHotHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings6 @item.Value" name="id_ratings6 @item.Value" class="id_ratings4 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings6 @item.Value" name="id_ratings6 @item.Value" class="id_ratings4 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings6 @item.Value" name="id_ratings6 @item.Value"
+                                               class="id_ratings6 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt6" name="cnt6" value="@cnt6" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;">Welfare</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Welfare != null)
+            {
+                int iSrno = 0, cnt7 = 0;
+                foreach (var item in ViewBag.Welfare)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt7 = cnt7 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question7 @item.Value" name="question7 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicHotWelfareList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.HotWelfareList != null)
+                                    {
+
+                                        if (dicHotWelfareList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings7 @item.Value" name="id_ratings7 @item.Value" class="id_ratings7 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings7 @item.Value" name="id_ratings7 @item.Value" class="id_ratings7 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings7 @item.Value" name="id_ratings7 @item.Value"
+                                               class="id_ratings6 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt7" name="cnt7" value="@cnt7" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;">Work Site Precautions</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.HotWorkSite != null)
+            {
+                int iSrno = 0, cnt8 = 0;
+                foreach (var item in ViewBag.HotWorkSite)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt8 = cnt8 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question8 @item.Value" name="question8 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicHotSiteList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.HotSiteList != null)
+                                    {
+
+                                        if (dicHotSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings8 @item.Value" name="id_ratings8 @item.Value" class="id_ratings8 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings8 @item.Value" name="id_ratings8 @item.Value" class="id_ratings8 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings8 @item.Value" name="id_ratings8 @item.Value"
+                                               class="id_ratings8 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt8" name="cnt8" value="@cnt8" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;">Personal Protection and Safety Equipment</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Safety != null)
+            {
+                int iSrno = 0, cnt9 = 0;
+                foreach (var item in ViewBag.Safety)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt9 = cnt9 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question9 @item.Value" name="question9 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicHotSafetyList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.HotSafetyList != null)
+                                    {
+
+                                        if (dicHotSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings9 @item.Value" name="id_ratings9 @item.Value" class="id_ratings9 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings9 @item.Value" name="id_ratings9 @item.Value" class="id_ratings9 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings9 @item.Value" name="id_ratings9 @item.Value"
+                                               class="id_ratings8 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt9" name="cnt9" value="@cnt9" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+    <div id="falsework" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">Hazards Identified</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.FalseHazard != null)
+            {
+                int iSrno = 0, cnt10 = 0;
+                foreach (var item in ViewBag.FalseHazard)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt10 = cnt10 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question10 @item.Value" name="question10 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicFalseHazardList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.FalseHazardList != null)
+                                    {
+
+                                        if (dicFalseHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings10 @item.Value" name="id_ratings10 @item.Value" class="id_ratings10 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings10 @item.Value" name="id_ratings10 @item.Value" class="id_ratings10 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings10 @item.Value" name="id_ratings10 @item.Value"
+                                               class="id_ratings10 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt10" name="cnt10" value="@cnt10" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">Work Site Precautions</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.FalseWorkSite != null)
+            {
+                int iSrno = 0, cnt11 = 0;
+                foreach (var item in ViewBag.FalseWorkSite)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt11 = cnt11 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question11 @item.Value" name="question11 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicFalseSiteList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.FalseSiteList != null)
+                                    {
+
+                                        if (dicFalseSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings11 @item.Value" name="id_ratings11 @item.Value" class="id_ratings11 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings11 @item.Value" name="id_ratings11 @item.Value" class="id_ratings11 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings11 @item.Value" name="id_ratings11 @item.Value"
+                                               class="id_ratings11 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt11" name="cnt11" value="@cnt11" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">Personal Protection and Safety Equipment</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.FalseSafety != null)
+            {
+                int iSrno = 0, cnt12 = 0;
+                foreach (var item in ViewBag.FalseSafety)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt12 = cnt12 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question12 @item.Value" name="question12 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicFalseSafetyList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.FalseSafetyList != null)
+                                    {
+
+                                        if (dicFalseSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings12 @item.Value" name="id_ratings12 @item.Value" class="id_ratings12 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings12 @item.Value" name="id_ratings12 @item.Value" class="id_ratings12 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings12 @item.Value" name="id_ratings12 @item.Value"
+                                               class="id_ratings12 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt12" name="cnt12" value="@cnt12" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+    <div id="ShaftWork" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">Hazards Identified</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.ShaftHazard != null)
+            {
+                int iSrno = 0, cnt13 = 0;
+                foreach (var item in ViewBag.ShaftHazard)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt13 = cnt13 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question13 @item.Value" name="question13 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicShaftHazardList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.ShaftHazardList != null)
+                                    {
+
+                                        if (dicShaftHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings13 @item.Value" name="id_ratings13 @item.Value" class="id_ratings13 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings13 @item.Value" name="id_ratings13 @item.Value" class="id_ratings13 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings13 @item.Value" name="id_ratings13 @item.Value"
+                                               class="id_ratings13 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt13" name="cnt13" value="@cnt13" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">Work Site Precautions</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.ShaftWorkSite != null)
+            {
+                int iSrno = 0, cnt14 = 0;
+                foreach (var item in ViewBag.ShaftWorkSite)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt14 = cnt14 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question14 @item.Value" name="question14 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicShaftSiteList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.ShaftSiteList != null)
+                                    {
+
+                                        if (dicShaftSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings14 @item.Value" name="id_ratings14 @item.Value" class="id_ratings14 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings14 @item.Value" name="id_ratings14 @item.Value" class="id_ratings14 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings14 @item.Value" name="id_ratings14 @item.Value"
+                                               class="id_ratings14 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt14" name="cnt14" value="@cnt14" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #e5eafe; color: #0099ff;border:1px solid black">Personal Protection and Safety Equipment</td>
+            </tr>
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Safety != null)
+            {
+                int iSrno = 0, cnt15 = 0;
+                foreach (var item in ViewBag.Safety)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt15 = cnt15 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question15 @item.Value" name="question15 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicShaftSafetyList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.ShaftSafetyList != null)
+                                    {
+
+                                        if (dicShaftSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings15 @item.Value" name="id_ratings15 @item.Value" class="id_ratings15 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings15 @item.Value" name="id_ratings15 @item.Value" class="id_ratings15 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings15 @item.Value" name="id_ratings15 @item.Value"
+                                               class="id_ratings15 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt15" name="cnt15" value="@cnt15" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+
+    <div id="pneumatic" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+            <tr style="border:1px solid black">
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Pneumatic != null)
+            {
+                int iSrno = 0, cnt16 = 0;
+                foreach (var item in ViewBag.Pneumatic)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt16 = cnt16 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question16 @item.Value" name="question16 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicPneumaticList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.PneumaticList != null)
+                                    {
+
+                                        if (dicPneumaticList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings16 @item.Value" name="id_ratings16 @item.Value" class="id_ratings16 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings16 @item.Value" name="id_ratings16 @item.Value" class="id_ratings16 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings16 @item.Value" name="id_ratings16 @item.Value"
+                                               class="id_ratings16 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt16" name="cnt16" value="@cnt16" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+    <div id="electrical" style="display: none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 2 - Specification of work (Filled by Responsible Person/ Activity Engineer or Supervisor)<br />
+                    (Use These Questions When Assessing the Risks – Use N/A if Not Applicable)
+                </td>
+            </tr>
+            <tr style="border:1px solid black">
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px;border:1px solid black">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 400px; min-width: 400px; max-width: 400px;border:1px solid black">
+                    Items to Check
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < 2; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff; width: 50px; min-width: 50px; max-width: 50px;border:1px solid black">
+                            @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                        </th>
+                    }
+                }
+
+            </tr>
+            @if (ViewBag.Electrical != null)
+            {
+                int iSrno = 0, cnt17 = 0;
+                foreach (var item in ViewBag.Electrical)
+                {
+
+                    iSrno = iSrno + 1;
+                    cnt17 = cnt17 + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 400px; min-width: 400px; max-width: 400px;">
+                            @item.Text
+                            <input type="hidden" id="question17 @item.Value" name="question17 @item.Value" value="@item.Value" />
+                        </td>
+
+                        @if (dicElectricalList.ContainsKey(item.Value))
+                        {
+                            for (int rating = 0; rating < 2; rating++)
+                            {
+                                <td>
+                                    @if (ViewBag.ElectricalList != null)
+                                    {
+
+                                        if (dicElectricalList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {
+                                            <input type="checkbox" id="id_ratings17 @item.Value" name="id_ratings17 @item.Value" class="id_ratings17 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="id_ratings17 @item.Value" name="id_ratings17 @item.Value" class="id_ratings17 @item.Value"
+                                                   value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int rating = 0; rating < 2; rating++)
+                                {
+                                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                                        <input type="checkbox" id="id_ratings17 @item.Value" name="id_ratings17 @item.Value"
+                                               class="id_ratings17 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" />
+                                    </td>
+                                }
+                            }
+                        }
+
+
+                    </tr>
+
+                }
+                <tr>
+                    <td style="display: none">
+                        <input type="hidden" id="cnt17" name="cnt17" value="@cnt17" />
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Controls & Comments
+                    </div>
+                    <div class="display-field">
+                        @objModel.comments
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="sec3" style="display:none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="11" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 3 - GAS TESTING REQUIREMENTS (RESPONSIBLE PERSON - RP)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5">Authorised Gas tester approved by Area Authority</td>
+                <td colspan="6">Contractor Name:</td>
+            </tr>
+            <tr>
+                <td>Date</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>Time</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+
+            <tr>
+                <td>O2  (19.5 – 22.5%)</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Combustibles (<5% LEL)</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>H2S (<10ppm)</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+
+            <tr>
+                <td>Initials</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>Gas test Cert no.</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    Gas test to be repeated every
+                </td>
+                <td></td>
+                <td>Hrs</td>
+                <td colspan="2">Continuous gas testing required</td>
+                <td></td>
+                <td>Yes</td>
+                <td></td>
+                <td>No</td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 3 - RESPONSIBLE PERSON (Activity Engineer or Supervisor) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    must be signed before work commences
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    I accept this Permit, agree to be bound by the conditions detailed above and the associated procedure(s), and accept responsibility as the person directly in charge of the work.
+
+                    I have read the Activity Method Statement & Risk Assessment and Procedure(attached), prepared the JSTI and communicated it to my crew, and have observed the risk controls in place.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Responsible Person: @objModel.resp_pers<br />
+                    (Activity Engineer/Supervisor)
+                </td>
+                <td>
+                    Signature---------------------------
+                </td>
+                <td>
+                    <br /><br />
+                    Date:--------------------------------<br /><br /><br />
+                    Time:--------------------------------
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 4 - ISSUING AUTHORITY (IA)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                   must be signed before work commences
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    I have checked that the work requirements and precautions have been identified by the Responsible Person (RP) and authorize the work to proceed
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ISSUING AUTHORITY: @objModel.IA
+
+                </td>
+                <td>
+                    Signature---------------------------
+                </td>
+                <td>
+                    Approved start of work:<br /><br /><br />
+                    From  Date:--------------------------------<br /><br /><br />
+                    Time:--------------------------------
+                </td>
+                <td>
+                    <br /><br /><br />
+                    To    Date:--------------------------------<br /><br /><br />
+                    Time:--------------------------------
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="sec5" style="display:none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 5 - COMMITMENT - JOB PERFORMER JP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    must be signed before work commences
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    I declare that all requirements are in place and all required tests are done (if required) before work commence.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Job Performer: @objModel.job_performer
+
+                </td>
+                <td>
+                    Signature---------------------------
+                </td>
+                <td>
+                    <br /><br />
+                    Date:--------------------------------<br /><br /><br />
+                    Time:--------------------------------
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="consec5">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="5" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION (5) VAPOR/ EXPOSURE/GAS TEST: If not required, mark "N/A"
+                </td>
+            </tr>
+            <tr>
+                <td>Atmosphere Reading</td>
+                <td>AM</td>
+                <td>PM</td>
+                <td>Time</td>
+                <td> Monitored By:</td>
+            </tr>
+            <tr>
+                <td>O2</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>LEL</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>H2S</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Other</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+
+    </div>
+    <div id="dvInItems" style="display:none">
+
+
+        <table>
+            <tr>
+                <td colspan="4" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 5 - Authorized Employee to work or test on the Equipment      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    must be signed before work commences
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    The Following person's are authorized to work on/test the above mentioned Equipement. The permit Conditions listed above have been read and understood by all personnel performing the work.
+                </td>
+            </tr>
+            <tr>
+
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Name</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Sign</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">ID No</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Date</th>
+            </tr>
+            @if (objInList.PermitList != null && objInList.PermitList.Count > 0)
+            {
+                for (int index = 0; index < objInList.PermitList.Count; index++)
+                {
+                    <tr>
+
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @objInList.PermitList[index].pers_name
+                        </td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;"></td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @objInList.PermitList[index].idno
+                        </td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @if (objInList.PermitList[index].date_in != null && objInList.PermitList[index].date_in > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objInList.PermitList[index].date_in.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+    <div id="psec6" style="display:none">
+        <table>
+            <tr style="border:1px solid black">
+                <td colspan="9" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 6 – PERMIT REVALIDATION
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>1st</th>
+                <th>2nd</th>
+                <th>3rd</th>
+                <th>4th</th>
+                <th>5th</th>
+                <th>6th</th>
+                <th>7th</th>
+            </tr>
+            <tr>
+                <td>Date</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>Responsible Person</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>Issuing Authority</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <table>
+            <tr id="sec7" style="border:1px solid black;display:none">
+                <td colspan="3" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION 7 - COMPLETION, SUSPENSION OR CANCELLATION of WORK
+                </td>
+            </tr>
+            <tr id="sec6" style="border:1px solid black;display:none">
+                <td colspan="3" style="background-color: #4cc4dd;font-weight:bold;border:2px solid black">
+                    SECTION6  - COMPLETION, SUSPENSION OR CANCELLATION of WORK
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    All work associated with this Electrical Permit has been:
+                </td>
+                <td>
+                    @if (ViewBag.Status != null)
+                    {
+                        foreach (var item in ViewBag.Status)
+                        {
+                            if (item == objModel.work_status)
+                            {
+                                <input type="checkbox" checked value='@item' />@item
+                            }
+                            else
+                            {
+                                <input type="checkbox" value='@item' />@item
+                            }
+                        }
+                    }
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    The work area and adjacent areas have been inspected after completion of the work and all hazards have been made safe:
+                </td>
+
+                <td>
+                    @if (ViewBag.YesNo != null)
+                    {
+                        foreach (var item in ViewBag.YesNo)
+                        {
+                            if (item == objModel.work_safe)
+                            {
+                                <input type="checkbox" name="work_safe" checked value='@item' />@item
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="work_safe" value='@item' />@item
+                            }
+                        }
+                    }
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="3">
+                    Additional Comments:<br />
+                    @objModel.add_comments
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Responsible Person: @objModel.resp_pers<br />
+
+                </td>
+                <td>
+                    <br /><br />
+                    Signature---------------------------
+                </td>
+                <td>
+
+                    Completion  Date:@if (objModel.completion_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objModel.completion_date.ToString("dd/MM/yyyy hh:mm:ss")
+                    }
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="color:red">
+                    Note: This permit is automatically suspended in case of emergency, at the end of the date and time, or if the conditions mentioned in this permit change. On suspension, the permit must be returned to the permit office.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:center">
+                    Validity of this permit will be 12 hours shift,Day & Night shift shall obtain separate permits
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+@section Scripts {
+    <script>
+        $(function () {
+
+            var value = document.getElementById("permit_type").value;
+
+            if (value == "Pneumatic test Permit") {
+
+                document.getElementById("pneumatic").style.display = "";
+                document.getElementById("pressure").style.display = "";
+                document.getElementById("pressures").style.display = "";
+                document.getElementById("sec6").style.display = "";
+                document.getElementById("sec5").style.display = "";
+            }
+            else if (value == "Electrical Permit") {
+                document.getElementById("electrical").style.display = "";
+                document.getElementById("dvInItems").style.display = "";
+                document.getElementById("psec6").style.display = "";
+                document.getElementById("sec7").style.display = "";
+            }
+            else if (value == "Falsework Striking Permit") {
+                document.getElementById("falsework").style.display = "";
+                document.getElementById("sec7").style.display = "";
+                document.getElementById("sec7").style.display = "";
+                document.getElementById("psec6").style.display = "";
+                document.getElementById("sec5").style.display = "";
+            }
+            else if (value == "Hot work Permit") {
+                document.getElementById("hotwork").style.display = "";
+                document.getElementById("sec7").style.display = "";
+                document.getElementById("sec5").style.display = "";
+                document.getElementById("psec6").style.display = "";
+            }
+            else if (value == "Excavation Permit") {
+                document.getElementById("excavation").style.display = "";
+                document.getElementById("sec7").style.display = "";
+                document.getElementById("psec6").style.display = "";
+                document.getElementById("sec5").style.display = "";
+                document.getElementById("sec3").style.display = "";
+            }
+            else if (value == "Shaft work Permit") {
+                document.getElementById("ShaftWork").style.display = "";
+                document.getElementById("sec7").style.display = "";
+                document.getElementById("psec6").style.display = "";
+                document.getElementById("sec5").style.display = "";
+            }
+            else if (value == "Hydro test Permit") {
+                document.getElementById("hydro").style.display = "";
+                document.getElementById("sec6").style.display = "";
+                document.getElementById("sec5").style.display = "";
+            }
+            else if (value == "Confined Space Entry Permit") {
+                document.getElementById("confined").style.display = "";
+                document.getElementById("con1").style.display = "";
+                document.getElementById("con2").style.display = "";
+                document.getElementById("psec6").style.display = "";
+                document.getElementById("sec7").style.display = "";
+                document.getElementById("consec5").style.display = "";
+            }
+
+        });
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,571 @@
+﻿@model ISOStd.Models.TUVCustomerModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "CustomerEdit";
+    DataSet dsProject = ViewBag.Project;
+    string  sid_project="",sProject_no="",sProject_desc="",sISOStd="",sAudit_team="",SubmitFinding = "SubmitFinding", Save = "Save";
+    DateTime dtContract_from = new DateTime();
+    DateTime dtContract_to = new DateTime();
+
+    ISOStd.Models.clsGlobal obj=new ISOStd.Models.clsGlobal();
+    if (dsProject != null && dsProject.Tables.Count > 0 && dsProject.Tables[0].Rows.Count > 0)
+    {
+        sid_project = dsProject.Tables[0].Rows[0]["id_project"].ToString();
+        sProject_no = dsProject.Tables[0].Rows[0]["Project_no"].ToString();
+        sProject_desc = dsProject.Tables[0].Rows[0]["Project_desc"].ToString();
+        sISOStd = dsProject.Tables[0].Rows[0]["ISOStd"].ToString();
+        sAudit_team = dsProject.Tables[0].Rows[0]["Audit_team"].ToString();
+
+        if (dsProject.Tables[0].Rows[0]["Contract_from"].ToString() != null && dsProject.Tables[0].Rows[0]["Contract_from"].ToString() != "")
+        {
+            dtContract_from = Convert.ToDateTime(dsProject.Tables[0].Rows[0]["Contract_from"].ToString());
+        }
+        if (dsProject.Tables[0].Rows[0]["Contract_to"].ToString() != null && dsProject.Tables[0].Rows[0]["Contract_to"].ToString() != "")
+        {
+            dtContract_to = Convert.ToDateTime(dsProject.Tables[0].Rows[0]["Contract_to"].ToString());
+        } 
+   }
+}
+
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Edit Customer</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("CustomerEdit", "TUV", FormMethod.Post,
+                         new { enctype = "multipart/form-data", style = "float: left;width:50%;", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>CustomerModel</legend>
+        <input type="hidden" id="CustID" name="CustID" value="@Model.CustID" />
+
+        <div style="max-width: 90%;">
+             <table id="tabcontent" style="float: left;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Customer</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CompanyName)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                          @Html.DisplayFor(model => model.CompanyName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Cust_Code)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Cust_Code" name="Cust_Code" value="@Model.Cust_Code"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Address)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Address" name="Address">@Model.Address</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Country)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Country" name="Country" value="@Model.Country" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.City)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="City" name="City" value="@Model.City" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PostalCode)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="PostalCode" name="PostalCode" value="@Model.PostalCode" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.FaxNumber)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="FaxNumber" name="FaxNumber" value="@Model.FaxNumber" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Email_Id)<text style="color: red;"> *</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="email" id="Email_Id" name="Email_Id" required value="@Model.Email_Id" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CustType)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="CustType" name="CustType" style="width: 180px;">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CustType != null)
+                                {
+                                    foreach (var item in ViewBag.CustType)
+                                    {
+                                        if(item.Text==Model.CustType)
+                                        {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                        <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        <p style="font-size: 11px;">(Add atleast a Project master to Create Customer)</p>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align: center;">
+                @Html.ActionLink("Back to List", "CustomerList", "TUV", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+                <input type="submit" id="SubmitAudit" name="button" value="Update" onclick="ProgressIconFunction('#form1')" />
+            </div>
+        </div>
+
+    </fieldset>
+   
+}
+@using (Html.BeginForm("ProjectUpdate", "TUV", FormMethod.Post, new
+{
+    enctype = "multipart/form-data",
+    style = "float: left;width:50%;",
+    id = "form2",
+    name = "form2"
+}))
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+    <div>
+        <input type="hidden" id="id_project" name="id_project" value="@sid_project"/>
+        <input type="hidden" id="CustID" name="CustID" value="@Model.CustID" />
+        <table style="margin-top: 18px; margin-bottom: 20px;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Project Master detail</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Project_no)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                              <input type="text" id="Project_no" name="Project_no" value="@sProject_no"/>
+                            <span class="field-validation-error"><span id="Project_no-message" style="display: none;">Project_no field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Project_no)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Project_desc)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                           <textarea id="Project_desc" name="Project_desc">@sProject_desc</textarea>
+                            <span class="field-validation-error"><span id="Project_desc-message" style="display: none;">Description field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Project_desc)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ISOStd)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="ISOStd" name="ISOStd" style="height: 100px; width: 180px;" multiple>
+                                <text style="color: red;">*</text>
+                                @if (ViewBag.IsoStdList != null)
+                                {
+                                    foreach (var data in ViewBag.IsoStdList)
+                                    {
+                                        if (Array.IndexOf(sISOStd.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                    <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                    <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="ISOStd-message" style="display: none;">Audit Criteria field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.ISOStd)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_team)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Audit_team" name="Audit_team" value="@sAudit_team"/>
+                            <span class="field-validation-error"><span id="Audit_team-message" style="display: none;">Audit team field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Audit_team)
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Contract_from)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Contract_from" name="Contract_from" value="@dtContract_from.ToString("dd/MM/yyyy")" readonly />
+                            <span class="field-validation-error"><span id="Contract_from-message" style="display: none;">Contract From date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Contract_from)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Contract_to)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Contract_to" name="Contract_to" value="@dtContract_to.ToString("dd/MM/yyyy")" readonly />
+                            <span class="field-validation-error"><span id="Contract_to-message" style="display: none;">Contract To date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Contract_to)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+            </table>
+        <div style="padding-right: 200px; text-align: center;">
+
+            @if (dsProject != null && dsProject.Tables.Count > 0 && dsProject.Tables[0].Rows.Count > 0)
+            {
+                <input type="submit" id="@SubmitFinding" name="button" value="Update" onclick="return Validation()" />
+                <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()" style="display: none;" />
+            }
+            else
+            {   
+                <input type="submit" id="@SubmitFinding" name="button" value="Update" onclick="return Validation()" style="display: none;" />
+                <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()"  />
+            }
+
+            <input type="button" value="Add New" onclick="AddNewItem()" />
+        </div>
+    </div>
+}
+<br />
+@if (dsProject != null && dsProject.Tables.Count > 0 && dsProject.Tables[0].Rows.Count > 0)
+{
+    <div id="dvItems">
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label">
+            <label for="Audit Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Project Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>Project No</th>
+                <th>Description</th>
+                <th>Audit Criteria</th>
+                <th>Audit Team</th>
+                <th>Contract From</th>
+                <th>Contract To</th>
+                
+            </tr>
+            @for (int i = 0; i < dsProject.Tables[0].Rows.Count; i++)
+            {
+                <tr id="@i">
+                    <td>
+                        <a onclick="EditItem(@dsProject.Tables[0].Rows[i]["id_project"].ToString(), @i)" title="Edit Customer details">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                    </td>
+                    <td>
+                       <img src="@Url.Content("~/Images/delete.png")" title="Delete Project" onclick="DeleteItems(@dsProject.Tables[0].Rows[i]["id_project"].ToString(),@dsProject.Tables[0].Rows[i]["CustID"].ToString())" style="cursor:pointer;" />
+                    </td>
+                    <td>
+                        @dsProject.Tables[0].Rows[i]["Project_no"].ToString()
+                    </td>
+                     <td>
+                        @dsProject.Tables[0].Rows[i]["Project_desc"].ToString()
+                    </td>
+                    <td>
+                        @obj.GetIsoStdNameById(dsProject.Tables[0].Rows[i]["ISOStd"].ToString())
+                    </td>
+                     <td>
+                        @dsProject.Tables[0].Rows[i]["Audit_team"].ToString()
+                    </td>
+                    <td>
+                        @if (dsProject.Tables[0].Rows[i]["Contract_from"].ToString() != null && dsProject.Tables[0].Rows[i]["Contract_from"].ToString() != "")
+                        {
+                           @Convert.ToDateTime(dsProject.Tables[0].Rows[i]["Contract_from"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                     
+                    </td>
+                     <td>
+                        @if (dsProject.Tables[0].Rows[i]["Contract_to"].ToString() != null && dsProject.Tables[0].Rows[i]["Contract_to"].ToString() != "")
+                        {
+                           @Convert.ToDateTime(dsProject.Tables[0].Rows[i]["Contract_to"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                    </td>
+                   
+                 
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+        
+
+        function AddNewItem() {
+            document.getElementById("SubmitFinding").style.display = "None";
+            document.getElementById("Save").style.display = "";
+            ResetControl();
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("Project_no").value == "") {
+                ssnMessage = $('#Project_no-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Project_no-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Project_desc").value == "") {
+                ssnMessage = $('#Project_desc-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Project_desc-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("ISOStd").value == "") {
+                ssnMessage = $('#ISOStd-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ISOStd-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Audit_team").value == "") {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Contract_from").value == "") {
+                ssnMessage = $('#Contract_from-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Contract_from-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Contract_to").value == "") {
+                ssnMessage = $('#Contract_to-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Contract_to-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function ResetControl() {
+
+            document.getElementById("Project_no").value = "";
+            document.getElementById("Project_desc").value = "";
+            $("#ISOStd").val('').trigger("chosen:updated");
+            document.getElementById("Audit_team").value = "";
+            $("#Contract_from").datepicker("setDate", new Date());
+            $("#Contract_to").datepicker("setDate", new Date());
+
+
+            var ssnMessage = $('#Project_no-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Project_desc-message');
+            ssnMessage.hide();
+            ssnMessage = $('#ISOStd-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_team-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Contract_from-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Contract_to-message');
+            ssnMessage.hide();
+        }
+
+       
+        function EditItem(id_project, Id) {
+            ResetControl();
+            Id++;
+            var table = document.getElementById("team-list");
+            document.getElementById("id_project").value = id_project;
+            document.getElementById("Project_no").value = table.rows[Id].cells[2].innerText;
+            document.getElementById("Project_desc").value = table.rows[Id].cells[3].innerText;
+            document.getElementById("Audit_team").value = table.rows[Id].cells[5].innerText;
+            document.getElementById("Contract_from").value = table.rows[Id].cells[6].innerText;
+            document.getElementById("Contract_to").value = table.rows[Id].cells[7].innerText;
+           
+            var ISOStdval = (table.rows[Id].cells[4].innerText).split(',');
+            $('#ISOStd').val('').trigger("chosen:updated");
+            $('#ISOStd option').filter(function () {
+                return ISOStdval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger("chosen:updated"); //Set selected
+
+
+            document.getElementById("SubmitFinding").style.display = "";
+            document.getElementById("Save").style.display = "none";
+
+        }
+
+        $(function () {
+            $("#ISOStd").chosen();
+            $('#Contract_from').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+            $('#Contract_to').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+
+        function DeleteItems(id_project,CustID) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("ProjectDocDelete", "TUV")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_project': id_project },
+                        success: function (result) {
+                            var params = {
+                                CustID: CustID
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,108 @@
+﻿@model ISOStd.Models.NearMissModels
+@using System.Data
+@{
+    Layout = null;
+    DataSet dsNearMiss = ViewBag.ActionDetails;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Near Miss Info</h4>
+    </div>
+
+
+    <div class="card-body">
+
+        <p>
+            Date of incident and timing:
+            @if (Model.incident_date != null && Model.incident_date > Convert.ToDateTime("01/01/0001"))
+            {
+                <code>
+                    @Model.incident_date.ToString("dd/MM/yyyy hh:mm")
+                </code>
+            }
+
+            Reported on:
+            @if (Model.reported_date != null && Model.reported_date > Convert.ToDateTime("01/01/0001"))
+            {<code>
+                    @Model.reported_date.ToString("dd/MM/yyyy")
+                </code>
+            }
+
+        </p>
+
+        <p>
+            Location/Area of incident:<code>
+    @Html.DisplayFor(model => model.location)
+</code>
+                Project:<code>@Html.DisplayFor(model => model.project)</code>
+        </p>
+        <p>
+            Report Number:<code>
+    @Html.DisplayFor(model => model.report_no)
+</code>
+                Reported By:<code>@Html.DisplayFor(model => model.reported_by)</code>
+        </p>
+        <p>
+            Description of near-miss incident:<code>@Html.DisplayFor(model => model.description)</code>
+        </p>
+
+        <p>
+            Effect of incident:<code>
+    @Html.DisplayFor(model => model.effect_incident)
+</code>
+                Probable immediate causes:<code>@Html.DisplayFor(model => model.causes)</code>
+
+        </p>
+        <p>Reviewed by:<code> @Html.DisplayFor(model => model.reviewed_by)</code></p>
+
+        @if (dsNearMiss != null && dsNearMiss.Tables.Count > 0 && dsNearMiss.Tables[0].Rows.Count > 0)
+        {
+            <div class="w-100 bg-primary"><h5>Near Miss Action Details</h5></div>
+
+            <table class="table-xs table-bordered table-striped">
+                <thead class="bg-blue">
+                    <tr>
+
+                        <th>Immediate Correction Taken</th>
+                        <th>Corrective Action proposed</th>
+                        <th>Need of Amending hazard risk register</th>
+                        <th>Verified by</th>
+                        <th>Reviewed by</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsNearMiss.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @dsNearMiss.Tables[0].Rows[i]["correction"].ToString()
+                            </td>
+                            <td>
+                                @dsNearMiss.Tables[0].Rows[i]["action"].ToString()
+                            </td>
+                            <td>
+                                @dsNearMiss.Tables[0].Rows[i]["hazard"].ToString()
+                            </td>
+                            <td>
+                                @obj.GetEmpHrNameById(dsNearMiss.Tables[0].Rows[i]["verified_by"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetEmpHrNameById(dsNearMiss.Tables[0].Rows[i]["reviewed_by"].ToString())
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+
+
+    </div>
+
+</div>
+
+

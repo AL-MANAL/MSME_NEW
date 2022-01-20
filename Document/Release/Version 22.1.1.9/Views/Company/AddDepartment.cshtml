@@ -1,0 +1,371 @@
+﻿@model ISOStd.Models.DepartmentModels
+@using System.Data;
+@{
+    ViewBag.Title = "AddDepartment";
+    DataSet dsBranch = new DataSet();
+    MultiSelectList dsDept = ViewBag.dsDept;
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    if (ViewBag.dsBranch != null)
+    {
+        dsBranch = ViewBag.dsBranch;
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Department</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+}
+
+@using (Html.BeginForm("AddDepartment", "Company", FormMethod.Post,
+                         new { id = "AddDepartment", name = "AddDepartment" }))
+{
+    @Html.AntiForgeryToken()
+    @*Html.ValidationSummary()*@
+
+    <div class="row">
+        <div class="col-md-8">
+
+            <!-- Basic layout-->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">Add Department</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="container-fluid">
+                        <table class="table table-lg">
+
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Add</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @Html.LabelFor(model => model.branch)
+                                    </td>
+                                    <td>
+                                        <select class="form-control select-fixed-multiple" id="branch" name="branch" required multiple="multiple">
+                                            @if (ViewBag.Branch != null)
+                                            {
+                                                foreach (var item in ViewBag.Branch)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.branch)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @Html.LabelFor(model => model.DeptName)
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" id="DeptName" name="DeptName" required />
+                                        @Html.ValidationMessageFor(model => model.DeptName)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    @if (Obj.GetCurrentUserSession().Dept.Contains("3"))
+                    {
+                        <div class="card-footer bg-white ml-auto">
+                            <button type="submit" name="button" id="button" value="Save" class="btn bg-indigo-400 float-right" onclick="ProgressIconFunction('#AddDepartment')">Submit<i class="icon-paperplane ml-2"></i></button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <!-- /basic layout -->
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- Basic layout-->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">Department List</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="container-fluid">
+                        @if (dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+                        {
+                            <table id="tblMeetingList" class="table table-lg">
+
+                                <tbody>
+                                    <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                        <th class="col-xs-4 col-md-4">Division Name</th>
+                                        <th class="col-xs-6 col-md-6">Dept Name</th>
+                                        @if (Obj.GetCurrentUserSession().Dept.Contains("3") || Obj.GetCurrentUserSession().Dept.Contains("5"))
+                                        {
+                                            <th class="col-xs-2 col-md-2">Action</th>
+                                        }
+                                    </tr>
+
+                                    @for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                                    {
+                                        <tr class="row">
+                                            <td class="col-xs-4 col-md-4">
+                                                <select class="form-control select-fixed-multiple" data-fouc id="branch@(dsBranch.Tables[0].Rows[i]["DeptId"].ToString())" name="branch@(dsBranch.Tables[0].Rows[i]["DeptId"].ToString())" multiple="multiple" required>
+
+                                                    @if (ViewBag.Branch != null)
+                                                    {
+                                                        foreach (var item in ViewBag.Branch)
+                                                        {
+                                                            //if (dsBranch.Tables[0].Rows[i]["branch"].ToString().ToString().Contains(item.Value))
+                                                            //if(Array.IndexOf((dsBranch.Tables[0].Rows[i]["branch"].ToString()).ToString().Split(','),item.Value > 0))
+                                                            if (Array.IndexOf((dsBranch.Tables[0].Rows[i]["branch"].ToString()).ToString().Split(','), item.Value) >= 0)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td class="col-xs-6 col-md-6">
+                                                <input class="form-control" type="text" id="dept @dsBranch.Tables[0].Rows[i]["DeptId"].ToString()" name="dept @dsBranch.Tables[0].Rows[i]["DeptId"].ToString()" value="@dsBranch.Tables[0].Rows[i]["DeptName"].ToString()" required />
+                                            </td>
+                                            <td class="col-xs-2 col-md-2">
+                                                @*<img src='@Url.Content("~/Images/updateIcon_small.png")' style="cursor: pointer;"
+                                                         onclick="UpdateItems(@item.Value)" />
+                                                    <img src="@Url.Content("~/Images/delete.png")" title="Delete Department" onclick="DeleteItems(@item.Value)" style="cursor:pointer;" />*@
+
+                                                @if (Obj.GetCurrentUserSession().Dept.Contains("3"))
+                                                {
+                                                    <span class='badge badge-info' style='cursor: pointer;' title='Update Department' onclick="UpdateItems(@dsBranch.Tables[0].Rows[i]["DeptId"].ToString())">Edit</span>
+                                                }
+                                                @if (Obj.GetCurrentUserSession().Dept.Contains("5"))
+                                                {
+                                                    <span class='badge badge-danger' title="Delete Department" onclick="DeleteItems(@dsBranch.Tables[0].Rows[i]["DeptId"].ToString())" style='cursor:pointer;'>Delete</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <!-- /basic layout -->
+
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        @*$(function () {
+
+            var data = "";
+            jQuery.ajax({
+                url: '@Url.Action("FunGetBranchList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+
+                success: function (result) {
+                    data = JSON.parse(result);
+
+                    $("#branch").select2({
+
+                        placeholder: 'Select an option',
+
+                        data: data,
+                        formatSelection: function (item) {
+                            return item.text
+                        },
+                        formatResult: function (item) {
+                            return item.text
+                        },
+                        templateResult: formatResult,
+                    });
+                }
+            });
+
+             function formatResult(node) {
+                 var $result = $('<span style="padding-left:' + (20 * node.level_step) + 'px;">' + node.text + '</span>');
+                 return $result;
+             };
+
+
+         });*@
+         $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+        //$(function () {
+        //    $("#DeptName").focus();
+        //});
+
+              function DeleteItems(id) {
+     bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Department?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("DepartmentDelete", "Company")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id': id },
+                        success: function (result) {
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname;
+                      }
+                     });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+         }
+
+
+
+        function UpdateItems(id) {
+        bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Edit the current Department?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                         var Dept = document.getElementById("dept " + id).value;
+                         //var branch = document.getElementById("branch " + id).value;
+
+                         var branch = $("#branch" + id).val();
+
+                         //var branch = document.getElementById("branch " + id);
+                         //var branch_text = branch.options[branch.selectedIndex].text;
+                    jQuery.ajax({
+                        url: '@Url.Action("DepartmentEdit", "Company")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id': id, 'Dept': Dept, 'branch': branch },
+                        success: function (result) {
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname;
+                       }
+                     });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+         }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,997 @@
+﻿@using System.Data
+@using ISOStd.Models;
+@{
+    ViewBag.Title = "CustomerComplaintPDF";
+    clsGlobal objGlobaldata = new clsGlobal();
+
+    ISOStd.Models.clsGlobal objGlobal = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.CustComplaintModels objComplaint = new ISOStd.Models.CustComplaintModels();
+
+    if (ViewBag.ComplaintDetail != null)
+    {
+        objComplaint = ViewBag.ComplaintDetail;
+    }
+
+    ISOStd.Models.CustComplaintModelsList NcOverallList = new ISOStd.Models.CustComplaintModelsList();
+    if (ViewBag.NcOverallList != null)
+    {
+        NcOverallList = ViewBag.NcOverallList;
+    }
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    //DataSet RptPDF = new DataSet();
+    //if (ViewBag.RptPDF != null)
+    //{
+    //    RptPDF = ViewBag.RptPDF;
+    //}
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<style type="text/css">
+
+    /*.page {
+        page-break-before: always !important;
+    }*/
+
+    * {
+        overflow: visible !important;
+    }
+
+    /*.page-breaker {
+        display: block;
+        clear: both;
+        page-break-after: always;
+    }*/
+
+    .page_break_inside_avoid {
+        page-break-inside: avoid !important;
+    }
+    .display-label{
+        font-weight: bold;
+    }
+</style>
+@Html.Partial("_RHeader", dsCompany)
+@*<fieldset class="border p-2">
+
+    <legend class="font-weight-semibold text-center font-size-lg"> Customer Complaint Report  <img src='@Url.Content("~/Images/companylogo1.png")' /></legend>*@
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            @*<tr>
+            <td colspan="4">
+                <h3>Report Details</h3>
+            </td>
+        </tr>*@
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Complaint No
+                    </div>
+                </td>
+                <td colspan="3">
+                    <div class="display-field">
+                        @objComplaint.ComplaintNo
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        Complaint Received Date
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (objComplaint.ReceivedDate != null && objComplaint.ReceivedDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objComplaint.ReceivedDate.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        Complaint Registered Date
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (objComplaint.registered_on != null && objComplaint.registered_on > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objComplaint.registered_on.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Customer Reference
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.CustomerRef
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        Mode Of Complaint
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.ModeOfComplaint
+                    </div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Customer Name
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.CustomerName
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        Project Name
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.ProjectName
+                    </div>
+                </td>
+                @*<td>
+                    <div class="display-label">
+                        Division
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.branch
+                    </div>
+                </td>*@
+            </tr>
+            @*<tr>
+                <td>
+                    <div class="display-label">
+                        Department
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.Department
+                    </div>
+                </td>
+
+                <td>
+                    <div class="display-label">
+                        Location
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.Location
+                    </div>
+                </td>
+            </tr>*@
+            @*<tr>
+                <td>
+                    <div class="display-label">
+                        Project Name
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.ProjectName
+                    </div>
+                </td>
+            </tr>*@
+            <tr><td style="text-align:center" colspan="4"><b>Complaint reported by details</b></td> </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Reported By
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.ReportedBy
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        Email
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.reportedby_email
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Designation
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.reportedby_desig
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        Contact Number
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.reportedby_no
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Details of Complaint
+                    </div>
+                </td>
+                <td colspan="3">
+                    <div class="display-field">
+                        @Html.Raw(HttpUtility.HtmlDecode(objComplaint.Details))
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        Complaint Status
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objComplaint.ComplaintStatus
+                    </div>
+                </td>
+            </tr>
+            <tr>
+        </table>
+    </div>
+
+    <br />
+    @if (objComplaint.complaint_valid != null && objComplaint.complaint_valid != "")
+    {
+        <div class="page_break_inside_avoid">
+            <h2>Customer Complaint Review Output</h2>
+            <table class="table table-lg table-bordered">
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Is it valid complaint?
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objComplaint.complaint_valid
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            Complaint Deviation
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objGlobal.GetDropdownitemById(objComplaint.complaint_deviation)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Complaint Status
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objComplaint.complaint_review_status
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Review Start Date
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (objComplaint.complain_review_sdate != null && objComplaint.complain_review_sdate > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objComplaint.complain_review_sdate.ToString("dd/MM/yyyy")
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            Review End Date
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (objComplaint.complain_review_date != null && objComplaint.complain_review_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objComplaint.complain_review_date.ToString("dd/MM/yyyy")
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Remark
+                        </div>
+                    </td>
+                    <td colspan="3">
+                        <div class="display-field">
+                            @objComplaint.complaint_remark
+                        </div>
+                    </td>
+                </tr>
+
+                @if ((objComplaint.rej_reason != null && objComplaint.rej_reason != "") && objComplaint.complaint_valid.ToLower() == "no")
+                {
+                    <tr class="row">
+                        <td>
+                            <div class="display-label">
+                                Reason of rejecting complaint
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @objComplaint.rej_reason
+                            </div>
+                        </td>
+                     
+                    </tr>
+                }
+                else if ((objComplaint.ForwarderAssign != null && objComplaint.ForwarderAssign != "") && objComplaint.complaint_valid.ToLower() == "yes")
+                {
+                    <tr>
+                        <td>
+                            <div class="display-label">
+                                Complaint to be Resolved by
+                            </div>
+                        </td>
+                        <td colspan="3">
+                            <div class="display-field">
+                                @objGlobal.GetMultiHrEmpNameById(objComplaint.ForwarderAssign)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="display-label">
+                                Assigned Date
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @if (objComplaint.AssignDate != null && objComplaint.AssignDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @objComplaint.AssignDate.ToString("dd/MM/yyyy")
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-label">
+                                Target Date
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @if (objComplaint.TargetDate != null && objComplaint.TargetDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @objComplaint.TargetDate.ToString("dd/MM/yyyy")
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    }
+
+
+    <hr />
+
+    <div>
+        @if (NcOverallList.CustComplaintList != null && NcOverallList.CustComplaintList.Count > 0)
+        {
+            for (int inc = 0; inc < NcOverallList.CustComplaintList.Count; inc++)
+            {
+                <div>
+                    @if (NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString() != null && NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].disp_notifeddate) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        <div class="page_break_inside_avoid">
+                            <h2 class="bg-dark pl-sm-2" style="text-align:center">Complaint resolved by  : @objGlobal.GetEmpHrNameById(NcOverallList.CustComplaintList[inc].ForwarderAssign)</h2>
+                            <hr />
+                            @if(ViewBag.immediate_action == "Yes")
+                            {
+                            <h2> Immediate Action(Disposition)</h2>
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <table class="table table-lg table-bordered">
+                                        <thead></thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="display-label">
+                                                    Are actions effective to resolve complaint?
+                                                </td>
+                                                <td>
+                                                    @NcOverallList.CustComplaintList[inc].disp_action_taken
+                                                </td>
+                                                <td class="display-label">
+                                                    Brief explanation
+                                                </td>
+                                                <td>
+                                                    @NcOverallList.CustComplaintList[inc].disp_explain
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="display-label">
+                                                    Notified to
+                                                </td>
+                                                <td>
+                                                    @NcOverallList.CustComplaintList[inc].disp_notifiedto
+                                                </td>
+
+                                                <td class="display-label">
+                                                    Notified on
+                                                </td>
+                                                <td>
+                                                    <span>
+                                                        @if (NcOverallList.CustComplaintList[inc].disp_notifeddate != null && NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                        {
+                                                            @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString()).ToString("dd/MM/yyyy")
+                                                        }
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                          
+
+                                    </table>
+                                    @if (NcOverallList.CustComplaintList[inc].DispList != null && NcOverallList.CustComplaintList[inc].DispList.Count > 0)
+                                    {
+                                        <table class="table table-lg table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sl No</th>
+                                                    <th>Action Taken/To be Taken</th>
+                                                    <th>Person Responsible</th>
+                                                    <th>Action completed on / Target date to complete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].DispList.Count; index++, j++)
+                                                {
+                                                    <tr>
+
+                                                        <td>
+                                                            @j
+                                                        </td>
+                                                        <td>
+                                                            @(NcOverallList.CustComplaintList[inc].DispList[index].disp_action)
+                                                        </td>
+                                                        <td>
+                                                            @(NcOverallList.CustComplaintList[inc].DispList[index].disp_resp_person)
+                                                        </td>
+                                                        <td>
+                                                            @if (NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date != null && NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date > Convert.ToDateTime("01/01/0001"))
+                                                            {
+                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date.ToString()).ToString("dd/MM/yyyy")
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+
+                                </div>
+                            </div>
+                            }
+                        </div>
+
+                        @*if (ViewBag.team == "Yes" && NcOverallList.CustComplaintList[inc].team_targetdate != null && NcOverallList.CustComplaintList[inc].team_targetdate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].team_targetdate) > Convert.ToDateTime("01/01/0001"))
+                        {
+                            <div class="page_break_inside_avoid">
+                                <h2>Team</h2>
+
+                                <div class="card-body">
+                                    <div class="container-fluid">
+                                        <table class="table table-lg table-bordered">
+                                            <thead></thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Team
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].nc_team
+                                                    </td>
+
+                                                    <td class="display-label">
+                                                        Target date to complete the Root Cause Analysis
+                                                    </td>
+                                                    <td>
+                                                        <span>
+                                                            @if (NcOverallList.CustComplaintList[inc].team_targetdate != null && NcOverallList.CustComplaintList[inc].team_targetdate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].team_targetdate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                            {
+                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].team_targetdate).ToString("dd/MM/yyyy")
+                                                            }
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        }*@
+
+                        if (ViewBag.rca == "Yes" && NcOverallList.CustComplaintList[inc].rca_details != null && NcOverallList.CustComplaintList[inc].rca_details != "")
+                        {
+                            <div class="page_break_inside_avoid">
+                                <h2>Root Cause Analysis</h2>
+
+                                <div class="card-body">
+                                    <div class="container-fluid">
+                                        <table class="table table-lg table-bordered">
+                                            <thead></thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        RCA Started On
+                                                    </td>
+                                                    <td>
+                                                        <span>
+                                                            @if (NcOverallList.CustComplaintList[inc].rca_startdate != null && NcOverallList.CustComplaintList[inc].rca_startdate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_startdate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                            {
+                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_startdate).ToString("dd/MM/yyyy")
+                                                            }
+                                                        </span>
+                                                    </td>
+                                                    <td class="display-label">
+                                                        Techniques adopted
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].rca_technique
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Details of root cause analysis
+                                                    </td>
+                                                    <td colspan="3">
+                                                        @NcOverallList.CustComplaintList[inc].rca_details
+                                                    </td>
+                                                </tr>
+                                              
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Need of corrective action
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].rca_action
+                                                    </td>
+                                                    <td class="display-label">
+                                                        If No, justify
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].rca_justify
+                                                    </td>
+                                                </tr>
+                                                @if (NcOverallList.CustComplaintList[inc].rca_action == "No")
+                                                {
+                                                    <tr>
+                                                        <td class="display-label">
+                                                            Verification due date
+                                                        </td>
+                                                        <td>
+                                                           
+                                                                @if (NcOverallList.CustComplaintList[inc].ca_verfiry_duedate != null && NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                                {
+                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate).ToString("dd/MM/yyyy")
+                                                                }
+                                                            
+                                                        </td>
+                                                        <td class="display-label">
+                                                            To be verified by
+                                                        </td>
+                                                        <td>
+                                                          
+                                                                @NcOverallList.CustComplaintList[inc].ca_proposed_by
+                                                            
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                <tr>
+                                                    <td class="display-label">
+                                                        RCA Completed By
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].rca_reportedby
+                                                    </td>
+                                                    <td class="display-label">
+                                                        RCA Completed / Reported On
+                                                    </td>
+                                                    <td>
+                                                        <span>
+                                                            @if (NcOverallList.CustComplaintList[inc].rca_reporteddate != null && NcOverallList.CustComplaintList[inc].rca_reporteddate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_reporteddate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                            {
+                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_reporteddate).ToString("dd/MM/yyyy")
+                                                            }
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Notified to
+                                                    </td>
+                                                    <td colspan="3">
+                                                        <span>
+                                                            @NcOverallList.CustComplaintList[inc].rca_notifiedto
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                      
+                        if (ViewBag.ca == "Yes" && NcOverallList.CustComplaintList[inc].ca_notifed_date != null && NcOverallList.CustComplaintList[inc].ca_notifed_date.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_notifed_date) > Convert.ToDateTime("01/01/0001"))
+                        {
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div class="page_break_inside_avoid">
+                                        <h2> Corrective Action</h2>
+                                        <table class="table table-lg table-bordered">
+                                            <thead></thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Verification due date
+                                                    </td>
+                                                    <td>
+                                                        @if (NcOverallList.CustComplaintList[inc].ca_verfiry_duedate != null && NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                        {
+                                                            @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate).ToString("dd/MM/yyyy")
+                                                        }
+                                                    </td>
+                                                    <td class="display-label">
+                                                        To be verified by
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].ca_proposed_by
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Notified to
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].ca_notifiedto
+                                                    </td>
+
+                                                    <td class="display-label">
+                                                        Notified Date
+                                                    </td>
+                                                    <td>
+                                                        @if (NcOverallList.CustComplaintList[inc].ca_notifed_date != null && NcOverallList.CustComplaintList[inc].ca_notifed_date.ToString() != "")
+                                                        {
+                                                            @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_notifed_date).ToString("dd/MM/yyyy")
+                                                        }
+                                                    </td>
+                                                </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="page_break_inside_avoid">
+                                        @if (NcOverallList.CustComplaintList[inc].CAList != null && NcOverallList.CustComplaintList[inc].CAList.Count > 0)
+                                        {
+                                            <table class="table table-lg table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sl No</th>
+                                                        <th>Corrective action</th>
+                                                        <th>Person responsible</th>
+                                                        <th>Target date</th>
+                                                        <th>Resource required</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].CAList.Count; index++, j++)
+                                                    {
+                                                        <tr>
+
+                                                            <td>
+                                                                @j
+                                                            </td>
+                                                            <td>
+                                                                @(NcOverallList.CustComplaintList[inc].CAList[index].ca_ca)
+                                                            </td>
+                                                            <td>
+                                                                @(NcOverallList.CustComplaintList[inc].CAList[index].ca_resp_person)
+                                                            </td>
+                                                            <td>
+                                                                @if (NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date.ToString() != null && NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date > Convert.ToDateTime("01/01/0001"))
+                                                                {
+                                                                    @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date.ToString()).ToString("dd/MM/yyyy")
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @(NcOverallList.CustComplaintList[inc].CAList[index].ca_resource)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+
+                        if (ViewBag.verification == "Yes" && NcOverallList.CustComplaintList[inc].v_status != null && NcOverallList.CustComplaintList[inc].v_status != "")
+                        {
+
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div class="page_break_inside_avoid">
+                                        <h2> Verification</h2>
+                                        <table class="table table-lg table-bordered">
+                                            <thead></thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Are proposed actions implemented effectively?
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].v_implement)
+                                                    </td>
+                                                    <td class="display-label">
+                                                        Brief explanation
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].v_implement_explain)
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Is RCA process effective?
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].v_rca)
+                                                    </td>
+
+                                                    <td class="display-label">
+                                                        Brief explanation
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].v_rca_explain)
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Similar discrepancies detected from date of implementing corrective action?
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].v_discrepancies)
+                                                    </td>
+
+                                                    <td class="display-label">
+                                                        Brief explanation
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].v_discrep_explain)
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    @*<td class="display-label">
+                                                        Uploaded Document
+                                                    </td>
+                                                    <td>
+                                                        @if (NcOverallList.CustComplaintList[inc].v_upload != null && NcOverallList.CustComplaintList[inc].v_upload != "" && NcOverallList.CustComplaintList[inc].v_upload.Length > 0)
+                                                        {
+                                                            foreach (var docs in NcOverallList.CustComplaintList[inc].v_upload.Trim(',').Split(','))
+                                                            {
+                                                                <span>
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                                </span>
+                                                            }
+                                                        }
+                                                    </td>*@
+
+                                                    <td class="display-label">
+                                                        Complaint Status
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].v_status
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Closed Date
+                                                    </td>
+                                                    <td>
+                                                        @if (NcOverallList.CustComplaintList[inc].v_closed_date != null && NcOverallList.CustComplaintList[inc].v_closed_date.ToString() != "")
+                                                        {
+                                                            @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].v_closed_date).ToString("dd/MM/yyyy")
+                                                        }
+                                                    </td>
+                                                    <td class="display-label">
+                                                        Verified On
+                                                    </td>
+                                                    <td>
+                                                        @if (NcOverallList.CustComplaintList[inc].v_verified_date != null && NcOverallList.CustComplaintList[inc].v_verified_date.ToString() != "")
+                                                        {
+                                                            @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].v_verified_date).ToString("dd/MM/yyyy")
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="display-label">
+                                                        Verified by
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].v_verifiedto
+                                                    </td>
+
+                                                    <td class="display-label">
+                                                        Notified To
+                                                    </td>
+                                                    <td>
+                                                        @NcOverallList.CustComplaintList[inc].v_notifiedto
+                                                    </td>
+                                                </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="page_break_inside_avoid">
+                                        @if (NcOverallList.CustComplaintList[inc].CustList != null && NcOverallList.CustComplaintList[inc].CustList.Count > 0)
+                                        {
+                                            <table class="table table-lg table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sl No</th>
+                                                        <th>Corrective Action Proposed</th>
+                                                        <th>Implementation status</th>
+                                                        <th>Is Corrective Action effective?</th>
+                                                        <th>If No, reasons</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].CustList.Count; index++, j++)
+                                                    {
+                                                        <tr>
+
+                                                            <td>
+                                                                @j
+                                                            </td>
+                                                            <td>
+                                                                @(NcOverallList.CustComplaintList[inc].CustList[index].ca_ca)
+                                                            </td>
+                                                            <td>
+                                                                @(NcOverallList.CustComplaintList[inc].CustList[index].implement_status)
+                                                            </td>
+                                                            <td>
+                                                                @(NcOverallList.CustComplaintList[inc].CustList[index].ca_effective)
+                                                            </td>
+                                                            <td>
+                                                                @(NcOverallList.CustComplaintList[inc].CustList[index].reason)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                     }               
+                </div>
+            }
+        }
+    </div>
+    <hr />
+
+    <br />
+    @if (ViewBag.cust_response == "Yes" && objComplaint.c_response != null && objComplaint.c_response != "")
+    {
+        <div class="page_break_inside_avoid">
+            <h2>Customer Complaint Response</h2>
+            <table class="table table-lg table-bordered">
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Customer Complaint Response
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objComplaint.c_response
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            Response Date
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (objComplaint.c_response_date != null && objComplaint.c_response_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objComplaint.c_response_date.ToString("dd/MM/yyyy")
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Response Details
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objComplaint.c_response_details
+                        </div>
+                    </td>
+                    @*<td>
+                        <div class="display-label">
+                            Uploaded Document
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (objComplaint.c_reponse_upload != "" && objComplaint.c_reponse_upload != null && objComplaint.c_reponse_upload.Length > 0)
+                            {
+                                foreach (var docs in objComplaint.c_reponse_upload.Trim(',').Split(','))
+                                {
+                                    <span>
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span>No File</span>
+                            }
+                        </div>
+                    </td>*@
+                </tr>
+            </table>
+        </div>
+    }
+
+</div>

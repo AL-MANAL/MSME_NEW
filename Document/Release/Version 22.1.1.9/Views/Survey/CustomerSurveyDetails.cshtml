@@ -1,0 +1,251 @@
+﻿@using System.Data;
+
+@{
+    ViewBag.Title = "Customer Survey";
+    DataSet dsSurvey = ViewBag.dsSurvey;
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerSurveyList", "Survey", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Survey List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Customer Survey Details </span>
+
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider">
+                                </p>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>*@
+
+        </div>
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Customer Survey Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>       
+
+        <div class="card-body">
+            <div class="container-fluid">
+                @if (dsSurvey != null && dsSurvey.Tables.Count > 0 && dsSurvey.Tables[0].Rows.Count > 0)
+                {
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td colspan="4" class="col">Customer Information</td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Customer
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @dsSurvey.Tables[0].Rows[0]["companyname"].ToString()
+                                </span>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Survey Date
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @dsSurvey.Tables[0].Rows[0]["SurveyDate"].ToString()
+                                </span>
+                            </td>
+                        </tr>
+
+                    </table>
+                }
+
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td colspan="4" class="col">Customer Information</td>
+                        </tr>
+                        <tr class="row">
+                            <th class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Sl. No
+                                </p>
+                            </th>
+                            <th class="col-xs-12 col-md-8">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Element
+                                </p>
+                            </th>
+
+                            <th class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Rating
+                                </p>
+                            </th>
+                        </tr>
+                        @if (dsSurvey != null && dsSurvey.Tables.Count > 0 && dsSurvey.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < dsSurvey.Tables[0].Rows.Count; item++)
+                            {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @(item + 1)
+                                </span>
+                            </td>
+                            <td class="col-xs-12 col-md-8">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @dsSurvey.Tables[0].Rows[item]["Questions"].ToString()
+                                </span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @dsSurvey.Tables[0].Rows[item]["RatingOptions"].ToString()
+                                </span>
+                            </td>                           
+                        </tr>
+                            }
+                        }
+
+
+                    </table>
+            </div>
+
+        </div>
+
+    </div>
+
+}
+
+
+@section scripts {
+    <script>
+                //----zzz
+
+
+              //----zzz
+                    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                               @:     text: '@TempData["alertdata"]',
+                                               @:     type: 'error'
+                                               @: }).show();
+                                                                }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                             @:       text: '@TempData["Successdata"]',
+                                             @:       type: 'success'
+         @:}).show();
+        }
+                    });
+                    //zzz----
+    </script>
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

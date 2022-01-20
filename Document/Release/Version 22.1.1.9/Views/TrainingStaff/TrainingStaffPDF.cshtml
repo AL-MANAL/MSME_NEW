@@ -1,0 +1,152 @@
+﻿@using System.Data
+@using ISOStd.Models;
+@{
+    ViewBag.Title = "TrainingStaffPDF";
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.TrainingStaffModels obj = new ISOStd.Models.TrainingStaffModels();
+    ISOStd.Models.TrainingStaffModelsList objList = new ISOStd.Models.TrainingStaffModelsList();
+
+    if (ViewBag.Training != null)
+    {
+        obj = ViewBag.Training;
+    }
+
+    if (ViewBag.TrainDetails != null)
+    {
+        objList = ViewBag.TrainDetails;
+    }
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+    @*<div class="bp-header__main">
+            <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+        </div>
+        <h1 class="mb-0 text-center">Training Report</h1>*@
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Employee
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.employee
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Date
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.date_taining.ToString() != "" && obj.date_taining.ToString() != null)
+                        {
+                            @Convert.ToDateTime(obj.date_taining.ToString("dd/MM/yyyy"));
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Division
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.division
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.dept
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Designation
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.designation
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Head of Department
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.dept_head
+                    </div>
+                </td>
+            </tr>
+
+            <tr class="row">
+                @*<td class="font-size-lg font-weight-bold">
+                Comments
+            </td>
+            <td class="font-size-lg">
+                <div>
+                    @obj.comments
+                </div>
+            </td>*@
+                <td class="font-size-lg font-weight-bold">
+                    Dept head Comments
+                </td>
+                <td class="font-size-lg" colspan="3">
+                    <div>
+                        @obj.comment_head
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
+        @if (objList.TrainList != null && objList.TrainList.Count > 0)
+        {
+            <h5 for="Training Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">Training Details</h5>
+
+            <table class="table table-lg table-bordered">
+                <tr class="row" style="background-color: #4cc4dd;">
+                    <th>Training Type</th>
+                    <th>Date</th>
+                    <th>Justification</th>
+                    <th>Acceptance</th>
+                    <th>Suggestion</th>
+                </tr>
+
+                @for (int index = 0; index < objList.TrainList.Count; index++)
+                {
+                    <tr class="row">
+                        <td class="font-size-lg font-weight-bold">@ObjGlobal.GetDropdownitemById(objList.TrainList[index].training_type)</td>
+                        <td class="font-size-lg font-weight-bold">
+                            @if (objList.TrainList[index].scheduled_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objList.TrainList[index].scheduled_date.ToString("dd-MM-yyyy")
+                            }
+                        </td>
+                        <td class="font-size-lg font-weight-bold">@objList.TrainList[index].justification</td>
+                        <td class="font-size-lg font-weight-bold">@objList.TrainList[index].acceptance</td>
+                        <td class="font-size-lg font-weight-bold">@objList.TrainList[index].suggestion</td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+</div>
+
+

@@ -1,0 +1,218 @@
+﻿@model ISOStd.Models.TrainingCertificatesModels
+
+@{
+    ViewBag.Title = "";
+ 
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                     <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingEventsList", "TrainingEvents", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Trainings List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Training Certificate Edit</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("TrainingCertificateEdit", "Trainings", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="TrainingID" name="TrainingID" value="@ViewBag.TrainingID" />
+    <input type="hidden" id="CertId" name="CertId" value="@ViewBag.CertId" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Training Certificate Edit</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Training_Topic)
+                    </div>
+                </td>
+                 <td class="col">
+                    <div class="display-field">
+                         @Html.DisplayFor(model => model.Training_Topic)      
+                    </div>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Cert_Ref)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Cert_Ref, new { htmlAttributes = new { @required = "required" ,@class = "form-control"} })  
+ 			            @Html.ValidationMessageFor(m => m.Cert_Ref)
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Person_Name)
+                    </div>
+                </td>
+                 <td class="col">
+                    <div class="editor-field">
+                        <select class="form-control select-search select2-hidden-accessible" id="Person_Name" name="Person_Name">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Person_Name != null)
+                            {
+                                foreach (var item in ViewBag.Person_Name)
+                                {
+                                    //if(item.Text==Model.Person_Name)
+                                    if (Array.IndexOf(Model.Person_No.ToString().Split(','), item.Value) >= 0)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Cert_Issue_Date)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        @if (Model.Cert_Issue_Date != null && Model.Cert_Issue_Date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            <input class="form-control" type="date" id="Cert_Issue_Date" name="Cert_Issue_Date" value="@Model.Cert_Issue_Date.ToString("yyyy-MM-dd")" required />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="date" id="Cert_Issue_Date" name="Cert_Issue_Date" required />
+                        }  
+			@Html.ValidationMessageFor(m => m.Cert_Issue_Date)
+                    </div>
+                </td>
+            </tr>
+           <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Cert_Exp_Date)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                            @if (Model.Cert_Exp_Date != null && Model.Cert_Exp_Date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            <input class="form-control" type="date" id="Cert_Exp_Date" name="Cert_Exp_Date" value="@Model.Cert_Exp_Date.ToString("yyyy-MM-dd")" required />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="date" id="Cert_Exp_Date" name="Cert_Exp_Date" required />
+                        }  
+		 @Html.ValidationMessageFor(m => m.Cert_Exp_Date)
+                    </div>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Cert_issued_by)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Cert_issued_by, new { htmlAttributes = new { @class = "form-control" } })  
+			             @Html.ValidationMessageFor(m => m.Cert_issued_by)
+                    </div>
+                </td>
+            </tr>
+           <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Cert_Upload)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                         <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png" class="bootstrap-uploader" data-fouc  />
+                                @if (Model.Cert_Upload != "")
+                         {
+                               <span class="bg-dark py-1 px-2 rounded">
+                                   <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Cert_Upload})' target="_blank">Preview</a>
+                               </span>
+                        }                           
+                               
+                    </div>
+                </td>
+            </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "TrainingEventsList", "TrainingEvents", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+        }
+
+@section Scripts {
+    <script>
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "jpg", "jpeg", "gif", "png","xlx","xlsx","doc","docx"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only pdf, jpg, jpeg, gif, png format");
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

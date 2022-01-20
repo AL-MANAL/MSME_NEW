@@ -4306,6 +4306,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
 
@@ -4506,6 +4509,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
 
@@ -5184,6 +5190,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
 
@@ -5426,7 +5435,12 @@ namespace ISOStd.Models
         {
             try
             {
-                string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
+
+
+                string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();
                 int portNumber = 0;
 
                 if (int.TryParse(ConfigurationManager.AppSettings["portNumber"].ToString().Trim(), out portNumber))
@@ -5715,6 +5729,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
 
@@ -11893,6 +11910,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
 
@@ -11975,6 +11995,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
                 string sLoggedEmail = "";
@@ -12052,6 +12075,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
 
@@ -12105,13 +12131,13 @@ namespace ISOStd.Models
 
 
 
-                    //  if (fsSource != "")
-                    //  {
-                    //    if (File.Exists(fsSource))
-                    //    {
-                    mail.Attachments.Add(new Attachment(fsSource, path, MediaTypeNames.Application.Octet));
-                    //   }
-                    // }
+                    if (fsSource != null)
+                    {
+                        //if (File.Exists(fsSource))
+                        //{
+                            mail.Attachments.Add(new Attachment(fsSource, path, MediaTypeNames.Application.Octet));
+                //}
+            }
                     SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
 
                     smtp.Credentials = new System.Net.NetworkCredential(emailFrom, password);
@@ -12131,6 +12157,9 @@ namespace ISOStd.Models
         {
             try
             {
+                //To enable or disable email
+                if (ConfigurationManager.AppSettings["enableEmail"].ToString().Trim() != "true")
+                    return true;
                 string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
                 int portNumber = 0;
 

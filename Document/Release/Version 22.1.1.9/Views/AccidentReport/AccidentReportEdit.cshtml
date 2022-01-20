@@ -1,0 +1,993 @@
+﻿@model ISOStd.Models.AccidentReportModels
+
+@{
+    ViewBag.Title = "AccidentReportEdit";
+    ISOStd.Models.AccidentReportModelsList objAccTypeList = new ISOStd.Models.AccidentReportModelsList();
+    ISOStd.Models.AccidentReportModelsList objReporterList = new ISOStd.Models.AccidentReportModelsList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    int icnt = 0, icnts = 0;
+
+    if (ViewBag.objAccTypeList != null)
+    {
+        objAccTypeList = ViewBag.objAccTypeList;
+        icnt = objAccTypeList.AccidentList.Count;
+    }
+    if (ViewBag.objReporterList != null)
+    {
+        objReporterList = ViewBag.objReporterList;
+        icnts = objReporterList.AccidentList.Count;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AccidentList", "AccidentReport", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Incident Report</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Incident Report</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AccidentReportEdit", "AccidentReport", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="id_accident_rept" name="id_accident_rept" value="@Model.id_accident_rept" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Incident Report</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Department)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.acc_date)
+                        </td>
+                        <td class="col">
+                            @if (Model.acc_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input class="form-control" type="date" id="acc_date" name="acc_date" value="@Model.acc_date.ToString("yyyy-MM-dd")"
+                                       required="required" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="date" id="acc_date" name="acc_date" required="required" />
+                            }
+                            <p>
+                                Hr: <select class="select-fixed-single" name="PlanTimeInHour" id="PlanTimeInHour">
+                                    @if (ViewBag.PlanTimeInHour != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInHour)
+                                        {
+                                            if (Convert.ToInt16(Model.acc_date.ToString("HH")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                Min:
+                                <select name="PlanTimeInMin" id="PlanTimeInMin" class="select-fixed-single">
+                                    @if (ViewBag.PlanTimeInMin != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInMin)
+                                        {
+                                            if (Convert.ToInt16(Model.acc_date.ToString("mm")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </p>
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.reported_date)
+                        </td>
+                        <td class="col">
+                            @if (Model.reported_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input class="form-control" type="date" id="reported_date" name="reported_date" value="@Model.reported_date.ToString("yyyy-MM-dd")" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="date" id="reported_date" name="reported_date" />
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reported_by)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="reported_by" name="reported_by" multiple="multiple" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            //if (Model.reported_by == item.Value)
+                                            if (Array.IndexOf(Model.reported_by.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.reported_by)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.location)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="location" name="location" multiple="multiple" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.location)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.accident_place)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            @Html.EditorFor(model => model.accident_place, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.Incident_Type)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Incident_Type" name="Incident_Type" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Incident_Type != null)
+                                {
+                                    foreach (var item in ViewBag.Incident_Type)
+                                    {
+                                        if (item.Value == Model.Incident_Type)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.details)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="details" name="details" required>@Model.details</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.damage)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="damage" name="damage">@Model.damage</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.eqp_involved)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="eqp_involved" name="eqp_involved">@Model.eqp_involved</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.job_type)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="job_type" name="job_type">@Model.job_type</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ppe)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="ppe" name="ppe">@Model.ppe</textarea>
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.invest_need)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="invest_need" name="invest_need" onchange="CalJustify()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            if (Model.invest_need == item)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.invest_need)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.upload)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg,.MP4" class="bootstrap-uploader" data-fouc />
+
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            <br />
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                <span class="form-text text-muted">
+                                    <code>
+                                        (Uncheck in case to remove a uploaded file)
+                                    </code>
+                                </span>
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                               preview
+                                            </a>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <tr class="row" id="justifyrow" style="display:none">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.justify)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="justify" name="justify">@Model.justify</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.Actions_Taken)
+                        </td>
+                        <td class="col">
+                            @Html.TextAreaFor(model => model.Actions_Taken, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                        </td>
+                    </tr>
+                </table>
+
+                <br />
+                @*Incident Details Type*@
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Incident Type details</legend>
+                    <table class="table table-lg" id="table1">
+
+                        <tbody>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident injuries or fatalities<text style="color:red;">*</text></th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="injury_type" name="injury_type">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.AccidentType != null)
+                                        {
+                                            foreach (var item in ViewBag.AccidentType)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.injury_type)
+                                    <span class="field-validation-error"><span id="injury_type-message" style="display: none;">Please select Incident Type.</span></span>
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Person Name<text style="color:red;">*</text></th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="pers_name" name="pers_name" multiple>
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.pers_name)
+                                    <span class="field-validation-error"><span id="pers_name-message" style="display: none;">Please select</span></span>
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Number of person<text style="color:red;">*</text></th>
+                                <td class="col">
+                                    <input class="form-control" type='number' id='no_person' name="no_person" />
+                                    @Html.ValidationMessageFor(model => model.no_person)
+                                    <span class="field-validation-error"><span id="no_person-message" style="display: none;">Please select number of Person.</span></span>
+                                </td>
+                                <td class="col">
+                                    <img src='@Url.Content("~/images/icon_add.png")' onclick='AddIncidentType()' style='cursor:pointer; padding-right: 5px;' />Add
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </fieldset>
+
+
+
+                <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Incident details</code></span>
+
+                <div class="card is-visible" id="hidden card">
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Incident Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt" name="itemcnt" value="@icnts" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Incident Type</th>
+                                    <th>Person Name</th>
+                                    <th>Number of Person</th>
+                                </tr>
+
+                                @if (objReporterList.AccidentList != null && objReporterList.AccidentList.Count > 0)
+                                {
+                                    for (int index = 0; index < objReporterList.AccidentList.Count; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                <input type='hidden' id='t_accident_type @index' name="t_accident_type @index" value='@objReporterList.AccidentList[index].id_accident_type' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='injury_type @index' name="injury_type @index" value='@objReporterList.AccidentList[index].injury_type'>@Obj.GetDropdownitemById(objReporterList.AccidentList[index].injury_type)
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='pers_name @index' name="pers_name @index" value='@objReporterList.AccidentList[index].pers_name'>@Obj.GetMultiHrEmpNameById(objReporterList.AccidentList[index].pers_name)
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='no_person @index' name="no_person @index" value='@objReporterList.AccidentList[index].no_person'>@objReporterList.AccidentList[index].no_person
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                @*Incident Report*@
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Incident Report details</legend>
+                    <table class="table table-lg" id="table1">
+
+                        <tbody>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident Reported To<text style="color:red;">*</text></th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="reported_to" name="reported_to" multiple>
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.reported_to)
+                                    <span class="field-validation-error"><span id="reported_to-message" style="display: none;">Please select Reported To.</span></span>
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident Report Date<text style="color:red;">*</text></th>
+                                <td class="col">
+                                    <input class="form-control" type='date' id='reportedon_date' name="reportedon_date" />
+                                    @Html.ValidationMessageFor(model => model.reportedon_date)
+
+                                    <span class="field-validation-error"><span id="reportedon_date-message" style="display: none;" for="basic">Please select Reported Date.</span></span>
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Safety Inspector Comments<text style="color:red;">*</text></th>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments" name="comments"></textarea>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.comments)
+                                    <span class="field-validation-error"><span id="comments-message" style="display: none;">Please write Safety Inspector Comments.</span></span>
+                                </td>
+                                <td class="col">
+                                    <img src='@Url.Content("~/images/icon_add.png")' onclick='AddIncidentInfo()' style='cursor:pointer; padding-right: 5px;' />Add
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </fieldset>
+
+                <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Incident details</code></span>
+
+
+                <div class="card is-visible" id="hidden_card1" @*style="display:none"*@>
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Incident Info Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt1" name="itemcnt1" value="@icnt" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Reported To</th>
+                                    <th>Reported Date</th>
+                                    <th>Safety Inspector Comments</th>
+                                </tr>
+                                @if (objAccTypeList.AccidentList != null && objAccTypeList.AccidentList.Count > 0)
+                                {
+                                    for (int index = 0; index < objAccTypeList.AccidentList.Count; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                <input type='hidden' id='id_accident_info @index' name="id_accident_info @index" value='@objAccTypeList.AccidentList[index].id_accident_info' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='reported_to @index' name="reported_to @index" value='@objAccTypeList.AccidentList[index].reported_to'>@Obj.GetMultiHrEmpNameById(objAccTypeList.AccidentList[index].reported_to)
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='reportedon_date @index' name="reportedon_date @index" value='@objAccTypeList.AccidentList[index].reportedon_date'>@objAccTypeList.AccidentList[index].reportedon_date
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='comments @index' name="comments @index" value='@objAccTypeList.AccidentList[index].comments'>@objAccTypeList.AccidentList[index].comments
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "AccidentList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+
+
+
+
+
+}
+
+@section Scripts {
+    <script>
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        CalJustify();
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png", "mp4"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only pdf,xlsx,xls,doc,docx format");
+            }
+        }
+
+
+        function CalJustify() {
+            var Invest_need = document.getElementById("invest_need").value;
+
+            if (Invest_need.toLowerCase() == "yes") {
+                //document.getElementById("justify").disabled = false;
+                document.getElementById("justifyrow").style.display = "none";
+                document.getElementById("justify").required = false;
+            }
+            else {
+                //document.getElementById("justify").disabled = true;
+                document.getElementById("justifyrow").style.display = "";
+
+                document.getElementById("justify").required = true;
+            }
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("injury_type").value == "") {
+                ssnMessage = $('#injury_type-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#injury_type-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("no_person").value == "" || parseInt(document.getElementById("no_person").value) < 0) {
+                ssnMessage = $('#no_person-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#no_person-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("pers_name").value == "") {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function AddIncidentType() {
+
+        if (Validation() == true) {
+
+
+            var cnt = document.getElementById("itemcnt").value;
+
+            document.getElementById("itemcnt").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            //var AccidentType = $('#AccidentTypeSelect').val();
+            //var sAccidentTypeSelect = document.getElementById("AccidentTypeSelect");
+            //var sAccidentTypeSelectText = sAccidentTypeSelect.options[sAccidentTypeSelect.selectedIndex].text;
+
+            var injury_type = $('#injury_type').val();
+            var InjuryTypeName = $("#injury_type option:selected").text();
+            var no_person = $('#no_person').val();
+            var pers_name = $('#pers_name').val();
+            var pers_nameName = $("#pers_name option:selected").text();
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell1.innerHTML = "<input type='hidden' id='injury_type " + cnt + "' name='injury_type " + cnt + "' value='" + injury_type + "'>" + InjuryTypeName;
+            cell2.innerHTML = "<input type='hidden' id='pers_name" + cnt + "' name='pers_name " + cnt + "' value='" + pers_name + "'>" + pers_nameName;
+            cell3.innerHTML = "<input type='hidden' id='no_person" + cnt + "' name='no_person " + cnt + "' value='" + no_person + "'>" + no_person;
+
+            cnt++;
+            document.getElementById("itemcnt").value = cnt;
+
+            document.getElementById("hidden card").classList.remove(hideClass);
+            document.getElementById("hidden card").classList.add(showClass);
+            ResetControl();
+            }
+
+        }
+
+        function ResetControl () {
+            //$("#injury_type").val('').trigger("chosen:updated");
+            $("#injury_type").val('').trigger('change');
+            document.getElementById("no_person").value = "";
+            $("#pers_name").val('').trigger('change');
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcnt").value;
+            cnt--;
+
+            document.getElementById("itemcnt").value = cnt;
+            if (cnt == "0") {
+
+                //document.getElementById("btnCreate").classList.add(hideClass);
+                //document.getElementById("btnCreate").classList.remove(showClass);
+                document.getElementById("hidden card").classList.remove(showClass);
+                document.getElementById("hidden card").classList.add(hideClass);
+            }
+
+        }
+
+
+        function AddIncidentInfo() {
+
+        if (Validation1() == true) {
+
+
+            var cnt = document.getElementById("itemcnt1").value;
+
+            document.getElementById("itemcnt1").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list1");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+
+            //var AccidentType = $('#AccidentTypeSelect').val();
+            //var sAccidentTypeSelect = document.getElementById("AccidentTypeSelect");
+            //var sAccidentTypeSelectText = sAccidentTypeSelect.options[sAccidentTypeSelect.selectedIndex].text;
+
+            var reported_to = $('#reported_to').val();
+            var reported_toName = $("#reported_to option:selected").text();
+            var reportedon_date = reformatDate($("#reportedon_date").val());
+            var comments = $('#comments').val();
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell1.innerHTML = "<input type='hidden' id='reported_to " + cnt + "' name='reported_to " + cnt + "' value='" + reported_to + "'>" + reported_toName;
+            cell2.innerHTML = "<input type='hidden' id='reportedon_date" + cnt + "' name='reportedon_date " + cnt + "' value='" + reportedon_date + "'>" + reportedon_date;
+            cell3.innerHTML = "<input type='hidden' id='comments" + cnt + "' name='comments " + cnt + "' value='" + comments + "'>" + comments;
+
+            cnt++;
+            document.getElementById("itemcnt1").value = cnt;
+
+            document.getElementById("hidden_card1").classList.remove(hideClass);
+            document.getElementById("hidden_card1").classList.add(showClass);
+            //document.getElementById("hidden_card1").style.display = "";
+            ResetControl1();
+            }
+
+        }
+
+        function Validation1() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("reported_to").value == "") {
+                ssnMessage = $('#reported_to-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#reported_to-message');
+                ssnMessage.hide();
+            }
+
+
+            if (document.getElementById("reportedon_date").value == "") {
+                ssnMessage = $('#reportedon_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#reportedon_date-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("comments").value == "") {
+                ssnMessage = $('#comments-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#comments-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+        function ResetControl1() {
+            //$("#injury_type").val('').trigger("chosen:updated");
+            $("#reported_to").val('').trigger('change');
+            document.getElementById("reportedon_date").value = "";
+            document.getElementById("comments").value = "";
+        }
+
+        function reformatDate(dateStr) {
+            dArr = dateStr.split("-");  // ex input 2010-01-18
+            return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+        }
+
+        function deleteRow1(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcnt1").value;
+            cnt--;
+
+            document.getElementById("itemcnt1").value = cnt;
+            if (cnt == "0") {
+                //document.getElementById("hidden_card1").style.display = "none";
+                //document.getElementById("btnCreate").classList.add(hideClass);
+                //document.getElementById("btnCreate").classList.remove(showClass);
+                document.getElementById("hidden_card1").classList.remove(showClass);
+                document.getElementById("hidden_card1").classList.add(hideClass);
+            }
+        }
+
+         function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#location").children('option').remove();
+                    $("#location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+
+        });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

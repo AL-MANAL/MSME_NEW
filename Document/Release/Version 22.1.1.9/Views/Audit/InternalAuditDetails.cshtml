@@ -1,0 +1,88 @@
+﻿@model IEnumerable< ISOStd.Models.InternalAuditModels>
+
+@{
+    ViewBag.Title = "InternalAuditDetails";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Internal Audit Details </span>
+</div>
+
+<div class = "ActionLink">
+        @Html.ActionLink("Back to List", "InternalAuditList", new {  AuditID = ViewBag.AuditID, AuditNum = ViewBag.AuditNum }, new { @class = "ActionLink",
+   onclick="HyperLinkProgressIconFunction()"})
+    </div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+<br /><br />
+<div style="width: 100%; overflow: auto;">
+    <table id="table1">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AuditNum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AuditDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AuditCriteria)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AuditLocation)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.upload)
+            </th>
+            <th>Findings Log
+            </th>
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+        <tr>
+            <td>
+                @Html.ActionLink(item.AuditNum, "InternalAuditNumDetails", new { AuditID = item.AuditID }, new { onclick = "HyperLinkProgressIconFunction()" })
+            </td>
+            <td>
+                @Html.Label(item.AuditDate.ToString("dd/MM/yyyy"))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuditCriteria)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuditLocation)
+            </td>
+            <td>
+                @if (item.upload != "")
+                {
+                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.upload })' target="_blank">Preview</a>
+                }
+            </td>
+
+                  <td>
+                    <a href='@Url.Action("AddInternalAuditFindingsLog", "Audit", new { AuditID = item.AuditID, AuditNum = item.AuditNum })' title="Add New Log"
+                       onclick="HyperLinkProgressIconFunction()">
+                        <img src="@Url.Content("~/Images/icon_add.png")" title="Add Log" onclick="HyperLinkProgressIconFunction()" />
+                    </a>
+                    <a href='@Url.Action("InternalAuditFindingsLogList", "Audit", new { AuditID = item.AuditID, AuditNum = item.AuditNum })' title="View Log List"
+                       onclick="HyperLinkProgressIconFunction()">
+                        <img src="@Url.Content("~/Images/icon_list.png")" title="View Log list" onclick="HyperLinkProgressIconFunction()" />
+                    </a>
+                </td>
+           
+
+        </tr>
+        }
+    }
+
+    </table>
+</div>

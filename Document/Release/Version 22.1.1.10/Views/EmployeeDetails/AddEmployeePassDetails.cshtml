@@ -1,0 +1,310 @@
+﻿@model ISOStd.Models.EmployeePassModels
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeeList", "EmployeeDetails", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Employee Management</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Document Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("AddEmployeePassDetails", "EmployeeDetails", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<input type="hidden" id="emp_no" name="emp_no" value='@Model.emp_no' />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Document Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+  	    <table class="table table-lg">
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PassType)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                           <select class="form-control select-search select2-hidden-accessible" data-fouc id="PassType" name="PassType">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.PassType != null)
+                                {
+                                    foreach (var item in ViewBag.PassType)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="PassType-message" style="display: none;">PassType field is required</span></span>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Upload)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <input type="file" name="Upload" id="Upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />     
+                           <span class="field-validation-error"><span id="Upload-message" style="display: none;">Upload field is required.</span></span>
+                        </div>
+                    </td>
+
+                </tr>
+              <tr class="row">
+                  
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ExpDate)
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-3">
+                        <div class="editor-field">
+                            <input class="form-control" type="date" id="ExpDate" name="ExpDate" />
+                        </div>
+                    </td>
+
+                </tr>
+             
+            </table>
+	    </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeeList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="button"  value="Save" class="btn bg-indigo-400" onclick="AddPass()"><i class="icon-checkmark3 mr-2"></i> Add</button>
+            <button type="submit" id="btnCreate" value="Save" style="display:none;" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+        </div>
+    </div>
+
+        <div class="card invisible" id="hidden card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Document Detail</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                 <tr class="bg-blue">
+                <th>Action</th>
+                <th>Document Type</th>
+                <th>Upload</th>
+                <th>Expiry Date</th>
+                </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    <script>
+
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                        @:     text: '@TempData["alertdata"]',
+                        @:     type: 'error'
+                        @: }).show();
+                               }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                        @:       text: '@TempData["Successdata"]',
+                        @:       type: 'success'
+        @:}).show();
+                   }
+        });
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("PassType").value == "") {
+                ssnMessage = $('#PassType-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#PassType-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Upload").value == "") {
+                ssnMessage = $('#Upload-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Upload-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function AddPass() {
+
+            if (Validation() == true) {
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+
+
+                var PassType = $('#PassType').val();
+                var sPassType = document.getElementById("PassType");
+                var sPassTypeText = sPassType.options[sPassType.selectedIndex].text;
+                var Upload = $('#Upload').val();
+                UploadsPath = UploadDocument(cnt);
+                var ExpDate = $('#ExpDate').val();
+
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='PassType" + cnt + "' name='PassType" + cnt + "' value='" + PassType + "'>" + sPassTypeText;
+                cell2.innerHTML = "<input type='hidden' id='Upload" + cnt + "' name='Upload" + cnt + "' value='" + UploadsPath + "'>" + Upload;
+                cell3.innerHTML = "<input type='hidden' id='ExpDate" + cnt + "' name='ExpDate" + cnt + "' value='" + ExpDate + "'>" + ExpDate;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+                document.getElementById("btnCreate").style.display = "";
+                ResetControl();
+            }
+
+        }
+        function ResetControl() {
+       
+            $("#PassType").val('').trigger('change');
+            document.getElementById("Upload").value = "";
+            document.getElementById("ExpDate").value = "";
+            $('#Upload').fileinput('reset');
+            var ssnMessage = $('#PassType-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Upload-message');
+            ssnMessage.hide();
+
+        }
+        function UploadDocument(ind) {
+            var Upload = ($("#Upload")).files; //$('#testfile').file;
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("Upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("Upload").files[i];
+
+                formData.append("Upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDocument", "EmployeeDetails")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    document.getElementById("Upload" + ind).value = result;
+                    UploadsPath = result;
+                    //jAlert(result);
+                    return result;
+                }
+            });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

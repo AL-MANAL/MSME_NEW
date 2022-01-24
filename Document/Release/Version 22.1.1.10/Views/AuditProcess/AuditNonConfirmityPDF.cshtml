@@ -1,0 +1,158 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "AuditNonConfirmityPDF";
+
+    ISOStd.Models.AuditProcessModels obj = new ISOStd.Models.AuditProcessModels();
+    ISOStd.Models.clsGlobal ObjGolbal = new ISOStd.Models.clsGlobal();
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    if (ViewBag.NCDetails != null)
+    {
+        obj = ViewBag.NCDetails;
+    }
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always;
+    }
+</STYLE>
+
+@Html.Partial("_ReportHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Directorate
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.division
+                    </div>
+                </td>
+
+                <td class="font-size-lg font-weight-bold">
+                    Group
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.dept
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.location
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Audit Criteria
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Audit_criteria
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    NC Number
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Non_comformance
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Why it is NC
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Conformance
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Details
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Details
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Evidence
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Evidence
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Remarks?
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.why_nc
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Auditee Acceptance
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.auditee_acceptance
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Corrective Action Date
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.ca_date.ToString() != "" && obj.ca_date.ToString() != null)
+                        {
+                            @Convert.ToDateTime(obj.ca_date.ToString("dd/MM/yyyy"));
+                        }
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Follow Up Date
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.followup_date.ToString() != "" && obj.followup_date.ToString() != null)
+                        {
+                            @Convert.ToDateTime(obj.followup_date.ToString("dd/MM/yyyy"));
+                        }
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+

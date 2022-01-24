@@ -1,0 +1,260 @@
+﻿@model ISOStd.Models.SupplierAuditChecklistModels
+
+@{
+    ViewBag.Title = "GenerateAuditChecklist";
+}
+
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Generate Audit Checklist</span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("GenerateAuditChecklist", "SupplierAuditChecklist", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+      
+              <input type="hidden" id="itemcnt" name="itemcnt"/> 
+                
+            <legend>Generatechecklist</legend>
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Itemno)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             @ViewBag.ItemNo
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Business)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="Business" name="Business"  required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Business != null)
+                                {
+                                    foreach (var item in ViewBag.Business)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                    </td>
+                    </tr>
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="Department" name="Department" onchange="GetQuestions()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                    </td>
+                       <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Supplier)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="Supplier" name="Supplier"  required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Supplier != null)
+                                {
+                                    foreach (var item in ViewBag.Supplier)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <tr>
+                       <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.AuditCriteria)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="AuditCriteria" name="AuditCriteria" multiple style="height: 100px; width: 200px;" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditCriteria != null)
+                                {
+                                    foreach (var item in ViewBag.AuditCriteria)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                    </td>
+
+                </tr>
+               
+               
+            </table>
+            </fieldset>
+             <table id="tblMeetingList" "width: 90%;">
+             
+                 <tr>         
+                      <th colspan="2" style="background-color: #e5eafe; color: #0099ff;width:20px;text-align:center">Audit Questions
+                </th>
+                 </tr>
+            <tr>
+                
+                <th style="background-color: #e5eafe; color: #0099ff;width:10px;min-width:10px; max-width:10px;">Sl No
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">Question
+                </th>
+            </tr>
+                
+       
+        </table>
+        
+    
+        <div style="width: 100%; text-align: center;">
+             @Html.ActionLink("Back to List", "AuditChecklistList", null, new {@class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Save"  onclick="ProgressIconFunction('#form1')"/>
+        </div>
+    }
+
+</div>
+@section Scripts {
+     <script>
+         $(function () {
+
+             $("#Business").chosen();
+             $("#Department").chosen();
+             $("#Supplier").chosen();
+             $("#AuditCriteria").chosen();
+             $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+         });
+         function GetQuestions() {
+             var Department = $('#Department').val();
+             var Business = $('#Business').val();
+             if (Department != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("GetQuestions", "SupplierAuditChecklist")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'Department': Department, 'Business': Business },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+                         var c = table.rows.length;
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+                         var cnt = result.length;
+                         document.getElementById("itemcnt").value = cnt;
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         //while (table.rows.length > 0) {
+                         //    table.deleteRow(0);
+                         //}
+
+                         if (result != "") {
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             var thTitleRow = table.insertRow();
+                             thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;";
+                             var cellTitle0 = thTitleRow.insertCell(0);
+
+                             cellTitle0.innerHTML = "Audit Questions";
+                             table.rows[0].cells[0].colSpan = 2;
+                             table.rows[0].cells[0].style = "color:#fff";
+
+
+                             var theaderRow = table.insertRow();
+
+                             theaderRow.style = "background-color: #e5eafe; font-weight: bold; font-size: 14px";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                         
+
+
+
+                             cellth0.innerHTML = "<th>Sl.No</th>";
+                             cellth1.innerHTML = "<th>Questions</th>";
+                            
+
+                             table.rows[1].cells[0].style = "color:#0099ff; width:5px";
+                             table.rows[1].cells[1].style = "color:#0099ff";
+                       
+                             
+                             var list = result;
+                            
+                             for (var i = 0,j=1; i < result.length; i++,j++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+                               
+
+                                 var Id = result[i].Value;
+
+                                 cell0.innerHTML = " <input type='hidden' id='slno " + j + "' name='slno " + j + "'>" + j;
+                                 cell1.innerHTML = " <input type='hidden' id='Audit_Elements " + i + "' name='Audit_Elements " + i + "' value='" + Id + "'>" + result[i].Text;
+                               
+                             }
+                           
+                         }
+                         else {
+                             document.getElementById("tblMeetingList").style.display = "none";
+                             jAlert("No Questions exists, please add Questions and then try again");
+                         }
+
+                     }
+                 });
+             }
+         }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

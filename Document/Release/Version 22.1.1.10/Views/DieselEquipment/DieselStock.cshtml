@@ -1,0 +1,272 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.DieselStockModels>
+
+@{
+    ViewBag.Title = "DieselStock";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Diesel Stock </span>
+</div>
+<div class = "ActionLink"><img src="@Url.Content("~/Images/icon_add.png")" title="Add Stock" onclick="Stock('add')" style="cursor:pointer;"/>Add New</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+<div id="AddItem" style="display: none; border:1px grey solid;">
+    @using (Html.BeginForm("DieselStock", "DieselEquipment", FormMethod.Post, new { id = "formDiesel", name = "formDiesel" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="OperationFlg" name="OperationFlg" value="add" />
+        <input type="hidden" id="Diesel_Rcvd_TransId" name="Diesel_Rcvd_TransId"/>
+        <table id="tabcontent">
+             <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">
+                        <label id="lblAdd" style="display:block;float:left;"> Add Stock</label>
+                        <label id="lblEdit" style="display:none;float:left;"> Edit Diesel Stock</label>
+                        <span onclick="HideControls()" style="cursor:pointer; float:right;">[-]Hide</span>
+                    </td>                    
+                </tr>
+            <tr>               
+               <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.First().Branch_id)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="Branch_id" name="Branch_id" required>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Branch_id != null)
+                            {
+                                foreach (var item in ViewBag.Branch_id)
+                                {                    
+                                    <option value='@item.Value' id="@item.Text">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.First().Qty)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="number" id="Qty" name="Qty" required /><label style="color: orange;font-weight:bold;">Avialable Qty:</label> @ViewBag.CurrentQty
+                    </div>
+                </td>
+                 </tr>
+            <tr>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.First().Rcvd_Date)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                       <input type="text" id="Rcvd_Date" name="Rcvd_Date" required readonly/>
+                    </div>
+                </td>          
+               
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.First().Rcvd_By)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Rcvd_By" name="Rcvd_By"/>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    
+        <div style="width: 100%; text-align: center;">
+            <input type="submit" value="Save" id="btnSubmit" onclick="ProgressIconFunction('#formDiesel')" />
+        </div>
+    }
+</div>
+<div id="content" style="border: 1px grey solid;">
+    <div style="text-align: center; background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">
+        Diesel Stock List            
+    </div>
+    @using (Html.BeginForm("DieselStock", "DieselEquipment", FormMethod.Get, new { id = "form2", name = "form2" }))
+    {
+        <p style="float:left;"><label style="color: orange;font-weight:bold;  ">Avialable Qty:</label> @ViewBag.CurrentQty</p>
+        <div style="text-align: center;">
+            <input type="text" id="frmDate" name="frmDate" required readonly/>
+             <input type="text" id="toDate" name="toDate" required readonly/>
+            <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form2')">
+                <span class="glyphicon glyphicon-search"></span>Search
+            </button>
+        </div>   
+    }
+
+    @Html.PagedListPager(Model, page => Url.Action("DieselStock",
+    new
+    {
+        page,
+        frmDate = Request.QueryString["frmDate"],
+        toDate = Request.QueryString["toDate"]
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+    
+    <table id="table1">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Branch_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Qty)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Rcvd_Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Rcvd_By)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().LoggedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().LoggedDate)
+            </th>
+            <th>Action</th>
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                string sRcvd_Date = "";
+                if (item.Rcvd_Date > Convert.ToDateTime("01/01/0001"))
+                {
+                    sRcvd_Date = item.Rcvd_Date.ToString("dd/MM/yyyy");
+                }
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Branch_id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Qty)
+                </td>
+                <td>
+                    @sRcvd_Date
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rcvd_By)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoggedBy)
+                </td>
+                <td>
+                    @if (item.LoggedDate > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.LoggedDate.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td>
+                    <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" 
+                            onclick="Stock('@item.Diesel_Rcvd_TransId', '@item.Branch_id', '@item.Qty', '@item.Rcvd_By', '@sRcvd_Date')"></span>
+                </td>
+            </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">Search for Data</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(function () {
+            
+            $('#Rcvd_Date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+
+            $('#frmDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+
+            $('#toDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+            $("#Rcvd_Date").datepicker("setDate", new Date());
+        });
+
+        function Stock(Diesel_Rcvd_TransId, Branch_id, Qty, Rcvd_By, Rcvd_Date) {
+            ClearControl();
+            document.getElementById("AddItem").style.display = "block";
+
+            if (Diesel_Rcvd_TransId != "" && Diesel_Rcvd_TransId != "add") {
+                document.getElementById("Diesel_Rcvd_TransId").value = Diesel_Rcvd_TransId;
+                document.getElementById("Qty").value = Qty;
+                document.getElementById("Rcvd_Date").value = Rcvd_Date;
+                document.getElementById("Rcvd_By").value = Rcvd_By;
+                document.getElementById("OperationFlg").value = "edit";
+
+                document.getElementById("lblAdd").style.display = "none";
+                document.getElementById("lblEdit").style.display = "block";
+
+                document.getElementById("Branch_id").options.namedItem(Branch_id).selected = true;
+                document.getElementById("btnSubmit").value = "Update";            }
+            else {
+                document.getElementById("OperationFlg").value = "add";
+                document.getElementById("lblAdd").style.display = "block";
+                document.getElementById("lblEdit").style.display = "none";
+                document.getElementById("btnSubmit").value = "Save";
+            }
+        }
+
+        function HideControls() {
+            ClearControl();
+            document.getElementById("AddItem").style.display = "none";
+        }
+
+        function ClearControl() {
+            document.getElementById("Diesel_Rcvd_TransId").value = "";
+            document.getElementById("Qty").value = "";
+            document.getElementById("Rcvd_By").value = "";
+            document.getElementById("Rcvd_Date").value = "";
+            document.getElementById("Branch_id").value = "";
+        }
+
+    </script>
+}

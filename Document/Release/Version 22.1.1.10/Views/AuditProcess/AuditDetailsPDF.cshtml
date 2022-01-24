@@ -1,0 +1,238 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+                /**/
+
+                ViewBag.Title = "AuditDetailsPDF";
+
+                ISOStd.Models.AuditProcessModels obj = new ISOStd.Models.AuditProcessModels();
+                ISOStd.Models.clsGlobal ObjGolbal = new ISOStd.Models.clsGlobal();
+
+                DataSet dsCompany = new DataSet();
+                if (ViewBag.CompanyInfo != null)
+                {
+                    dsCompany = ViewBag.CompanyInfo;
+                }
+
+                if (ViewBag.Audit != null)
+                {
+                    obj = ViewBag.Audit;
+                }
+
+                DataSet objAuditList = new DataSet();
+                if (ViewBag.AuditTrans != null)
+                {
+                    objAuditList = ViewBag.AuditTrans;
+                }
+
+                int itmctn = 0;
+                Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always;
+    }
+</STYLE>
+
+@Html.Partial("_ReportHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Directorate
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.division
+                    </div>
+                </td>
+
+                <td class="font-size-lg font-weight-bold">
+                    Group
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.dept
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Team
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.team
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.location
+                    </div>
+                </td>                
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Audit Criteria
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Audit_criteria
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Audit Status
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Audit_Status
+                    </div>
+                </td>            
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Check List
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.checklist
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Internal Audit Team
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.internal_audit_team
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    Planned by
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.PlannedBy
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Notified To
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Notified_To
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    From Timing
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.FromPlanTimeInHour
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    To Timing
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.ToPlanTimeInHour
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    @if (obj.Audit_Status == "Completed")
+    {
+        <table class="table table-lg table-bordered table-striped datatable-responsive" id="auditprocess">
+            <thead>
+                <tr>
+                    <th>
+                        Sl.No
+                    </th>
+                    <th>
+                        What is checked?
+                    </th>
+                    <th>
+                        Finding Details
+                    </th>
+                    <th>
+                        Details of Evidence
+                    </th>
+                    <th>
+                        Finding Category
+                    </th>
+                    <th>
+                        Why it is Non Conformance / Potential Non Conformance?
+                    </th>
+                    <th>
+                        NC Number (If finding category Nonconformance or observation)
+                    </th>
+                </tr>
+
+            </thead>
+            <tbody>
+                @if (ViewBag.Question != null && objAuditList != null && objAuditList.Tables.Count > 0 && objAuditList.Tables[0].Rows.Count > 0)
+                {
+                    int iSrno = 0, i = 0;
+                    foreach (var item in ViewBag.Question)
+                    {
+                        iSrno = iSrno + 1;
+                        itmctn = itmctn + 1;
+
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                            </td>
+                            <td>
+                                @objAuditList.Tables[0].Rows[i]["Details"].ToString()
+                            </td>
+                            <td>
+                                @objAuditList.Tables[0].Rows[i]["Evidence"].ToString()
+                            </td>
+                            <td>
+                                @objAuditList.Tables[0].Rows[i]["Category"].ToString()
+                            </td>
+                            <td>
+                                @objAuditList.Tables[0].Rows[i]["Conformance"].ToString()
+                            </td>
+                            <td>
+                                @objAuditList.Tables[0].Rows[i]["Non_comformance"].ToString()
+                            </td>
+                        </tr>
+                        i++;
+                    }
+
+                    if (itmctn == 0)
+                    {
+                        <tr>
+                            <td>
+                                <h3 class="text-danger">No Questions Found</h3>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    }
+</div>

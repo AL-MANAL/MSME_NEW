@@ -1,0 +1,617 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.QHSEPlannerModels>
+
+@{
+    ViewBag.Title = "QHSEPlannerModelsList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+@*<link href='@Url.Content("~/Content/popover/popover.css")' rel="stylesheet">*@
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Event Planner</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Event Planner List</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+
+    @if (Obj.GetCurrentUserSession().Events.Contains("3"))
+    {
+        <div class="card-body">
+            <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddQHSEPlanner", "QHSEPlanner")' title="Add New">
+                <span class="ladda-label">Add New</span>
+                <span class="ladda-spinner"></span>
+            </a>
+        </div>
+    }
+    <div class="card-body">
+        <div class="options d-flex flex-fill">
+            @using (Html.BeginForm("QHSEPlannerList", "QHSEPlanner", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+            {
+                if (ViewBag.Branch != null)
+                {
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                        <option value='' hidden>Division</option>
+                        @if (ViewBag.Branch != null)
+                        {
+                            foreach (var item in ViewBag.Branch)
+                            {
+                                if (item.Value == ViewBag.Branch_name)
+                                {
+                                    <option value='@item.Value' selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                }
+            }
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped table-hover datatable-responsive" id="qhse">
+        <thead>
+            <tr>
+                <th>
+                    Sl No
+                </th>
+                @*<th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().QHSE_name)
+                    </th>*@
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Activity_name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Planned_date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Target_date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Actual_date)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Remarks)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Person_responsible)
+                </th>
+                <th class="not-export-column">Edit</th>
+                <th class="not-export-column">Active Status</th>
+                <th class="not-export-column">Delete </th>             
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+                    <tr>
+                        <td>
+                            @Html.ActionLink(i.ToString(), "QHSEPlannerDetails", new { id_qhse = item.id_qhse.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_qhse, onclick = "HyperLinkProgressIconFunction()" })
+
+                            @*@Html.ActionLink(i.ToString(), "QHSEPlannerDetails", new { id_qhse = item.id_qhse.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_qhse, onclick = "HyperLinkProgressIconFunction()" })*@
+                            @*<button id="@item.id_qhse.ToString()" type="button" class="btn btn-light" data-popup="popover"  data-trigger="hover"  data-original-title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">Popover <i class="icon-play3 ml-2"></i></button>*@
+                        </td>
+                        @*<td style="width:150px; min-width:150px; max-width:150px;">
+                             @Html.DisplayFor(model=>item.QHSE_name)
+                            </td>*@
+                        <td>
+                            @Html.DisplayFor(model => item.Activity_name)
+                            @*@Html.ActionLink(item.Activity_name.ToString(), "QHSEPlannerDetails", new { id_qhse = item.id_qhse.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_qhse, onclick = "HyperLinkProgressIconFunction()" })*@
+                        </td>
+                        <td>
+                            @if (item.Planned_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.Planned_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (item.Target_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.Target_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (item.Actual_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.Actual_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(model => item.Status)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.Remarks)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.Person_responsible)
+                        </td>
+                        <td>
+
+                            <a href='@Url.Action("QHSEPlannerEdit", "QHSEPlanner", new { id_qhse = item.id_qhse })' title="Edit QHSE Planner" onclick="HyperLinkProgressIconFunction()">
+                                <span class="badge badge-info">Edit</span>
+                            </a>
+                        <td>
+
+                            <a class="btn btn-outline bg-orange text-orange border-orange" href='@Url.Action("QHSEPlannerActiveStatus", "QHSEPlanner", new { id_qhse = item.id_qhse })' title="Add Active status" onclick="HyperLinkProgressIconFunction()">
+
+                                <div class="list-icons">
+                                    <i class="icon-menu9"></i>
+                                </div>
+
+                            </a>
+                        </td>
+                             <td>
+                                @*<img src="@Url.Content("~/Images/delete.png")"  />*@
+                                <span class="badge badge-danger" title="Delete QHSE Planner" onclick="DeleteItems(@item.id_qhse)" style="cursor:pointer;">Delete</span>
+                            </td>                        
+
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+</div>
+
+
+
+@section scripts {
+    @*<script type="text/javascript" charset="utf8" src="~/Scripts/jquery-3.1.1.js"></script>*@
+
+    <script>
+         //----zzz
+    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+        {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+
+         function setData(id) {
+
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("QHSEPlannerInfo", "QHSEPlanner")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+
+                    }
+
+                });
+
+                return set_data;
+            }
+
+
+ 
+        var qhse = function () {
+
+              var ShowEdit = @(Obj.GetCurrentUserSession().Events.Contains("3") ? "true" : "false");
+              var ShowDel  = @(Obj.GetCurrentUserSession().Events.Contains("5") ? "true" : "false");
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive:true,
+                    columnDefs: [{
+                        orderable: false,
+                        width: 100,
+                        targets: [8,9,10]
+                    }, {
+                            'targets': [10],
+                            'visible': ShowDel
+                        }, {
+                            'targets': [9,8],
+                            'visible': ShowEdit
+                        }],
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Events.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+                var table = $('#qhse').DataTable({
+                    drawCallback: function () {
+                        $('[data-toggle="popover"]').popover({
+
+                            html: true,
+                            content: setData,
+                            container: 'body'
+                            //data: setData,
+
+
+                        });
+                    },
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+                    scrollY: '350px',
+                    scrollCollapse: true,  
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'QHSE Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'QHSE Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'QHSE Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'QHSE Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'QHSE Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#qhse").resize();
+                    } , 100);
+
+                    });
+                //}
+
+                $('#qhse').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#qhse").resize();
+
+                });
+
+                $('#qhse').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#qhse").resize();
+
+                });
+
+                $('#qhse').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#qhse").resize();
+
+                });
+
+
+                $('#qhse').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#qhse").resize();
+
+                });
+
+
+                $('#qhse').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#qhse").resize();
+
+                });
+
+
+                    //.on('order.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+                    //.on('search.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+
+                    //.on('column-visibility.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize();
+                    //})
+
+
+
+            };
+
+
+
+
+
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            qhse.init();
+        });
+
+
+
+    </script>
+
+
+
+    <script type="text/javascript">
+
+        function DeleteItems(id_qhse) {
+
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                   if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("QHSEPlannerDelete", "QHSEPlanner")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_qhse': id_qhse },
+                        success: function (result) {
+
+
+
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                   else if (r == false) {
+
+                       bootbox.hideAll();
+                       return false;
+
+                }
+
+                }
+            });
+
+
+        }
+            function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                            jQuery.ajax({
+                                url: '@Url.Action("QHSEPlannerListSearch", "QHSEPlanner")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });
+
+       }
+    </script>
+
+
+
+
+}

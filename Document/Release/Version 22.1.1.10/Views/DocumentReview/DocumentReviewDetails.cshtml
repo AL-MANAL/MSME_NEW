@@ -1,0 +1,312 @@
+﻿@model ISOStd.Models.DocumentReviewModels
+
+@{
+    ViewBag.Title = "DocumentReviewDetails";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    var login_user = Obj.GetCurrentUserSession().empid;
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("DocumentReviewDetails", "DocumentReview", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Document Review Frequency</span>
+                    </a>
+                    <span class="breadcrumb-item active">Document Review Frequency Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Document Review Frequency Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                @*@if (Obj.GetCurrentUserSession().PpeLog.Contains("3"))
+                {*@
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("DocumentReviewEdit", "DocumentReview", new { id_doc_review = Model.id_doc_review.ToString() })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                        <b>  <i class="icon-add-to-list"></i></b> Edit
+                    </a>
+                @*}*@
+                @Html.ActionLink("Back to List", "DocumentReviewList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.division)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.division)
+                            </p>
+                        </td>
+
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.review_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            @if (Model.review_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.review_date.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.doc_level)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.doc_level)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.doc_type)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.doc_type)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.frequency)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.frequency)
+                            </p>
+                        </td>
+
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.criteria)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.criteria)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.approvedby)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.approvedby)
+                            </p>
+                        </td>
+
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.approve_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.approve_status)
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Approve/Reject Date
+                            </p>
+                        </td>
+                        <td class="col">
+                            
+                                @if (Model.approve_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.approve_date.ToString("dd/MM/yyyy hh:mm:ss")
+                                </p>
+                                }
+                            
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.apprv_reject_comment)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.apprv_reject_comment)
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <hr />
+        @*@if (Model.approve_statusId == "0" && Model.approvedbyId.Contains(login_user))
+        {
+            <div id="Text" style="text-align:center">
+                <h1>Document Review Frequency</h1>
+                <div>
+                    <a href='@Url.Action("DocReviewFreqApproveOrReject", "DocumentReview", new { id_doc_review = Model.id_doc_review, iStatus = 1, PendingFlg = "true"})' title="Approve Document Review Frequency" style="color:green;">
+                        <span class="badge badge-info">Approve</span>
+                    </a>
+                    <a href='@Url.Action("DocReviewFreqApproveOrReject", "DocumentReview", new { id_doc_review = Model.id_doc_review, iStatus = 2, PendingFlg = "true"})' title="Reject Document Review Frequency" style="color:red;">
+                        <span class="badge badge-danger">Reject</span>
+                    </a>
+                </div>
+            </div>
+        }*@
+
+      @if (Model.approve_statusId == "0" && Model.approvedbyId.Contains(login_user))
+      {
+          using (Html.BeginForm("DocReviewFreqApproveOrReject", "DocumentReview", FormMethod.Post,
+                               new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+          {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="id_doc_review" name="id_doc_review" value="@Model.id_doc_review" />
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Approve/Reject <text style="color:red;">*</text>
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                <label><input type="radio" id="approve_status" name="approve_status" value="1" required onchange="ApprvRequired()" />Approve</label>
+                                <label><input type="radio" id="approve_status" name="approve_status" value="2" required onchange="ApprvRequired()" />Rejected</label>
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Comments
+                            </p>
+                        </td>
+                        <td class="col">
+                            <div class="bg-dark py-1 px-2 rounded">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="apprv_reject_comment" name="apprv_reject_comment"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                 
+                </table>
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                    <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">   
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+     });
+
+
+        function ApprvRequired() {
+            var doc_status = $("input[type='radio'][id='approve_status']:checked").val();
+            if (doc_status == "2") {
+                $("#apprv_reject_comment").attr('required', true);
+            }
+            else {
+                $("#apprv_reject_comment").attr('required', false);
+            }
+        }
+    </script>
+}
+

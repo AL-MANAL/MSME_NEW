@@ -1,0 +1,724 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.KPIModels>
+
+    @{
+        ViewBag.Title = "";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+        ISOStd.Models.KPIModels ObjModel = new ISOStd.Models.KPIModels();
+        ISOStd.Models.KPIModels ObjKpi = new ISOStd.Models.KPIModels();
+        ISOStd.Models.KPIModels ObjMI = new ISOStd.Models.KPIModels();
+
+        var currentmonth = DateTime.Now.Month;
+        var currentyear = DateTime.Now.Year;
+
+        int icnt = 0;
+        if (ViewBag.Eval != null)
+        {
+            ObjModel = ViewBag.Eval;
+            icnt = 1;
+        }
+        if (ViewBag.KPI != null)
+        {
+            ObjKpi = ViewBag.KPI;
+        }
+        if (ViewBag.MI != null)
+        {
+            ObjMI = ViewBag.MI;
+            icnt = 1;
+        }
+    }
+  
+  @section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("KPIEvaluationList", "KPI", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Key Performance/Process Indicator</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Evaluation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Measurable Indicator List</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+    
+     
+
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="kpi">
+
+                <thead>
+                    <tr>
+                        <th>
+                            Sl No.
+                        </th>
+                        <th>
+                          MI Number
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().measurable_indicator)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().expected_value)
+                        </th>
+                      
+                        @*<th>
+                            @Html.DisplayNameFor(model => model.First().kpi_type)
+                        </th>*@
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().FromPeriod)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().ToPeriod)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().monitoring_mechanism)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().frequency_eval)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().risk)
+                        </th>
+                        <th>
+                            Evaluation
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i = i + 1;
+                            <tr>
+                                <td>
+                                    @i
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.kpi_ref_no)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.measurable_indicator)
+                                </td>
+                                <td>
+                                   
+                                    @Html.DisplayFor(model => item.expected_value)@Html.DisplayFor(model => item.expected_value_unit)
+                                </td>
+                             
+                                @*<td>
+                                    @Html.DisplayFor(model => item.kpi_type)
+                                </td>*@
+                                <td>
+                                    @if (item.FromPeriod > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @item.FromPeriod.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.ToPeriod > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @item.ToPeriod.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.monitoring_mechanism)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.frequency_eval)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.risk)
+                                </td>
+                                <td>
+@*@if ((Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) >= (Convert.ToDateTime(item.FromPeriod.ToString("yyyy-MM-dd"))) && (Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) <= (Convert.ToDateTime(item.ToPeriod.ToString("yyyy-MM-dd"))))
+{*@
+                                    <a class="dropdown-item" href='@Url.Action("AddEvaluation", "KPI", new { Status = "Display",KPI_Id = item.KPI_Id, id_measurable = item.id_measurable, id_evaluation = item.id_evaluation })' title="Evaluation" onclick="HyperLinkProgressIconFunction()">
+                                        <i class="icon-pencil7"></i>Evaluation
+                                    </a>
+@*}*@
+                                </td>                         
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    @if (ObjModel.stat_display == "Display")
+    {
+using (Html.BeginForm("AddEvaluation", "KPI", FormMethod.Post,
+        new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+        <div class="card-body" id="hidden card1">
+            <input type="hidden" id="id_evaluation" name="id_evaluation" value="@ObjModel.id_evaluation" />
+            <input type="hidden" id="KPI_Id" name="KPI_Id" value="@ObjMI.KPI_Id" />
+            <input type="hidden" id="id_measurable" name="id_measurable" value="@ObjMI.id_measurable" />
+            <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+           
+            <div class="container-fluid">
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Add Evaluation</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                KPI Number
+                            </td>
+                            <td class="col">
+                                @ObjKpi.kpi_ref_no
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Process to be monitored
+                            </td>
+                            <td class="col">
+                                @ObjKpi.process_monitor
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                From Date
+                            </td>
+                            <td class="col">
+                                @if (ObjMI.FromPeriod != null && ObjMI.FromPeriod > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(ObjMI.FromPeriod.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                To Date
+                            </td>
+                            <td class="col">
+                                @if (ObjMI.ToPeriod != null && ObjMI.ToPeriod > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(ObjMI.ToPeriod.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Expected value to be achieved
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                @ObjMI.expected_value
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                KPI Evaluation Date<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                @if (ObjModel.evaluation_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" id="evaluation_date" name="evaluation_date" value="@ObjModel.evaluation_date.ToString("yyyy-MM-dd")" class="form-control" />
+                                }
+                                else
+                                {
+                                    <input type="date" id="evaluation_date" name="evaluation_date" required class="form-control" />
+                                }
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Source of data to evaluate<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                              <input type="text" class="form-control" id="source_evaluate" name="source_evaluate" required value="@ObjModel.source_evaluate" />
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Upload
+                            </td>
+                            <td class="col">
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                @if (ObjModel.upload != null && ObjModel.upload != "" && ObjModel.upload.Length > 0)
+                                {
+
+                                    <span class="form-text text-muted">
+                                        <code>
+                                            (Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+                                    foreach (var docs in ObjModel.upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Method of evaluation<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="method_evaluation" name="method_evaluation"  required value="@ObjModel.method_evaluation" />
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Value achieved<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="value_achieved" name="value_achieved" required value="@ObjModel.value_achieved" />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Unit<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="unit" name="unit" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Unit != null)
+                                        {
+                                            foreach (var item in ViewBag.Unit)
+                                            {
+                                                if (item == ObjModel.unit)
+                                                {
+                                                    <option value='@item' selected>@item</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    KPI Status<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="kpi_status" name="kpi_status" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Status != null)
+                                        {
+                                            foreach (var item in ViewBag.Status)
+                                            {
+                                                if (item.Value == ObjModel.kpi_status)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Remarks
+                            </td>
+                            <td class="col">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks" required>@ObjModel.remarks</textarea>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Need to raise NCR<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="raise_need" name="raise_need" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.YesNo != null)
+                                        {
+                                            foreach (var item in ViewBag.YesNo)
+                                            {
+                                                if (item == ObjModel.raise_need)
+                                                {
+                                                    <option value='@item' selected>@item</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    </fieldset>
+</div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                @Html.ActionLink("Back to List", "KPIEvaluationList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <div class="mt-2 mt-sm-0">
+                    <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" id="btnCreate" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                </div>
+            </div>
+
+        </div>
+}
+    }
+    </div>
+
+    @section scripts {
+
+        <script type="text/javascript">
+
+                       //----zzz
+    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+            var hideClass = 'invisible';
+            //if(document.getElementById("itemcnt").value == "1")
+            //{
+            //    document.getElementById("hidden card1").classList.remove(hideClass);
+            //}
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+            });
+
+                       var kpi = function () {
+                       var ShowEdit = @(Obj.GetCurrentUserSession().Kpi.Contains("3") ? "true" : "false");
+                       var ShowDel = @(Obj.GetCurrentUserSession().Kpi.Contains("5") ? "true" : "false");
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    //width: 100,
+                                    targets: 'not-export-column'
+
+                                }],
+                                responsivePriority: 2, targets: -1,
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+                             var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Kpi.Contains("4") ? "true" : "false");
+                            if (Delclass == false) { myClass = 'hidden' };
+
+                            var table = $('#kpi').DataTable({
+                                drawCallback: function () {
+                                    $('[data-toggle="popover"]').popover({
+
+                                        html: true,
+                                        content: setData,
+                                        container: 'body'
+                                        //data: setData,
+                                    });
+                                    var dropdownMenu;
+
+                                    // and when you show it, move it to the body
+                                    $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                                        // grab the menu
+                                        dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                                        // detach it and append it to the body
+                                        $('body').append(dropdownMenu.detach());
+
+                                        // grab the new offset position
+                                        var eOffset = $(e.target).offset();
+
+                                        // make sure to place it where it would normally go (this could be improved)
+                                        dropdownMenu.css({
+                                            'display': 'block',
+                                            'top': eOffset.top + $(e.target).outerHeight(),
+                                            'left': eOffset.left
+                                        });
+                                    });
+
+                                    // and when you hide it, reattach the drop down, and hide it normally
+                                    $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                                        $(e.target).append(dropdownMenu.detach());
+                                        dropdownMenu.hide();
+                                    });
+                                },
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                //stateSaveParams: function (settings, data) {
+                                //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                //        delete data.columns[i].visible;
+                                //        delete data.columns[i].search;
+                                //    }
+                                //},
+                                //scrollY: '350px',
+                                scrollCollapse: true,
+
+
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'kpi Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'kpi Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'kpi Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'kpi Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'kpi Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+                            });
+
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+
+                                    table.columns.adjust().draw();
+                                    $("#kpi").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#kpi').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#kpi").resize();
+
+                            });
+
+                            $('#kpi').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#kpi").resize();
+
+                            });
+
+                            $('#kpi').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#kpi").resize();
+
+                            });
+
+                            $('#kpi').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#kpi").resize();
+
+                            });
+
+                            $('#kpi').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#kpi").resize();
+
+                            });
+
+                            //.on('order.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+                            //.on('search.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+
+                            //.on('column-visibility.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize();
+                            //})
+
+                        };
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        kpi.init();
+            });
+
+
+                    //FileFormat Validation
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                    });
+                }
+            }
+
+
+        </script>
+
+    }

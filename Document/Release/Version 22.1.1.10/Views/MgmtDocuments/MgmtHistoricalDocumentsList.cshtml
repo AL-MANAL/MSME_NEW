@@ -1,0 +1,230 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.MgmtDocumentsModels>
+
+@{
+    ViewBag.Title = "MgmtDocumentsList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">System Documents </span>
+</div>
+@*<div class = "ActionLink">@Html.ActionLink("Add New", "AddMgmtDocuments", null, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })</div>*@
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+<br />
+<br />
+
+@Html.PagedListPager(Model, page => Url.Action("MgmtDocumentsList",
+    new
+    {
+        page,
+        Approvestatus = Request.QueryString["Approvestatus"],
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+<div id="content">
+    <table id="table1">
+        <thead>
+            <tr>
+                <th style="width:60px;min-width:60px; max-width:60px;">
+                    @Html.DisplayNameFor(model => model.First().Company)
+                </th>
+                <th style="width:60px;min-width:60px; max-width:60px;">
+                    @Html.DisplayNameFor(model => model.First().DocLevels)
+                </th>
+                <th style="width:100px; min-width:100px; max-width:100px;">
+                    Doc. Ref.
+                </th>
+                <th style="width:200px; min-width:200px; max-width:200px;">
+                    Doc. Name
+                </th>
+                <th style="width:100px; min-width:100px; max-width:100px;">
+                    Doc. Type
+                </th>
+
+                <th style="width:100px; min-width:100px; max-width:100px;">
+                    @Html.DisplayNameFor(model => model.First().ISOStds)
+                </th>
+                <th style="width:100px; min-width:100px; max-width:100px;">
+                    Document
+                </th>
+                @*<th style="width:100px; min-width:100px; max-width:100px;">
+                    Annexure
+                </th>*@
+
+                <th style="width: 60px; min-width: 60px; max-width: 60px;">
+                    History
+                </th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Approval Status</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Reviewed Status</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Prepared By</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Reviewed By</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Approved By</th>
+                @*<th style="width:60px; min-width:60px; max-width:60px;">Action</th>
+                @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                }*@
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="width:60px; min-width:60px; max-width:60px;">
+                            @Html.DisplayFor(modelItem => item.Company)
+                        </td>
+                        <td style="width:60px;min-width:60px; max-width:60px;">
+                            @Html.ActionLink(item.DocLevels.ToString(), "MgmtDocumentsDetails", new { idMgmt = item.idMgmt.ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.DocRef)
+                        </td>
+                        <td style="width:200px; min-width:200px; max-width:200px;">
+                            @Html.DisplayFor(modelItem => item.DocName)
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.Doctype)
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.ISOStds)
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @if (item.DocUploadPath != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.DocUploadPath })' target="_blank">Preview</a>
+                            }
+                        </td>
+                        @*<td style="width:100px; min-width:100px; max-width:100px;">
+                            <a href='@Url.Action("AddAnnexure", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="Add New Annexure" onclick="HyperLinkProgressIconFunction()">
+                                <img src="@Url.Content("~/Images/icon_add.png")" title="Add Annexure" onclick="HyperLinkProgressIconFunction()" />
+                            </a>
+                            <a href='@Url.Action("AnnexureList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="View Annexure List" onclick="HyperLinkProgressIconFunction()">
+                                <img src="@Url.Content("~/Images/icon_list.png")" title="View Annexure list" onclick="HyperLinkProgressIconFunction()" />
+                            </a>
+                        </td>*@
+                        <td style="width:60px; min-width:60px; max-width:60px;">
+                            <a href='@Url.Action("MgmtDocumentsHistoryList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="Add New Annexure" onclick="HyperLinkProgressIconFunction()">
+                                <img src="@Url.Content("~/Images/historyicon.png")" title="History" onclick="HyperLinkProgressIconFunction()" />
+                            </a>
+                        </td>
+                        @* <td style="width:100px; min-width:100px; max-width:100px;">
+                                @if (ViewBag.Role.ToLower() != "Preparer".ToLower() && item.Approved_Status.ToLower() == "Not Approved".ToLower() && item.ApprovedBy.Contains(ViewBag.CurrentEmpName))
+                                {
+                                <a href='@Url.Action("MgmtDocumentsApprove", "MgmtDocuments", new { idMgmt = item.idMgmt })' title="Approve document details" style="color:red;">
+                                    Approve
+                                </a>
+                                }
+                                else
+                                {
+                                @item.Approved_Status
+                                }
+                            </td>*@
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.Approved_Status)
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.Reviewed_Status)
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.PreparedBy)
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.ReviewedBy)
+                        </td>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayFor(modelItem => item.ApprovedBy)
+                        </td>
+
+                        @*<td style="width:60px; min-width:60px; max-width:60px;">
+                            @if (ViewBag.CurrentEmpName == item.ReviewedBy
+                           || ViewBag.CurrentEmpName == item.ApprovedBy
+                           || item.UploadedBy == ViewBag.CurrentEmpName)
+                            {
+
+                                <a href='@Url.Action("MgmtDocumentsEdit", "MgmtDocuments", new { idMgmt = item.idMgmt })' title="Edit document details" onclick="HyperLinkProgressIconFunction()">
+                                    <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                                </a>
+                            }
+
+                        </td>
+                        @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                        {
+                            <td style="width: 60px; min-width: 60px; max-width: 60px;">
+
+                                <a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >
+                                <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.idMgmt)" style="cursor:pointer;" />
+                            </td>
+                        }*@
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function DeleteItems(idMgmt) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("MgmtDocDelete", "MgmtDocuments")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'idMgmt': idMgmt },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+    </script>
+
+}

@@ -25,9 +25,22 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
-        
-        //Employee perf notification for HR and top mgmt
 
+        //Employee perf notification for HR and top mgmt
+        public DataSet getListPendingForCustSatisfaction(string sempid)
+        {
+            string sSqlstmt = "select id_cust_satisfaction,cust_name,logged_by,eval_date from t_cust_satisfaction where active = 1"
+            + " and review_status = 0 and find_in_set('" + sempid + "', reviewed_by) ";
+
+            DataSet dsApprovalList = Getdetails(sSqlstmt);
+            if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+            {
+                return dsApprovalList;
+            }
+            return null;
+        }
+
+        //Employee perf notification for HR and top mgmt
         public DataSet getListPendingForEmpPerf(string sempid)
         {
             string sSqlstmt = "select eval_status,Performance_EvalId,emp_id,Eval_DoneBy,Evaluation_DoneOn from t_emp_performance_eval where active = 1"

@@ -1,0 +1,96 @@
+﻿@model ISOStd.Models.HolidayAddModel
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Holiday</span>
+</div>
+@*<div class = "ActionLink">@Html.ActionLink("Add New", "AddMgmtDocuments", null, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })</div>*@
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+<br />
+<div>
+    @using (Html.BeginForm("HolidayEdit", "HolidayAdd", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+      
+        <div>
+            <input type="hidden" id="Id_holiday" name="Id_holiday" value="@Model.Id_holiday" />
+            <table style="width:60%;margin-left:20%;margin-right:20%;">
+                <tr>
+                    <td>Name<text style="color:red;"> *</text></td>
+                    <td> <input type="text" id="Name" name="Name" required value="@Model.Name" /></td>
+                </tr>
+                <tr>
+                    <td>From Date<text style="color:red;"> *</text></td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Frdate" name="Frdate" style="width:100px" value="@Model.Frdate.ToString("dd/MM/yyyy")" required readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>To Date<text style="color:red;"> *</text></td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Todate" name="Todate" style="width:100px" value="@Model.Todate.ToString("dd/MM/yyyy")" required readonly />
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "Holiday", null, new { onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+</div>
+<br />
+<div>
+
+
+
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+            $(function () {
+                $('#Frdate').datepicker({
+                    dateFormat: "dd/mm/yy",
+                    buttonImageOnly: true,
+                    buttonImage: '../Images/Calender.png',
+                    showOn: 'both',
+                    changeMonth: true,
+                    changeYear: true,
+                });
+               
+
+
+
+                $('#Todate').datepicker({
+                    dateFormat: "dd/mm/yy",
+                    buttonImageOnly: true,
+                    buttonImage: '../Images/Calender.png',
+                    showOn: 'both',
+                    changeMonth: true,
+                    changeYear: true,
+                });
+           
+            });
+         
+
+
+
+    </script>
+
+}

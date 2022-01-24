@@ -1,0 +1,381 @@
+﻿@model ISOStd.Models.CustEnquiryModels
+
+@{
+    ViewBag.Title = "AddCustEnquiry";
+}
+<script type="text/javascript" src="~/Scripts/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="~/Scripts/ckeditor/adapters/jquery.js"></script>
+
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Add Customer Enquiry </span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("AddCustEnquiry", "CustEnquiry", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend>AddCustEnquiry</legend>
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.mode_enquiry)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="mode_enquiry" name="mode_enquiry" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EnquiryMode != null)
+                                {
+                                    foreach (var item in ViewBag.EnquiryMode)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.date_enquiry)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="date_enquiry" name="date_enquiry" readonly required style="width: 100px;" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.companyname)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="companyname" name="companyname" style="width: 250px;" required onchange="GetCompDetails()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CompanyName != null)
+                                {
+                                    foreach (var item in ViewBag.CompanyName)
+                                    {
+                                        <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.projectname)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.projectname)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.contactperson)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="contactperson" name="contactperson" readonly style="background:#efefef" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.telno)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="telno" name="telno"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.faxno)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="faxno" name="faxno" readonly style="background:#efefef"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.sales_incharge)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.sales_incharge)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.incharge)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="incharge" name="incharge" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Incharge != null)
+                                {
+                                    foreach (var item in ViewBag.Incharge)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.amt)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="number" id="amt" name="amt" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.date_fax)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="date_fax" name="date_fax" readonly style="width: 100px;" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ref_no)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="ref_no" name="ref_no" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.date_lpo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="date_lpo" name="date_lpo" readonly style="width: 100px;" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.lpo_no)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="lpo_no" name="lpo_no" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.lpo_amt)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="number" id="lpo_amt" name="lpo_amt" min="0" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.status)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="status" name="status" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Status != null)
+                                {
+                                    foreach (var item in ViewBag.Status)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.upload)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" style="height: 38px;" multiple/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.description)
+                        </div>
+                    </td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(model => model.description, new { @class = "ckeditor" })
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "CustEnquiryList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <script>
+         $(function () {
+             $("#companyname").chosen();
+             $("#mode_enquiry").chosen();
+             $("#incharge").chosen();
+             $("#status").chosen();
+             $.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+
+             $('#date_enquiry').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true
+             });
+             $("#date_enquiry").datepicker("setDate", new Date());
+
+             $('#date_lpo').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true
+             });
+             $("#date_lpo").datepicker("setDate", new Date());
+
+             $('#date_fax').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true
+             });
+             $("#date_fax").datepicker("setDate", new Date());
+
+         });
+       
+        function GetCompDetails() {
+            var companyname = $('#companyname').val();
+             //alert(AuditDepartment);
+             jQuery.ajax({
+                 url: '@Url.Action("FunGetCompanyDetails", "CustEnquiry")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'companyname': companyname },
+                 success: function (result) {
+                     if (result != null) {
+                         document.getElementById("contactperson").value = result.contactperson;
+                         document.getElementById("faxno").value = result.faxno;                        
+                     }
+                     else {
+                         jAlert("No Contact Person or FaxNo available.");
+                     }
+                 }
+             });
+         }
+
+         function FileFormatValidation(file) {
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["pdf", "xlsx","xls","doc","docx"]) == -1) {
+                 file.value = "";
+                 jAlert("Invalid file format, please upload only pdf,xlsx,xls,doc,docx format");
+             }
+        }
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+
+        });
+       
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ckeditor")
+    @Scripts.Render("~/bundles/ckeditor/adapters")
+}
+

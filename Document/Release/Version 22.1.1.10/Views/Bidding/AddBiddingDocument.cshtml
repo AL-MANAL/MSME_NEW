@@ -1,0 +1,291 @@
+﻿@model ISOStd.Models.BiddingModels
+
+@{
+    ViewBag.Title = "AddBidding";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Document</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("AddBiddingDocument", "Bidding", FormMethod.Post,
+                         new { enctype = "multipart/form-data" })) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>BiddingModels</legend>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.client)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="client" name="client" style="width:250px;" required/>          
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.folderref)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="folderref" name="folderref" style="width:250px;" required/>          
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.projectname)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="projectname" name="projectname" style="width:250px;" required/>          
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.submission_date)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                  <td>
+                   <div class="editor-field">
+                       <input type="date" id="submission_date" name="submission_date" required/>
+                     @*   @Html.EditorFor(model => model.submission_date)<text style="color:black">(Format:MM-dd-yyyy)</text>
+                        @Html.ValidationMessageFor(model => model.submission_date)   *@ 
+                    </div>
+                </td>
+                
+            </tr>
+             <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.preparedby)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="preparedby" name="preparedby" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.GetPreparer != null)
+                                {
+                                    foreach (var item in ViewBag.GetPreparer)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>        
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.checkedby)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                       <select id="checkedby" name="checkedby" required multiple style="height: 200px; width: 200px;">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Reviewer != null)
+                                {
+                                    foreach (var item in ViewBag.Reviewer)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>       
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.proposalref)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="proposalref" name="proposalref" required/>          
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.proposal_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         <input type="date" id="proposal_date" name="proposal_date" required/>
+                      @*  @Html.EditorFor(model => model.proposal_date)<text style="color:black">(Format:MM-dd-yyyy)</text>
+                        @Html.ValidationMessageFor(model => model.proposal_date)    *@
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.upload)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                            multiple="multiple" accept=".pdf, .doc, .docx,image/*" style="height: 38px;"  />
+
+                        <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                    </div>
+
+                </td>
+                <td>
+                    <div class="editor-label">
+                        Email Notification
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="NotificationPeriod" name="NotificationPeriod" required style="width: 88px;">
+                            @if (ViewBag.NotificationPeriod != null)
+                            {
+                                foreach (var item in ViewBag.NotificationPeriod)
+                                {
+                                <option value='@item.Key'>@item.Value</option>
+                                    }
+                                }
+                        </select>
+                        <input type="number" id="NotificationValue" name="NotificationValue" required value="0" style="width: 90px;" />
+                        <p style="font-size: 11px;">(Alert on or before Target date)</p>
+                    </div>
+                </td>
+            </tr>
+         
+          
+        </table>
+    </fieldset>
+     <div style="width: 100%; text-align: center;">
+       @Html.ActionLink("Back to List", "BiddingList",null, null, new {@class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
+        <input type="submit" value="Save" />
+    </div>
+}
+
+
+@section Scripts {
+
+     <script>
+
+         $(function () {
+
+             $("#preparedby").chosen();
+             $("#checkedby").chosen();
+             $.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+         });
+
+         function FileFormatValidation(file) {
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["pdf", "doc", "docx"]) == -1) {
+                 file.value = "";
+                 jAlert("Invalid file format, please upload only pdf format");
+             }
+         }
+         function setCountry(Country) {
+
+             if (Country != "") {
+
+             }
+             else {
+                 document.getElementById("Country").value = "";
+             }
+         }
+         function SetCust(custid) {
+             if (custid != "") {
+                 document.getElementById("abc").style.display = "none";
+             }
+             else {
+                 document.getElementById("abc").style.display = "";
+             }
+
+         }
+         $(function () {
+             $("#custid").autocomplete({
+                 source: function (request, response) {
+                     $.ajax({
+                         url: '@Url.Action("GetCustomerList", "CRM")',
+                        type: "POST",
+                        dataType: "json",
+                        scroll: true,
+                        scrollHeight: 100,
+                        maxHeight: 100,
+                        data: { custid: request.term },
+                        success: function (data) {
+
+                            if (data.length == 0) {
+                                document.getElementById("abc").style.display = "";
+                            }
+                            response($.map(data, function (item) {
+                                return { label: item, value: item };
+                            }))
+                        }
+                    })
+                },
+                  select: function (e, ui) {
+                      e.preventDefault();
+                      $(this).val(ui.item.label);
+                      SetCust(ui.item.value);
+                  },
+                  messages: {
+                      noResults: "", results: ""
+                  }
+              });
+             $("#Country").autocomplete({
+                 source: function (request, response) {
+                     $.ajax({
+                         url: '@Url.Action("GetCountryList", "CRM")',
+                        type: "POST",
+                        dataType: "json",
+                        scroll: true,
+                        scrollHeight: 100,
+                        maxHeight: 100,
+                        data: { Country: request.term },
+                        success: function (data) {
+
+                            if (data.length == 0) {
+                                setCountry("");
+                            }
+                            response($.map(data, function (item) {
+                                return { label: item, value: item };
+                            }))
+                        }
+                    })
+                },
+                select: function (e, ui) {
+                    e.preventDefault();
+                    $(this).val(ui.item.label);
+                },
+                messages: {
+                    noResults: "", results: ""
+                }
+            });
+
+         });
+
+       
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+ @Scripts.Render("~/bundles/ckeditor")
+    @Scripts.Render("~/bundles/ckeditor/adapters")
+}

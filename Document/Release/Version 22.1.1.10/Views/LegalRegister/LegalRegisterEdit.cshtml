@@ -1,0 +1,991 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+@using System.Data;
+
+@{
+    ViewBag.Title = "LegalRegisterEdit";
+    DataSet dsFindingsDetails = ViewBag.FindingsDetails;
+    string sid_requirements = "", sarticle = "", srequirements = "", sapplicable = "", snonapplicablejustify = "", supdatedBynametrans = "", supdatedByposition = "", supdatedByDept = "",sreference="",smonitoring="",
+        SubmitFinding = "SubmitFinding", Save = "Save";
+    DateTime dtupdatedDate = new DateTime();
+    if (dsFindingsDetails != null && dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+    {
+        sid_requirements = dsFindingsDetails.Tables[0].Rows[0]["id_requirements"].ToString();
+        dtupdatedDate = Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[0]["updatedDate"].ToString());
+        sarticle = dsFindingsDetails.Tables[0].Rows[0]["article"].ToString();
+        srequirements = dsFindingsDetails.Tables[0].Rows[0]["requirements"].ToString();
+        sapplicable = dsFindingsDetails.Tables[0].Rows[0]["applicable"].ToString();
+
+        snonapplicablejustify = dsFindingsDetails.Tables[0].Rows[0]["nonapplicablejustify"].ToString();
+        supdatedBynametrans = dsFindingsDetails.Tables[0].Rows[0]["updatedBynametrans"].ToString();
+        supdatedByposition = dsFindingsDetails.Tables[0].Rows[0]["updatedByposition"].ToString();
+        supdatedByDept = dsFindingsDetails.Tables[0].Rows[0]["updatedByDept"].ToString();
+        sreference = dsFindingsDetails.Tables[0].Rows[0]["reference"].ToString();
+        smonitoring = dsFindingsDetails.Tables[0].Rows[0]["monitoring"].ToString();
+      
+       
+    }
+
+    }
+   
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Edit LegalRegister </span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("LegalRegisterEdit", "LegalRegister", FormMethod.Post,
+                         new { style = "float: left;width:50%;", id = "form1", name = "form1" }))
+{
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <fieldset>
+                <legend>LegalRegisterModel</legend>
+                <input type="hidden" id="LegalRequirement_Id" name="LegalRequirement_Id" value="@Model.LegalRequirement_Id" />
+
+                <div style="max-width: 90%;">
+                    <table id="tabcontent" style="float: left;">
+                        <tr>
+                            <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">LegalRegister</td>
+                        </tr>
+                        <tr>
+                     
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.lawNo)
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="display-field">
+                                    @Html.DisplayFor(model => model.lawNo)
+                                </div>
+                            </td>
+                            @*<td>
+                                <div class="editor-label">
+                                  <input type="text" id="lawNo" name="lawNo" value="@Model.lawNo" readonly/>
+                                </div>
+                            </td>*@
+                                <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.lawTitle)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                  <input type="text" id="lawTitle" name="lawTitle" value="@Model.lawTitle" required/>
+                                </div>
+                            </td>
+
+                        </tr>
+                         <tr>
+                     
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.origin_of_requirement)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                  <input type="text" id="origin_of_requirement" name="origin_of_requirement" value="@Model.origin_of_requirement" required/>
+                                </div>
+                            </td>
+                                <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.document_storage_location)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                  <input type="text" id="document_storage_location" name="document_storage_location" value="@Model.document_storage_location" required/>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.frequency_of_evaluation)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                    <select id="frequency_of_evaluation" name="frequency_of_evaluation" required="">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.frequency_of_evaluation != null)
+                                        {
+                                            foreach (var data in ViewBag.frequency_of_evaluation)
+                                            {
+                                                if (data == Model.frequency_of_evaluation)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.activeStatus)
+                                </div>
+                            </td>
+                        
+                               
+                                <td>
+                                <div class="editor-field">
+                                    <select id="activeStatus" name="activeStatus" required="">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.activeStatus != null)
+                                        {
+                                            foreach (var data in ViewBag.activeStatus)
+                                            {
+                                                if (data == Model.activeStatus)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.updatedByName)
+                                </div>
+                            </td>
+   
+                                <td>
+                                <div class="editor-field">
+                                    <select id="updatedByName" name="updatedByName" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpLists != null)
+                                        {
+                                            foreach (var data in ViewBag.EmpLists)
+                                            {
+                                                if (data.Text == Model.updatedByName)
+                                                {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                            <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.reviewedBy)
+                                </div>
+                            </td>
+                                     <td>
+                                <div class="editor-field">
+                                    <select id="reviewedBy" name="reviewedBy" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.DeptHead != null)
+                                        {
+                                            foreach (var data in ViewBag.DeptHead)
+                                            {
+                                                if (data.Text == Model.reviewedBy)
+                                                {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                            <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.approvedBy)
+                                </div>
+                            </td>
+                      <td>
+                                <div class="editor-field">
+                                    <select id="approvedBy" name="approvedBy" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.DeptHead != null)
+                                        {
+                                            foreach (var data in ViewBag.DeptHead)
+                                            {
+                                                if (data.Text == Model.approvedBy)
+                                                {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                            <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.initialdevelopmentdate)
+                        </div>
+                    </td>
+                       <td>
+                             <div class="editor-field">
+                                 <input type="text" id="initialdevelopmentdate" name="initialdevelopmentdate" value="@Model.initialdevelopmentdate.ToString("dd/MM/yyyy")" />
+                                 <span class="field-validation-error"><span id="initialdevelopmentdate-message" style="display: none;">initialdevelopmentdate is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.initialdevelopmentdate)
+                             </div>
+                         </td>
+
+
+
+                        @*    <td>
+                    <div class="editor-field">
+                        @if (Model.initialdevelopmentdate > Convert.ToDateTime("01/01/0001"))
+                        {
+                           <input type="text" id="initialdevelopmentdate" name="Training_Planned_Date" value="@Model.initialdevelopmentdate.ToString("dd/MM/yyyy")" 
+                               required >
+                        }
+                        else
+                        {
+                           <input type="text" id="initialdevelopmentdate" name="initialdevelopmentdate" required />
+                        }
+                    </div>
+                </td>*@
+                        </tr>
+
+                        <tr>
+                                   
+                            <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.updatedOn)
+                        </div>
+                    </td>
+                              
+
+                             <td>
+                             <div class="editor-field">
+                                 <input type="text" id="updatedOn" name="updatedOn" value="@Model.updatedOn.ToString("dd/MM/yyyy")" />
+                                 <span class="field-validation-error"><span id="updatedOn-message" style="display: none;">updatedOn field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.updatedOn)
+                             </div>
+                         </td>
+                            <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.upload)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                    <input type="file" name="upload" id="upload" value="" onchange="FileFormatValidation(this)" accept=".pdf" style="height: 38px;" />
+                                    @if (Model.upload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.upload })' target="_blank">Preview</a>                            
+                                    }
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+                    </table>
+                    <div style="text-align:center;">
+                        @Html.ActionLink("Back to List", "LegalRegisterList", "LegalRegister", null, new { onclick = "HyperLinkProgressIconFunction()" })
+                        <input type="submit" id="SubmitAudit" name="button" value="Update" onclick="ProgressIconFunction('#form1')"/>
+                    </div>
+                </div>
+
+            </fieldset>
+   
+}
+       
+             
+    
+            
+         @using (Html.BeginForm("LegalRegisterPlanUpdate", "LegalRegister", FormMethod.Post, new { enctype = "multipart/form-data", style = "float: left;width:50%;",
+         id = "form2", name = "form2" }))
+         {
+            @Html.ValidationSummary(true)
+             @Html.AntiForgeryToken()
+             <div>
+                 <input type="hidden" id="id_requirements" name="id_requirements" value="@sid_requirements"/>
+                 <input type="hidden" id="LegalRequirement_Id" name="LegalRequirement_Id" value="@Model.LegalRequirement_Id" />
+                 <table style="margin-top: 18px; margin-bottom: 20px;">
+                     <tr>
+                         <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Legal Register detail</td>
+                     </tr>
+                     <tr>
+
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.updatedDate)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="updatedDate" name="updatedDate" value="@dtupdatedDate.ToString("dd/MM/yyyy")"  />
+                                 <span class="field-validation-error"><span id="updatedDate-message" style="display: none;">Updated  On field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.updatedDate)
+                             </div>
+                         </td>
+
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.article)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="article" name="article" value="@sarticle" />
+                                 @*<textarea id="article" name="article" value="@sarticle"></textarea>*@ 
+                                 <span class="field-validation-error"><span id="article-message" style="display: none;">Article field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.article)
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.requirements)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="requirements" name="requirements" value="@srequirements"/>
+                                 <span class="field-validation-error"><span id="requirements-message" style="display: none;">Article details are required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.requirements)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.applicable)
+                             </div>
+                         </td>
+                          
+                         <td>
+                             <div class="editor-field">
+                                 <select id="applicable" name="applicable" onclick="cal()">
+                                     @if (ViewBag.applicable != null)
+                                     {
+                                         foreach (var data in ViewBag.applicable)
+                                         {
+                                             if (data == sapplicable)
+                                             {
+                                                 <option value='@data' selected>@data</option>
+                                             }
+                                             else
+                                             {
+                                                 <option value='@data'>@data</option>
+
+                                             }
+                                         }
+                                     }
+                                 </select>
+                                 <span class="field-validation-error"><span id="applicable-message" style="display: none;">Applicable field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.applicable)
+                             </div>
+                         </td>
+                     </tr>
+
+
+
+
+
+                     <tr>
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.nonapplicablejustify)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="nonapplicablejustify" name="nonapplicablejustify" readonly style="background:#efefe6" value="@snonapplicablejustify" />
+                                 @*<input type="text" id="nonapplicablejustify" name="nonapplicablejustify" value="@snonapplicablejustify"/>*@
+                                 <span class="field-validation-error"><span id="nonapplicablejustify-message" style="display: none;">nonapplicablejustify  field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.nonapplicablejustify)
+                             </div>
+                         </td>
+                            <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.updatedBynametrans)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="updatedBynametrans" name="updatedBynametrans" value="@supdatedBynametrans"/>
+                                 <span class="field-validation-error"><span id="updatedBynametrans-message" style="display: none;">Updated By name   field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.updatedBynametrans)
+                             </div>
+                         </td>
+
+                     </tr>
+                     <tr>
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.reference)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="reference" name="reference" value="@sreference"/>
+                                 <span class="field-validation-error"><span id="reference-message" style="display: none;">reference field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.reference)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.monitoring)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="monitoring" name="monitoring" value="@smonitoring"/>
+                                 <span class="field-validation-error"><span id="monitoring-message" style="display: none;">monitoring field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.monitoring)
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+                              <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.updatedByposition)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="updatedByposition" name="updatedByposition" value="@supdatedByposition"/>
+                                 <span class="field-validation-error"><span id="updatedByposition-message" style="display: none;">updated By position  field is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.updatedByposition)
+                             </div>
+                         </td>
+                           <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.updatedByDept)
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                                 <input type="text" id="updatedByDept" name="updatedByDept" value="@supdatedByDept"/>
+                                 <span class="field-validation-error"><span id="updatedByDept-message" style="display: none;">updated By Dept   is required.</span></span>
+                                 @Html.ValidationMessageFor(model => model.updatedByDept)
+                             </div>
+                         </td>
+
+                        
+                       
+                     </tr>
+                 </table>
+                 <div style="padding-right: 200px; text-align:center;">
+
+                     @if (dsFindingsDetails != null && dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+                     {
+                         <input type="submit" id="@SubmitFinding" name="button" value="UpdatePlan" onclick= "Validation()" />
+                         <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()" style="display: none;" />
+                     }
+                     else
+                     {   
+                         <input type="submit" id="@SubmitFinding" name="button" value="UpdatePlan" onclick=" AddAudit()" style="display: none;" />
+                         <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()"  />
+                     }
+
+                     <input type="button" value="Add New" onclick="AddNewItem()" />
+                 </div>
+             </div>
+         }
+        <br />
+@if (dsFindingsDetails != null && dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+{
+    <div id="dvItems" >
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label">
+            <label for="Audit Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Legal Register Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Action</th>
+                <th>Updated Date</th>
+                <th>Article</th>
+                <th> Requirements</th>
+                <th>Is it Applicable ?</th>
+                <th> If Not Justify?</th>
+                <th> Updated By</th>
+                <th>Updated By Position Plan</th>
+                <th>Update By Dept</th>
+                <th>Procedure reference </th>
+                <th>Update By Dept</th>
+                <th>monitoring requirements/th>
+
+            </tr>
+            @for (int i = 0; i < dsFindingsDetails.Tables[0].Rows.Count; i++)
+            {
+                <tr id="@i">
+                    <td>
+                        <a onclick="EditItem(@dsFindingsDetails.Tables[0].Rows[i]["id_requirements"].ToString(), @i)" title="Edit Legal Register details">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[i]["updatedDate"].ToString()).ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["article"].ToString()
+                    </td>
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["requirements"].ToString()
+                    </td>
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["applicable"].ToString()
+                    </td>
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["nonapplicablejustify"].ToString()
+                    </td>
+                  
+               
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["updatedBynametrans"].ToString()
+                    </td>
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["updatedByposition"].ToString()
+                    </td>
+                     <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["updatedByDept"].ToString()
+                    </td>
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["reference"].ToString()
+                    </td>
+                    <td>
+                        @dsFindingsDetails.Tables[0].Rows[i]["monitoring"].ToString()
+                    </td>
+                    <td>
+                        <a href='@Url.Action("AddLegalRegisterEvaluation", "LegalRegister", new { id_requirements = dsFindingsDetails.Tables[0].Rows[i]["id_requirements"].ToString() })'>
+                            <img src='@Url.Content("~/Images/icon_add.png")' title="Evaluation"/></a>
+                        <a href='@Url.Action("LegalRegisterEvaluationList", "LegalRegister", new { id_requirements = dsFindingsDetails.Tables[0].Rows[i]["id_requirements"].ToString(), LegalRequirement_Id = Model.LegalRequirement_Id })'>
+                            <img src='@Url.Content("~/Images/icon_list.png")' title="Evaluation"/></a>
+
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+
+@section Scripts {
+       <script>
+
+
+           $(function () {
+
+
+               $('#updatedDate').datepicker({
+                   dateFormat: "dd-mm-yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true
+               })
+
+
+
+               $('#legalregister_evaluation_Id').datepicker({
+                   dateFormat: "dd-mm-yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true
+               })
+
+               $('#Duedate').datepicker({
+                   dateFormat: "dd-mm-yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true
+               })
+
+               $('#updatedOn').datepicker({
+                   dateFormat: "dd-mm-yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true
+               })
+
+               $('#initialdevelopmentdate').datepicker({
+                   dateFormat: "dd-mm-yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true
+               })
+
+
+           });
+
+
+           function AddNewItem() {
+               document.getElementById("SubmitFinding").style.display = "None";
+               document.getElementById("Save").style.display = "";
+               ResetControl();
+           }
+
+           function Validation() {
+               var validflg = true;
+               var ssnMessage = "";
+               if (document.getElementById("updatedDate").value == "") {
+                   ssnMessage = $('#updatedDate-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#updatedDate-message');
+                   ssnMessage.hide();
+               }
+               if (document.getElementById("article").value == "") {
+                   ssnMessage = $('#article-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#article-message');
+                   ssnMessage.hide();
+               }
+               if (document.getElementById("requirements").value == "") {
+                   ssnMessage = $('#requirements-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#requirements-message');
+                   ssnMessage.hide();
+               }
+               if (document.getElementById("applicable").value == "") {
+                   ssnMessage = $('#applicable-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#applicable-message');
+                   ssnMessage.hide();
+               }
+               if (document.getElementById("reference").value == "") {
+                   ssnMessage = $('#reference-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#reference-message');
+                   ssnMessage.hide();
+               }
+               if (document.getElementById("monitoring").value == "") {
+                   ssnMessage = $('#monitoring-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#monitoring-message');
+                   ssnMessage.hide();
+               }
+
+               //if (document.getElementById("nonapplicablejustify").value == "") {
+               //    ssnMessage = $('#nonapplicablejustify-message');
+               //    ssnMessage.show();
+               //    validflg = false;
+               //}
+               //else {
+               //    ssnMessage = $('#nonapplicablejustify-message');
+               //    ssnMessage.hide();
+               //}
+               if (document.getElementById("updatedBynametrans").value == "") {
+                   ssnMessage = $('#updatedBynametrans-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#updatedBynametrans-message');
+                   ssnMessage.hide();
+               }
+               if (document.getElementById("updatedByposition").value == "") {
+                   ssnMessage = $('#updatedByposition-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#updatedByposition-message');
+                   ssnMessage.hide();
+               }
+               if (document.getElementById("updatedByDept").value == "") {
+                   ssnMessage = $('#updatedByDept-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   ssnMessage = $('#updatedByDept-message');
+                   ssnMessage.hide();
+               }
+
+          
+               return validflg;
+           }
+
+           function ResetControl() {
+
+               $("#updatedDate").datepicker("setDate", new Date());
+               document.getElementById("article").value = "";
+               document.getElementById("requirements").value = "";
+               document.getElementById("applicable").selectedIndex = "0";
+              // document.getElementById("applicable").value = "";
+               document.getElementById("nonapplicablejustify").value = "";
+               document.getElementById("updatedBynametrans").value = "";
+               document.getElementById("updatedByposition").value = "";
+               document.getElementById("updatedByDept").value = "";
+               document.getElementById("reference").value = "";
+               document.getElementById("monitoring").value = "";
+               
+
+               var ssnMessage = $('#updatedDate-message');
+               ssnMessage.hide();
+               ssnMessage = $('#article-message');
+               ssnMessage.hide();
+               ssnMessage = $('#requirements-message');
+               ssnMessage.hide();
+               ssnMessage = $('#applicable-message');
+               ssnMessage.hide();
+               ssnMessage = $('#nonapplicablejustify-message');
+               ssnMessage.hide();
+               ssnMessage = $('#updatedBynametrans-message');
+               ssnMessage.hide();
+               ssnMessage = $('#updatedByposition-message');
+               ssnMessage.hide();
+               ssnMessage = $('#updatedByDept-message');
+               ssnMessage.hide();
+               ssnMessage = $('#reference-message');
+               ssnMessage.hide();
+               ssnMessage = $('#monitoring-message');
+               ssnMessage.hide();
+               
+           }
+
+
+           function AddAudit() {
+
+               if (Validation() == true) {
+
+                   document.getElementById("dvItems").style.display = "";
+                   var cnt = document.getElementById("itemcnt").value;
+
+                   document.getElementById("itemcnt").value = cnt;
+                   // Find a <table> element with id="myTable":
+                   var table = document.getElementById("team-list");
+
+
+                   // Create an empty <tr> element and add it to the 1st position of the table:
+                   var row = table.insertRow();
+
+                   // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                   var cell0 = row.insertCell(0);
+                   var cell1 = row.insertCell(1);
+                   var cell2 = row.insertCell(2);
+                   var cell3 = row.insertCell(3);
+                   var cell4 = row.insertCell(4);
+                   var cell5 = row.insertCell(5);
+                   var cell6 = row.insertCell(6);
+                   var cell7 = row.insertCell(7);
+                   var cell8 = row.insertCell(8);
+                   var cell9 = row.insertCell(9);
+
+
+                   var article = $('#article').val();
+                   var requirements = $('#requirements').val();
+                   var applicable = $('#applicable').val();
+                   var nonapplicablejustify = $('#nonapplicablejustify').val();
+                   var updatedBynametrans = $('#updatedBynametrans').val();
+                   var updatedByposition = $("#updatedByposition").val();
+                   var updatedDate = $("#updatedDate").val();
+                   var updatedByDept = $('#updatedByDept').val();
+                   var reference = $('#reference').val();
+                   var monitoring = $('#monitoring').val();
+
+
+
+                   // cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                   cell0.innerHTML = "<input type='hidden' id='article" + cnt + "' name='article" + cnt + "' value='" + article + "'>" + article;
+                   cell1.innerHTML = "<input type='hidden' id='requirements" + cnt + "' name='requirements" + cnt + "' value='" + requirements + "'>" + requirements;
+                   cell2.innerHTML = "<input type='hidden' id='applicable" + cnt + "' name='applicable" + cnt + "' value='" + applicable + "'>" + applicable;
+                   cell3.innerHTML = "<input type='hidden' id='nonapplicablejustify" + cnt + "' name='nonapplicablejustify" + cnt + "' value='" + nonapplicablejustify + "'>" + nonapplicablejustify;
+                   cell4.innerHTML = "<input type='hidden' id='updatedBynametrans" + cnt + "' name='updatedBynametrans" + cnt + "' value='" + updatedBynametrans + "'>" + updatedBynametrans;
+                   cell5.innerHTML = "<input type='hidden' id='updatedByposition" + cnt + "' name='updatedByposition" + cnt + "' value='" + updatedByposition + "'>" + updatedByposition;
+                   cell6.innerHTML = "<input type='hidden' id='updatedByDept" + cnt + "' name='updatedByDept" + cnt + "' value='" + updatedByDept + "'>" + updatedByDept;
+                   cell7.innerHTML = "<input type='hidden' id='updatedDate" + cnt + "' name='updatedDate" + cnt + "' value='" + updatedDate + "'>" + updatedDate;
+                   cell8.innerHTML = "<input type='hidden' id='reference" + cnt + "' name='reference" + cnt + "' value='" + reference + "'>" + reference;
+                   cell9.innerHTML = "<input type='hidden' id='monitoring" + cnt + "' name='monitoring" + cnt + "' value='" + monitoring + "'>" + monitoring;
+
+                   cnt++;
+                   document.getElementById("itemcnt").value = cnt;
+                   document.getElementById("btnCreate").style.display = "";
+
+                   ResetControl();
+               }
+
+           }
+
+
+           function EditItem(id_requirements, Id) {
+               ResetControl();
+               Id++;
+               var table = document.getElementById("team-list");
+
+               document.getElementById("id_requirements").value = id_requirements;
+               document.getElementById("updatedDate").value = table.rows[Id].cells[1].innerText;
+               document.getElementById("article").value = table.rows[Id].cells[2].innerText;
+               document.getElementById("requirements").value = table.rows[Id].cells[3].innerText;
+               document.getElementById("applicable").value = table.rows[Id].cells[4].innerText;
+               document.getElementById("nonapplicablejustify").value = table.rows[Id].cells[5].innerText;
+               document.getElementById("updatedBynametrans").value = table.rows[Id].cells[6].innerText;
+
+               document.getElementById("updatedByposition").value = table.rows[Id].cells[7].innerText;
+               document.getElementById("updatedByDept").value = table.rows[Id].cells[8].innerText;
+               document.getElementById("reference").value = table.rows[Id].cells[9].innerText;
+               document.getElementById("monitoring").value = table.rows[Id].cells[10].innerText;
+             //  document.getElementById('updatedByDept').value = table.rows[Id].cells[9].innerText;
+
+               document.getElementById("SubmitFinding").style.display = "";
+               document.getElementById("Save").style.display = "none";
+
+           }
+
+          
+
+
+           function GetLegalRegisterRefList() {
+               var Dept = $('#LegalRequirement_Id').val();
+               //alert(AuditDepartment);
+               jQuery.ajax({
+                   url: '@Url.Action("GetLegalRegisterRefList", "LegalRegister")',
+                   type: 'POST',
+                   dataType: "json",
+                   data: { 'LegalRequirement_Id': LegalRegister },
+                   success: function (result) {
+                       var x = document.getElementById("lawNo");
+                       $("#lawNo").empty();
+                       var option = document.createElement("option");
+                       option.text = "Select";
+                       x.add(option);
+
+                       var list = result;
+                       $.each(list, function (index, value) {
+                           var option = document.createElement("option");
+                           //alert(value);
+                           option.text = value;
+                           x.add(option);
+                       });
+                   }
+               });
+        }
+
+        function GetLegalRegisterDetails() {
+            var DeptId = $('#Dept').val();
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetLegalRegisterDetails", "LegalRegister")',
+                   type: 'POST',
+                   dataType: "json",
+                   data: { 'DeptId': DeptId },
+                   success: function (result) {
+
+                       if (result != "") {
+                           //alert(result.ISO);
+                           document.getElementById("lawNo").value = result.lawNo;
+                           document.getElementById("frequency_of_evaluation").value = result.frequency_of_evaluation;
+                          // document.getElementById("Personal_Responsible").value = result.Personal_Responsible;
+
+                           $('#origin_of_requirement').val('');
+                           var Audit = result.origin_of_requirement.split(',');
+                           $.each(Audit, function (index, item) {
+
+                               //you're filtering options, not the list itself
+                               $("#origin_of_requirement > option").filter(function () {
+                                   return $(this).val() == item;
+                               }).prop('selected', true); //use .prop, not .attr
+                           });
+
+                           document.getElementById("approved_By").value = result.Approved_By;
+                           document.getElementById("Estld_by").value = result.Estld_by;
+                       }
+                       else {
+                           document.getElementById("lawNo").value = "";
+                           document.getElementById("frequency_of_evaluation").value = "";
+                           document.getElementById("Personal_Responsible").value = "";
+
+                           $('#Audit_Criteria').val('');
+
+
+                           document.getElementById("Approved_By").value = "";
+                           document.getElementById("Estld_by").value = "";
+                       }
+                   }
+               });
+        }
+
+           function cal() {
+               var x = document.getElementById("applicable").value;
+
+
+               if (x == "No") {
+                   document.getElementById("nonapplicablejustify").readOnly = false;
+                   document.getElementById("nonapplicablejustify").style = "";
+
+
+
+               }
+               else {
+                   document.getElementById("nonapplicablejustify").readOnly = true;
+                   document.getElementById("nonapplicablejustify").style.background = "#efefe6";
+                   document.getElementById("nonapplicablejustify").value = "";
+               }
+           }
+
+           function FileFormatValidation(file) {
+               var ext = file.value.split(".").pop().toLowerCase();
+               if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                   file.value = "";
+                   jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+               }
+           }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

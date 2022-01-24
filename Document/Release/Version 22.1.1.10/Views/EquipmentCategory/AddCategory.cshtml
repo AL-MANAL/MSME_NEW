@@ -1,0 +1,73 @@
+﻿@model ISOStd.Models.EquipmentCategoryModels
+@{
+    ViewBag.Title = "AddCategory";
+}
+
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Add Category</span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("AddCategory", "EquipmentCategory", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend>AddAction</legend>
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Category)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Category" name="Category"  required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Category != null)
+                                {
+                                    foreach (var item in ViewBag.Category)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                   <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Cat_name)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                           @Html.EditorFor(m => m.Cat_name, new { @required="required" })
+                         @Html.ValidationMessageFor(m => m.Cat_name)  
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    
+        <div style="width: 100%; text-align: center;">
+              @Html.ActionLink("Back to List", "CategoryList", null, new {@class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+
+</div>

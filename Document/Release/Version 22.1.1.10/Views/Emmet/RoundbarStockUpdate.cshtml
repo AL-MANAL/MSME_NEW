@@ -1,0 +1,578 @@
+﻿@model ISOStd.Models.EmmetModels
+@using System.Data
+
+@{
+    ViewBag.Title = "";
+    int icnts = 0;
+    DataSet dsStock = new DataSet();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    if (ViewBag.dsStock != null)
+    {
+        dsStock = ViewBag.dsStock;
+    }
+    
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Issue Roundbar/Fabrication</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+  
+<div>
+       @using (Html.BeginForm("AddRoundbarIssue", "Emmet", FormMethod.Post,
+    new { enctype = "multipart/form-data", id = "form2", name = "form2" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+
+        <div >
+           
+            <table id="tabcontent">
+                
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.added_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="issue_date" name="issue_date" style="width: 150px;" required />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.jobno)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="jobno" name="jobno"  required />
+                        </div>
+                    </td>
+                 
+                </tr>
+                 <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.po)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="po" name="po" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table style=" width: 100%;">
+
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th colspan="8" style="font-size: 14px; font-weight: bold;">issue Stock</th>
+                </tr>
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th style="font-size: 14px; font-weight: bold;">Category</th>
+                    <th style="font-size: 14px; font-weight: bold;">Material</th>
+                     <th style="font-size: 14px; font-weight: bold;">Heat No</th>
+                    <th style="font-size: 14px; font-weight: bold;">Length</th>
+                    <th style="font-size: 14px; font-weight: bold;">Qty</th>
+                    <th style="font-size: 14px; font-weight: bold;">Issue Length</th>
+                    <th style="font-size: 14px; font-weight: bold;">Issue Qty</th>
+                    <th colspan="2" style="font-weight: bold;">Action</th>
+                </tr>
+                <tr>
+                    <td>
+                        <select class="chosen-select" id="category" name="category" onchange="GetMaterialList()">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.category != null)
+                            {
+                                foreach (var item in ViewBag.category)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+
+                        </select>
+                        @Html.ValidationMessageFor(model => model.category)
+                        <span class="field-validation-error"><span id="category-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td>
+                        <select class="chosen-select" id="material" name="material" onchange="getLength()">
+                            <option value='' hidden>Select</option>
+                        </select>
+                        @Html.ValidationMessageFor(model => model.material)
+                        <span class="field-validation-error"><span id="material-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                      <td>
+                        <select class="chosen-select" id="heatno" name="heatno" multiple style="width:200px">
+                            <option value='' hidden>Select</option>
+                        </select>
+                        @Html.ValidationMessageFor(model => model.heatno)
+                        <span class="field-validation-error"><span id="heatno-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td>
+                        <select class="chosen-select" id="length" name="length" onchange="getQty()">
+                            <option value='' hidden>Select</option>
+
+                        </select>
+                        @Html.ValidationMessageFor(model => model.length)
+                        <span class="field-validation-error"><span id="length-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td>
+                        <input type="number" id="qty" name="qty" readonly />
+
+                    </td>
+                    <td>
+                        <input type="number" id="issue_length" name="issue_length" min="1" onchange="CheckLength()" />
+                        @Html.ValidationMessageFor(model => model.issue_length)
+                        <span class="field-validation-error"><span id="issue_length-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td>
+                        <input type="number" id="issue_qty" name="issue_qty" min="1" onchange="CheckQty()" />
+                        @Html.ValidationMessageFor(model => model.issue_qty)
+                        <span class="field-validation-error"><span id="issue_qty-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    
+                    <td colspan="2">
+                        <img src='@Url.Content("~/images/icon_add.png")' onclick='AddData()' style='cursor:pointer; padding-right: 5px;' />Add
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        <p style="font-size: 11px; margin: 0px; text-align: center;">Please click Plus button</p>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+
+        <div style=" width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "RoundbarIssueList", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" id="btnCreate" style="display: none;" value="submit" onclick="ProgressIconFunction('#form2')" />
+        </div>
+
+        <br />
+        <br />
+        
+        
+        <div id="Welfare">
+            <input type="hidden" id="itemcnts" name="itemcnts" value="@icnts" />
+
+            <table id="team-list1">
+                <tr>
+                    <th colspan="8" style="background-color: #4cc4dd; color: white">List
+                    </th>
+                </tr>
+                <tr>
+                    <th style="width: 50px; min-width: 50px; max-width: 50px;">Delete</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Category</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Material</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Heat No</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Length</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Qty</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Issue Length</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Issue Qty</th>
+
+                </tr>
+            </table>
+        </div>
+      
+    }
+</div>
+      @section Scripts {
+     <script>
+         $(function () {
+
+             $("#material").chosen();
+             $("#heatno").chosen();
+             $("#length").chosen();
+             $("#category").chosen();
+             $("#material").chosen();
+             $("#heatno").chosen();
+             $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+             $('#issue_date').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+             });
+
+             $("#issue_date").datepicker("setDate", new Date());
+
+
+             $('#issue_qty').on('change keyup', function () {
+                 var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                 $(this).val(sanitized);
+             });
+         });
+       
+         function deleteCoseRow(btn, material, issue_qty, lengthText) {
+             var row = btn.parentNode.parentNode;
+             row.parentNode.removeChild(row);
+             updateQty(material, issue_qty, lengthText);
+             ResetControl();
+         }
+         function GetMaterialList() {
+             document.getElementById("issue_qty").value = "";
+             document.getElementById("issue_length").value = "";
+             var category = $('#category').chosen().val();
+             jQuery.ajax({
+                 url: '@Url.Action("FunGetMaterialList", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'category': category },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+
+
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+
+                        $.each(result, function (index, item) {
+
+                            $("#material").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#material").trigger("chosen:updated");
+
+                        });
+                        $('#material').trigger('change');
+                        return;
+                    }
+                    else {
+                        jAlert("No Material exists.");
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+                        return;
+                    }
+                }
+            });
+         }
+         function GetHeatNoList() {
+           
+         }
+         function Validation() {
+             var validflg = true;
+             var ssnMessage = "";
+
+             if (document.getElementById("category").value == "") {
+                 ssnMessage = $('#category-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#category-message');
+                 ssnMessage.hide();
+             }
+             if (document.getElementById("heatno").value == "") {
+                 ssnMessage = $('#heatno-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#heatno-message');
+                 ssnMessage.hide();
+             }
+
+             if (document.getElementById("material").value == "") {
+                 ssnMessage = $('#material-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#material-message');
+                 ssnMessage.hide();
+             }
+             if (document.getElementById("length").value == "") {
+                 ssnMessage = $('#length-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#length-message');
+                 ssnMessage.hide();
+             }
+
+             if (document.getElementById("issue_qty").value == "") {
+                 ssnMessage = $('#issue_qty-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#issue_qty-message');
+                 ssnMessage.hide();
+             }
+
+             if (document.getElementById("issue_length").value == "") {
+                 ssnMessage = $('#issue_length-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#issue_length-message');
+                 ssnMessage.hide();
+             }
+             return validflg;
+         }
+
+
+         function AddData() {
+
+             if (Validation() == true) {
+
+                 document.getElementById("Welfare").style.display = "";
+                 var cnt = document.getElementById("itemcnts").value;
+
+                 document.getElementById("itemcnts").value = cnt;
+                 // Find a <table> element with id="myTable":
+                 var table = document.getElementById("team-list1");
+
+                 // Create an empty <tr> element and add it to the 1st position of the table:
+                 var row = table.insertRow();
+
+                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                 var cell0 = row.insertCell(0);
+                 var cell1 = row.insertCell(1);
+                 var cell2 = row.insertCell(2);
+                 var cell3 = row.insertCell(3);
+                 var cell4 = row.insertCell(4);
+                 var cell5 = row.insertCell(5);
+                 var cell6 = row.insertCell(6);
+                 var cell7 = row.insertCell(7);
+
+                 cell0.style = "width: 50px; min-width: 50px; max-width: 50px;";
+                 cell1.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                 cell2.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                 cell3.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                 cell4.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                 cell5.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                 cell6.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                 cell7.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+               
+                 document.getElementById("btnCreate").style.display = "";
+                 var material = document.getElementById("material").value;
+
+                 var qty = $('#qty').val();
+                 var issue_qty = $('#issue_qty').val();
+                 var issue_length = $('#issue_length').val();
+                
+                 var category = [];
+                 var categoryText = $.map($("#category option:selected"), function (el, i) {
+                     return $(el).text();
+                 });
+                 var categoryVal = $('#category').val();
+
+                 var material = [];
+                 var materialText = $.map($("#material option:selected"), function (el, i) {
+                     return $(el).text();
+                 });
+                 var materialVal = $('#material').val();
+
+
+                 var length = [];
+                 var lengthText = $.map($("#length option:selected"), function (el, i) {
+                     return $(el).text();
+                 });
+                 var lengthVal = $('#length').val();
+
+                 var heatno = [];
+                 var heatnoText = $.map($("#heatno option:selected"), function (el, i) {
+                     return $(el).text();
+                 });
+                 var heatnoVal = $('#heatno').val();
+
+                 cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteCoseRow(this," + materialVal + "," + issue_qty + "," + lengthText + ")' style='cursor:pointer; padding-right: 5px;'/><input type='hidden' id='id_stock" + cnt + "' name='id_stock" + cnt + "' value='" + lengthVal + "'>";
+                 cell1.innerHTML = "<input type='hidden' id='category" + cnt + "' name='category" + cnt + "' value='" + categoryVal + "'>" + categoryText;
+                 cell2.innerHTML = "<input type='hidden' id='material" + cnt + "' name='material" + cnt + "' value='" + materialVal + "'>" + materialText;
+                 cell3.innerHTML = "<input type='hidden' id='heatno" + cnt + "' name='heatno" + cnt + "' value='" + heatnoText + "'>" + heatnoText;
+                 cell4.innerHTML = "<input type='hidden' id='length" + cnt + "' name='length" + cnt + "' value='" + lengthText + "'>" + lengthText;
+                 cell5.innerHTML = "<input type='hidden' id='qty" + cnt + "' name='qty" + cnt + "' value='" + qty + "'>" + qty;
+                 cell6.innerHTML = "<input type='hidden' id='issue_length" + cnt + "' name='issue_length" + cnt + "' value='" + issue_length + "'>" + issue_length;
+                 cell7.innerHTML = "<input type='hidden' id='issue_qty" + cnt + "' name='issue_qty" + cnt + "' value='" + issue_qty + "'>" + issue_qty;
+               
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+             
+                setQty(materialVal,lengthText, issue_qty);
+                ResetControl();
+            }
+
+        }
+
+        function ResetControl() {
+            document.getElementById("qty").value = "";
+            document.getElementById("issue_length").value = "";
+            document.getElementById("issue_qty").value = "";
+            $("#length").val('').trigger("chosen:updated");
+            $("#category").val('').trigger("chosen:updated");
+            $("#material").val('').trigger("chosen:updated");
+            $('#material').children('option').remove();
+            $("#material").trigger("chosen:updated");
+            $('#length').children('option').remove();
+            $("#length").trigger("chosen:updated");
+            $('#heatno').children('option').remove();
+            $("#heatno").trigger("chosen:updated");
+        }
+        function getQty() {
+            document.getElementById("issue_qty").value = "";
+            document.getElementById("issue_length").value = "";
+            document.getElementById("qty").value = "";
+            var length = $('#length').chosen().val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetStockQtyByLength", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'id_stock': length },
+                success: function (result) {
+                  
+                    document.getElementById("qty").value = result;
+
+                }
+            });
+        }
+         function getLength() {
+             document.getElementById("issue_qty").value = "";
+             document.getElementById("issue_length").value = "";
+             document.getElementById("qty").value = "";
+             var material = $('#material').chosen().val();
+             jQuery.ajax({
+                 url: '@Url.Action("FunGetMaterialLengthList", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'material': material },
+                success: function (result) {
+                    if (result != null && result.length > 0) {
+
+
+                        $('#length').children('option').remove();
+                        $("#length").trigger("chosen:updated");
+
+                        $.each(result, function (index, item) {
+
+                            $("#length").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#length").trigger("chosen:updated");
+
+                        });
+                        $('#length').trigger('change');
+                        return;
+                    }
+                    else {
+                        $('#length').children('option').remove();
+                        $("#length").trigger("chosen:updated");
+                    }
+                }
+             });
+
+           
+             jQuery.ajax({
+                 url: '@Url.Action("FunGetHeatNoList", "Emmet")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'material': material },
+                 success: function (result) {
+
+                     if (result != null && result.length > 0) {
+
+
+                         $('#heatno').children('option').remove();
+                         $("#heatno").trigger("chosen:updated");
+
+                         $.each(result, function (index, item) {
+
+                             $("#heatno").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                             $("#heatno").trigger("chosen:updated");
+
+                         });
+                         $('#heatno').trigger('change');
+                         return;
+                     }
+                     else {
+                         jAlert("No Heatno exists.");
+                         $('#heatno').children('option').remove();
+                         $("#heatno").trigger("chosen:updated");
+                         return;
+                     }
+                 }
+             });
+         }
+         function CheckQty() {
+             var length = $('#length').chosen().val();
+           
+             if (length != '') {
+                 var qty = document.getElementById("qty").value;
+                 var issue_qty = document.getElementById("issue_qty").value;
+                 if (parseFloat(issue_qty) > parseFloat(qty)) {
+                     jAlert("Issued Qty is greater than stock");
+                     document.getElementById("issue_qty").value = "";
+                 }
+                 if (parseFloat(issue_qty) <= 0) {
+                     jAlert("Issued Qty should be greater than zero");
+                     document.getElementById("issue_qty").value = "";
+                 }
+             }
+             else {
+                 jAlert("Select Length");
+                 document.getElementById("issue_qty").value = "";
+             }
+
+            
+         }
+         function CheckLength() {
+             var length = $('#length').chosen().val();
+             if (length != '') {
+                 var length =  $("#length option:selected").text();
+                 var issue_length = document.getElementById("issue_length").value;
+                 if (parseFloat(issue_length) > parseFloat(length)) {
+                     jAlert("Issued Length is greater than stock");
+                     document.getElementById("issue_length").value = "";
+                 }
+             }
+             else {
+                 jAlert("Select Length");
+                 document.getElementById("issue_length").value = "";
+             }
+         }
+         function setQty(material, lengthText,issue_qty) {
+
+             jQuery.ajax({
+                 url: '@Url.Action("FunSetRoundbarQty", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'material': material, 'length': lengthText, 'issue_qty': issue_qty },
+                success: function (result) {
+
+                }
+            });
+         }
+         function updateQty(material, issue_qty, lengthText) {
+
+             jQuery.ajax({
+                 url: '@Url.Action("FunUpdateRoundbarQty", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'material': material,'length': lengthText, 'issue_qty': issue_qty},
+                success: function (result) {
+
+
+                }
+            });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

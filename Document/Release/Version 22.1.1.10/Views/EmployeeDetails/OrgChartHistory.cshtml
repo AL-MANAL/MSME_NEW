@@ -1,0 +1,101 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.EmployeeMasterModels>
+
+@{
+    ViewBag.Title = "ChartList";
+}
+<link href='@Url.Content("~/Content/popover/popover.css")' rel="stylesheet">
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Organization Chart History</span>
+</div>
+<br />
+<div>
+    @Html.ActionLink("Back to List", "OrgChart", null, new {Class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
+
+</div>
+ <br />
+<br />
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+   
+
+
+    @Html.PagedListPager(Model, page => Url.Action("OrgChartHistory",
+    new
+    {
+        page,
+        Approvestatus = Request.QueryString["Approvestatus"],
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+<div id="content">
+    <table id="table1">
+        <thead>
+            <tr>
+                <th style="width:100px;min-width:100px; max-width:100px;">
+                        Sl.No
+                    </th>
+                    <th style="width:350px;min-width:350px; max-width:350px;">
+                        Chart Name
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        Preview Chart
+                    </th> 
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int sl = 0;
+                foreach (var item in Model)
+                {
+                    sl = sl + 1;
+                        <tr>
+                            <td style="width:100px;min-width:100px; max-width:100px;">@sl</td>
+                            <td style="width:350px;min-width:350px; max-width:350px;">@Html.DisplayFor(modelItem => item.ChartName)</td>
+                            <td style="width:100px;min-width:100px; max-width:100px;">
+                                @if (item.DocUploadPath != "")
+                                {
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.DocUploadPath })' target="_blank">Preview</a>
+                                }
+                            </td>    
+                        </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+</table>
+</div>
+@Styles.Render("~/Content/popover")
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        
+
+    </script>
+
+}

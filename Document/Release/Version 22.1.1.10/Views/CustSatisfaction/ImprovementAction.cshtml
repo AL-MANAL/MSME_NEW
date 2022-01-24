@@ -1,0 +1,528 @@
+﻿@model ISOStd.Models.CustSatisfactionModels
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.CustSatisfactionModelsList objQList = new ISOStd.Models.CustSatisfactionModelsList();
+  
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    int icnt1 = 0;
+
+    if (ViewBag.objQList != null)
+    {
+        objQList = ViewBag.objQList;
+        icnt1 = objQList.CSList.Count;
+    }  
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustSatisfactionList", "CustSatisfaction", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Satisfaction Assessment List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Improvement Actions</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("ImprovementAction", "CustSatisfaction", FormMethod.Post,
+                                                                                                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Improvement Actions</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_cust_satisfaction" name="id_cust_satisfaction" value="@Model.id_cust_satisfaction" />
+                <input type="hidden" id="itemcnt1" name="itemcnt1" value="@icnt1" />
+            
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Department)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Department)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Location)
+                            </p>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.cust_name)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.cust_name)
+                            </p>
+                        </td>
+
+                    </tr>
+
+
+                    <tr class="row">
+                        <td class="col-md-12">
+                            Survey Period
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.frm_date)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.frm_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Model.frm_date.ToString("dd/MM/yyyy")
+                                    </p>
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.to_date)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.to_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Model.to_date.ToString("dd/MM/yyyy")
+                                    </p>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.prod_delivered)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.prod_delivered)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.contact_details)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.contact_details)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.eval_date)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.eval_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Model.eval_date.ToString("dd/MM/yyyy")
+                                    </p>
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.complaint)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.complaint)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.cust_satisfied)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.cust_satisfied)
+                                    </p>
+</div>
+                        </td>
+
+                    </tr>
+                </table>
+
+
+               
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Improvement Actions</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.action_taken)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="action_taken" name="action_taken"></textarea>
+                                        <span class="field-validation-error"><span id="action_taken-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.action_taken)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.pers_resp)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="pers_resp" name="pers_resp">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.pers_resp != null)
+                                            {
+                                                foreach (var item in ViewBag.pers_resp)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="pers_resp-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.pers_resp)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">                 
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.target_date)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                       <input type="date" class="form-control" id="target_date" name="target_date" />
+                                        <span class="field-validation-error"><span id="target_date-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.target_date)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.resource_req)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="resource_req" name="resource_req"></textarea>
+                                        <span class="field-validation-error"><span id="resource_req-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.resource_req)
+                                    </div>
+                                </td>     
+                            </tr>
+                          
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <div class="card" id="hidden card1">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>Action to be taken</th>
+                                        <th>Personnel Responsible</th>
+                                        <th>Target Date</th>
+                                        <th>Resources required </th>
+                                    </tr>
+                                    @if (objQList.CSList != null && objQList.CSList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objQList.CSList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" id="id_act @(index)" name="id_act @(index)" value="@objQList.CSList[index].id_act" />
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                </td>
+                                                <td>
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='action_taken @(index)' name="action_taken @(index)">@objQList.CSList[index].action_taken</textarea>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control select-search select2-hidden-accessible" id="pers_resp @(index)" name="pers_resp @(index)">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.pers_resp != null)
+                                                        {
+                                                            foreach (var item in ViewBag.pers_resp)
+                                                            {
+                                                                if (item.Value == objQList.CSList[index].pers_resp)
+                                                                {
+                                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item.Value'>@item.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    @if (objQList.CSList[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        <input type="date" class="form-control" id="target_date @(index)" name="target_date @(index)" value="@objQList.CSList[index].target_date.ToString("yyyy-MM-dd")" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="date" class="form-control" id="target_date @(index)" name="target_date @(index)" />
+                                                    }                                                       
+                                                </td>
+                                                <td>
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='resource_req @(index)' name="resource_req @(index)">@objQList.CSList[index].resource_req</textarea>
+                                                </td>
+                                             
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                 
+             
+               
+
+
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "CustSatisfactionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                                                                                     @:     text: '@TempData["alertdata"]',
+                                                                                                     @:     type: 'error'
+                                                                                                     @: }).show();
+        }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                                                                               @:text: '@TempData["Successdata"]',
+                                                                               @: type: 'success'
+                                                                               @: }).show();
+        }
+
+        });
+     
+  
+
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("action_taken").value == "") {
+                ssnMessage = $('#action_taken-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#action_taken-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("pers_resp").value == "") {
+                ssnMessage = $('#pers_resp-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_resp-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("target_date").value == "") {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("resource_req").value == "") {
+                ssnMessage = $('#resource_req-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#resource_req-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddData() {
+
+            if (Validation() == true) {
+
+                document.getElementById("hidden card1").style.display = "block";
+                var cnt = document.getElementById("itemcnt1").value;
+
+                document.getElementById("itemcnt1").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                var action_taken = $('#action_taken').val();
+                var target_date = $('#target_date').val();
+                var resource_req = $('#resource_req').val();
+
+                var pers_resp = $.map($("#pers_resp option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var pers_respVal = $("#pers_resp").val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<textarea id='action_taken " + cnt + "' name='action_taken " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + action_taken + "</textarea>";
+                cell2.innerHTML = "<select class='form-control select-fixed-single' id='pers_resp " + cnt + "' name='pers_resp " + cnt + "'><option value='" + pers_respVal + "' selected>" + pers_resp + "</option>@if (ViewBag.pers_resp != null)
+                {
+                    foreach (var item in ViewBag.pers_resp)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell3.innerHTML = "<input class='form-control' type='date' id='target_date " + cnt + "' name='target_date " + cnt + "' value='" + target_date + "' />";
+                cell4.innerHTML = "<textarea id='resource_req " + cnt + "' name='resource_req " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + resource_req + "</textarea>";
+
+                cnt++;
+                document.getElementById("itemcnt1").value = cnt;
+
+                //reintialisation
+
+                // Badge position
+                $('.maxlength-badge-position').maxlength({
+                    alwaysShow: true,
+                    placement: 'top'
+                });
+
+                //auto resize
+                autosize($('.elastic'));
+                $('.select-fixed-single').select2({
+                    minimumResultsForSearch: Infinity,
+                    width: 150
+                });
+                document.getElementById("hidden card1").classList.remove(hideClass);
+                document.getElementById("hidden card1").classList.add(showClass);
+
+                document.getElementById("action_taken").value = "";
+                document.getElementById("target_date").value = "";
+                document.getElementById("resource_req").value = "";
+                $("#pers_resp").val('').trigger('change');
+
+            }
+
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,1553 @@
+﻿@model ISOStd.Models.CustSatisfactionModels
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.CustSatisfactionModelsList objQList = new ISOStd.Models.CustSatisfactionModelsList();
+    ISOStd.Models.CustSatisfactionModelsList objDList = new ISOStd.Models.CustSatisfactionModelsList();
+    ISOStd.Models.CustSatisfactionModelsList objCList = new ISOStd.Models.CustSatisfactionModelsList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    int icnt1 = 0, icnt2 = 0, icnt3 = 0;
+
+    if (ViewBag.objQList != null)
+    {
+        objQList = ViewBag.objQList;
+        icnt1 = objQList.CSList.Count;
+    }
+    if (ViewBag.objDList != null)
+    {
+        objDList = ViewBag.objDList;
+        icnt2 = objDList.CSList.Count;
+    }
+    if (ViewBag.objCList != null)
+    {
+        objCList = ViewBag.objCList;
+        icnt3 = objCList.CSList.Count;
+    }
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustSatisfactionList", "CustSatisfaction", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Satisfaction Assessment List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Edit Customer Satisfaction Assessment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("EditCustSatisfaction", "CustSatisfaction", FormMethod.Post,
+                                                                                                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Edit Customer Satisfaction Assessment</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_cust_satisfaction" name="id_cust_satisfaction" value="@Model.id_cust_satisfaction" />
+                <input type="hidden" id="itemcnt1" name="itemcnt1" value="@icnt1" />
+                <input type="hidden" id="itemcnt2" name="itemcnt2" value="@icnt2" />
+                <input type="hidden" id="itemcnt3" name="itemcnt3" value="@icnt3" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="branch" name="branch" required onchange="GetDeptList()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.cust_name)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="cust_name" name="cust_name" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Customer != null)
+                                {
+                                    foreach (var item in ViewBag.Customer)
+                                    {
+                                        if (item.Value == Model.cust_name)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+
+                        </td>
+
+                    </tr>
+                </table>
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Survey Period</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.frm_date)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+
+
+                            <td class="col">
+                                <div class="editor-label">
+                                    @if (Model.frm_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input type="date" class="form-control" id="frm_date" name="frm_date" required value="@Model.frm_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" id="frm_date" name="frm_date" required />
+                                    }
+
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.to_date)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-label">
+                                    @if (Model.to_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input type="date" class="form-control" id="to_date" name="to_date" required value="@Model.to_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" id="to_date" name="to_date" required />
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </fieldset>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.prod_delivered)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="prod_delivered" name="prod_delivered" required>@Model.prod_delivered</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.contact_details)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="contact_details" name="contact_details" required>@Model.contact_details</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.eval_date)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <div class="editor-label">
+                                @if (Model.eval_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" class="form-control" id="eval_date" name="eval_date" required value="@Model.eval_date.ToString("yyyy-MM-dd")" />
+                                }
+                                else
+                                {
+                                    <input type="date" class="form-control" id="eval_date" name="eval_date" required value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Method of assessment</legend>
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Performance/reliability of the product</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.performance)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="performance" name="performance">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.performance != null)
+                                            {
+                                                foreach (var item in ViewBag.performance)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="performance-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.performance)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.perf_remarks)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="perf_remarks" name="perf_remarks"></textarea>
+                                        <span class="field-validation-error"><span id="perf_remarks-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.perf_remarks)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.perf_upload)@*<text style="color: red;">*</text>*@
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <input type="file" name="perf_upload" id="perf_upload" multiple="multiple" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, .png, .jpg, .jpeg,image/*" />
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                    @*<span class="field-validation-error"><label id="upload-message" class="validation-invalid-label" style="display:none" for="basic">Upload field is required.</label> </span>*@
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddPerfData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <div class="card" id="hidden card1">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>Performance/reliability of the product</th>
+                                        <th>Remarks</th>
+                                        <th>Records</th>
+                                    </tr>
+                                    @if (objQList.CSList != null && objQList.CSList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objQList.CSList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" id="id_perf @(index)" name="id_perf @(index)" value="@objQList.CSList[index].id_perf" />
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control select-search select2-hidden-accessible" id="performance @(index)" name="performance @(index)">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.performance != null)
+                                                        {
+                                                            foreach (var item in ViewBag.performance)
+                                                            {
+                                                                if (item.Value == objQList.CSList[index].performance)
+                                                                {
+                                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item.Value'>@item.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='perf_remarks @(index)' name="perf_remarks @(index)">@objQList.CSList[index].perf_remarks</textarea>
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='perf_upload1 @index' name="perf_upload1 @index" value='@objQList.CSList[index].perf_upload'>
+                                                    @if (objQList.CSList[index].perf_upload != null && objQList.CSList[index].perf_upload != "" && objQList.CSList[index].perf_upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objQList.CSList[index].perf_upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        Preview
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">On time delivery</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.delivery)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="delivery" name="delivery">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.delivery != null)
+                                            {
+                                                foreach (var item in ViewBag.delivery)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="delivery-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.delivery)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.delivery_remarks)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="delivery_remarks" name="delivery_remarks"></textarea>
+                                        <span class="field-validation-error"><span id="delivery_remarks-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.delivery_remarks)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.delivery_upload)@*<text style="color: red;">*</text>*@
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <input type="file" name="delivery_upload" id="delivery_upload" multiple="multiple" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, .png, .jpg, .jpeg,image/*" />
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                    @*<span class="field-validation-error"><label id="upload-message" class="validation-invalid-label" style="display:none" for="basic">Upload field is required.</label> </span>*@
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddDeliveryData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <div class="card" id="hidden card2">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list2">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>On time delivery</th>
+                                        <th>Remarks</th>
+                                        <th>Records</th>
+                                    </tr>
+                                    @if (objDList.CSList != null && objDList.CSList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objDList.CSList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" id="id_delivery @(index)" name="id_delivery @(index)" value="@objDList.CSList[index].id_delivery" />
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control select-search select2-hidden-accessible" id="delivery @(index)" name="delivery @(index)">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.delivery != null)
+                                                        {
+                                                            foreach (var item in ViewBag.delivery)
+                                                            {
+                                                                if (item.Value == objDList.CSList[index].delivery)
+                                                                {
+                                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item.Value'>@item.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='delivery_remarks @(index)' name="delivery_remarks @(index)">@objDList.CSList[index].delivery_remarks</textarea>
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='delivery_upload1 @index' name="delivery_upload1 @index" value='@objDList.CSList[index].delivery_upload'>
+                                                    @if (objDList.CSList[index].delivery_upload != null && objDList.CSList[index].delivery_upload != "" && objDList.CSList[index].delivery_upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objDList.CSList[index].delivery_upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        Preview
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.complaint)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="complaint" name="complaint" required onchange="setCustType()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            if (item == Model.complaint)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                    </table>
+                    <fieldset id="cust_id" class="border p-2" style="display:none">
+                        <legend class="font-weight-semibold text-success">Customer complaints</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.complaint_type)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="complaint_type" name="complaint_type">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.complaint_type != null)
+                                            {
+                                                foreach (var item in ViewBag.complaint_type)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="complaint_type-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.complaint_type)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.complaint_no)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input class="form-control" type="number" id="complaint_no" name="complaint_no" />
+                                        <span class="field-validation-error"><span id="complaint_no-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.complaint_no)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.complaint_upload)@*<text style="color: red;">*</text>*@
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <input type="file" name="complaint_upload" id="complaint_upload" multiple="multiple" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, .png, .jpg, .jpeg,image/*" />
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                    @*<span class="field-validation-error"><label id="upload-message" class="validation-invalid-label" style="display:none" for="basic">Upload field is required.</label> </span>*@
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddComplaintData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <div class="card" id="hidden card3">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list3">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+
+                                        <th>Type</th>
+                                        <th>No. of complaints</th>
+                                        <th>Records</th>
+                                    </tr>
+                                    @if (objCList.CSList != null && objCList.CSList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objCList.CSList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" id="id_complaint @(index)" name="id_complaint @(index)" value="@objCList.CSList[index].id_complaint" />
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                </td>
+                                              
+                                                <td>
+                                                    <select class="form-control select-search select2-hidden-accessible" id="complaint_type @(index)" name="complaint_type @(index)">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.complaint_type != null)
+                                                        {
+                                                            foreach (var item in ViewBag.complaint_type)
+                                                            {
+                                                                if (item.Value == objCList.CSList[index].complaint_type)
+                                                                {
+                                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item.Value'>@item.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input class="form-control" type="number" id="complaint_no @(index)" name="complaint_no @(index)" value="@objCList.CSList[index].complaint_no" />
+
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='complaint_upload1 @index' name="complaint_upload1 @index" value='@objCList.CSList[index].complaint_upload'>
+                                                    @if (objCList.CSList[index].complaint_upload != null && objCList.CSList[index].complaint_upload != "" && objCList.CSList[index].complaint_upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objCList.CSList[index].complaint_upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        Preview
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.repeat_enquiries)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="repeat_enquiries" name="repeat_enquiries" onchange="setEnq()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            if (item == Model.repeat_enquiries)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.no_enquiries)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="number" id="no_enquiries" name="no_enquiries" disabled value="@Model.no_enquiries"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.enquiries_upload)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="enquiries_upload" id="enquiries_upload" title="Documents" disabled
+                                   multiple="multiple" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" />
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            @if (Model.enquiries_upload != null && Model.enquiries_upload != "" && Model.enquiries_upload.Length > 0)
+                            {
+                                <div class="editor-label">
+                                    <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                foreach (var docs in Model.enquiries_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                        </span>
+                                    </p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.repeat_orders)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="repeat_orders" name="repeat_orders" onchange="setOrder()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            if (item == Model.repeat_orders)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.no_orders)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="number" id="no_orders" name="no_orders" disabled value="@Model.no_orders" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.orders_upload)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="orders_upload" id="orders_upload" title="Documents" disabled
+                                   multiple="multiple" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" />
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            @if (Model.orders_upload != null && Model.orders_upload != "" && Model.orders_upload.Length > 0)
+                            {
+                                <div class="editor-label">
+                                    <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                foreach (var docs in Model.orders_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+                                        <input type="checkbox" id="QCDocsVal1" name="QCDocsVal1" class="QCDocsVal1" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                        <input type="hidden" id="QCDocsValselectall1" name="QCDocsValselectall1" />
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                        </span>
+                                    </p>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.survey_form)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="survey_form" name="survey_form" onchange="setSurvey()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.survey_form != null)
+                                    {
+                                        foreach (var item in ViewBag.survey_form)
+                                        {
+                                            if (item.Value == Model.survey_form)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.csi)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="csi" name="csi" disabled value="@Model.csi" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.cust_satisfied)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="cust_satisfied" name="cust_satisfied" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.cust_satisfied != null)
+                                    {
+                                        foreach (var item in ViewBag.cust_satisfied)
+                                        {
+                                            if (item.Value == Model.cust_satisfied)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.reviewed_by)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="reviewed_by" name="reviewed_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Reviewer != null)
+                                    {
+                                        foreach (var item in ViewBag.Reviewer)
+                                        {
+                                            if (item.Value == Model.reviewed_by)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "CustSatisfactionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                                                                                     @:     text: '@TempData["alertdata"]',
+                                                                                                     @:     type: 'error'
+                                                                                                     @: }).show();
+        }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                                                                               @:text: '@TempData["Successdata"]',
+                                                                               @: type: 'success'
+                                                                               @: }).show();
+        }
+
+        });
+        setEnq();
+        setOrder();
+        setSurvey();
+        setCustType();
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            // var selectedValues = $("#division option:selected").val();
+            // alert(selectedValues);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    // GetLocList(selectedValues);
+                    // GetEmpList(selectedValues);
+                    $("#Department").children('option').remove();
+                    $("#Department").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Department").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Department List',
+                    //        message: 'No Department exists.'
+                    //    });
+                    //}
+                }
+            });
+        }
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+        $("#QCDocsVal1").click(function () {
+            if ($("#QCDocsVal1").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall1").value = "DeleteQC";
+            }
+        });
+        function setEnq() {
+            var repeat_enquiries = $("#repeat_enquiries option:selected").text();
+
+            if (repeat_enquiries == "Yes") {
+                $("#no_enquiries").attr('disabled', false);
+                $("#no_enquiries").attr('required', true);
+                $("#enquiries_upload").attr('disabled', false);
+                //$("#enquiries_upload").attr('required', true);
+            }
+            else if (repeat_enquiries == "No") {
+                $("#no_enquiries").attr('disabled', true);
+                $("#no_enquiries").attr('required', false);
+                $("#enquiries_upload").attr('disabled', true);
+                $("#enquiries_upload").attr('required', false);
+                $("#no_enquiries").val('').trigger('change');
+                document.getElementById("enquiries_upload").value = "";
+            }
+        }
+
+        function setOrder() {
+            var repeat_orders = $("#repeat_orders option:selected").text();
+
+            if (repeat_orders == "Yes") {
+                $("#no_orders").attr('disabled', false);
+                $("#no_orders").attr('required', true);
+                $("#orders_upload").attr('disabled', false);
+               // $("#orders_upload").attr('required', true);
+            }
+            else if (repeat_orders == "No") {
+                $("#no_orders").attr('disabled', true);
+                $("#no_orders").attr('required', false);
+                $("#orders_upload").attr('required', false);
+                $("#orders_upload").attr('disabled', true);
+                $("#no_orders").val('').trigger('change');
+                document.getElementById("orders_upload").value = "";
+            }
+        }
+
+
+        function setSurvey() {
+            var survey_form = $("#survey_form option:selected").text();
+
+            if (survey_form == "Received") {
+                $("#csi").attr('disabled', false);
+                $("#csi").attr('required', true);
+
+            }
+            else {
+                $("#csi").attr('disabled', true);
+                $("#csi").attr('required', false);
+                $("#csi").val('').trigger('change');
+            }
+        }
+        function setCustType() {
+            var complaint = $("#complaint option:selected").text();
+
+            if (complaint == "Yes") {
+                document.getElementById("cust_id").style.display = "block";
+            }
+            else {
+                document.getElementById("cust_id").style.display = "none";
+            }
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function PerfValidation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("performance").value == "") {
+                ssnMessage = $('#performance-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#performance-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("perf_remarks").value == "") {
+                ssnMessage = $('#perf_remarks-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#perf_remarks-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+        function AddPerfData() {
+
+            if (PerfValidation() == true) {
+
+                //document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt1").value;
+
+                document.getElementById("itemcnt1").value = cnt;
+                // Find a <table> element with id="myTable":
+                var upload = $("#perf_upload").val();
+                if (upload != "") {
+                    uploadServerPath = UploadPerfDocument(cnt);
+                }
+                else {
+                    DisplayPerfDocument("", cnt);
+                }
+
+            }
+        }
+        function UploadPerfDocument(ind) {
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("perf_upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("perf_upload").files[i];
+                formData.append("perf_upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadMultipleDocument", "CustSatisfaction")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    DisplayPerfDocument(result, ind);
+                    return result;
+                }
+            });
+        }
+
+        function DisplayPerfDocument(Filepath, cnt) {
+            var filename = "";
+            if (Filepath != "") {
+                var sfile = Filepath.split(',');
+                var sfilecont = sfile.length;
+                var sfilename = "";
+
+                for (var i = 0; i < sfilecont; i++) {
+                    sfilename = sfile[i].substring(sfile[i].lastIndexOf('/') + 1);
+                    filename = sfilename.substring(0, sfilename.indexOf(".")) + ',' + filename
+                }
+                filename = filename.slice(0, -1);
+            }
+
+
+            document.getElementById("hidden card1").style.display = "block";
+            var cnt = document.getElementById("itemcnt1").value;
+
+            document.getElementById("itemcnt1").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list1");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+
+
+
+            var performance = $.map($("#performance option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var performanceVal = $("#performance").val();
+
+            var perf_remarks = $("#perf_remarks").val();
+
+            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+            cell1.innerHTML = "<select class='form-control select-fixed-single' id='performance " + cnt + "' name='performance " + cnt + "'><option value='" + performanceVal + "' selected>" + performance + "</option>@if (ViewBag.performance != null)
+            {
+                foreach (var item in ViewBag.performance)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+
+            cell2.innerHTML = "<textarea id='perf_remarks " + cnt + "' name='perf_remarks " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + perf_remarks + "</textarea>";
+
+
+            cell3.innerHTML = "<input type='hidden' id='perf_upload1 " + cnt + "' name='perf_upload1 " + cnt + "' value='" + Filepath + "'>" + filename;
+
+
+            cnt++;
+            document.getElementById("itemcnt1").value = cnt;
+
+            //reintialisation
+
+            // Badge position
+            $('.maxlength-badge-position').maxlength({
+                alwaysShow: true,
+                placement: 'top'
+            });
+
+            //auto resize
+            autosize($('.elastic'));
+            $('.select-fixed-single').select2({
+                minimumResultsForSearch: Infinity,
+                width: 150
+            });
+
+            document.getElementById("hidden card1").classList.remove(hideClass);
+            document.getElementById("hidden card1").classList.add(showClass);
+
+            document.getElementById("perf_upload").value = "";
+            $("#performance").val('').trigger('change');
+            document.getElementById("perf_remarks").value = "";
+        }
+
+
+        //--On time delivery
+
+        function DeliveryValidation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("delivery").value == "") {
+                ssnMessage = $('#delivery-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#delivery-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("delivery_remarks").value == "") {
+                ssnMessage = $('#delivery_remarks-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#delivery_remarks-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+        function AddDeliveryData() {
+
+            if (DeliveryValidation() == true) {
+
+                //document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt2").value;
+
+                document.getElementById("itemcnt2").value = cnt;
+                // Find a <table> element with id="myTable":
+                var upload = $("#delivery_upload").val();
+                if (upload != "") {
+                    uploadServerPath = UploadDeliveryDocument(cnt);
+                }
+                else {
+                    DisplayDeliveryDocument("", cnt);
+                }
+
+            }
+        }
+        function UploadDeliveryDocument(ind) {
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("delivery_upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("delivery_upload").files[i];
+                formData.append("delivery_upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadMultipleDocument", "CustSatisfaction")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    DisplayDeliveryDocument(result, ind);
+                    return result;
+                }
+            });
+        }
+
+        function DisplayDeliveryDocument(Filepath, cnt) {
+            var filename = "";
+            if (Filepath != "") {
+                var sfile = Filepath.split(',');
+                var sfilecont = sfile.length;
+                var sfilename = "";
+
+                for (var i = 0; i < sfilecont; i++) {
+                    sfilename = sfile[i].substring(sfile[i].lastIndexOf('/') + 1);
+                    filename = sfilename.substring(0, sfilename.indexOf(".")) + ',' + filename
+                }
+                filename = filename.slice(0, -1);
+            }
+
+
+            document.getElementById("hidden card2").style.display = "block";
+            var cnt = document.getElementById("itemcnt2").value;
+
+            document.getElementById("itemcnt2").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list2");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+
+
+
+            var delivery = $.map($("#delivery option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var deliveryVal = $("#delivery").val();
+
+            var delivery_remarks = $("#delivery_remarks").val();
+
+            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+            cell1.innerHTML = "<select class='form-control select-fixed-single' id='delivery " + cnt + "' name='delivery " + cnt + "'><option value='" + deliveryVal + "' selected>" + delivery + "</option>@if (ViewBag.delivery != null)
+            {
+                foreach (var item in ViewBag.delivery)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+
+            cell2.innerHTML = "<textarea id='delivery_remarks " + cnt + "' name='delivery_remarks " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + delivery_remarks + "</textarea>";
+
+
+            cell3.innerHTML = "<input type='hidden' id='delivery_upload1 " + cnt + "' name='delivery_upload1 " + cnt + "' value='" + Filepath + "'>" + filename;
+
+
+            cnt++;
+            document.getElementById("itemcnt2").value = cnt;
+
+            //reintialisation
+
+            // Badge position
+            $('.maxlength-badge-position').maxlength({
+                alwaysShow: true,
+                placement: 'top'
+            });
+
+            //auto resize
+            autosize($('.elastic'));
+            $('.select-fixed-single').select2({
+                minimumResultsForSearch: Infinity,
+                width: 150
+            });
+
+            document.getElementById("hidden card2").classList.remove(hideClass);
+            document.getElementById("hidden card2").classList.add(showClass);
+
+            document.getElementById("delivery_upload").value = "";
+            $("#delivery").val('').trigger('change');
+            document.getElementById("delivery_remarks").value = "";
+        }
+
+        //--complaints
+
+        function ComplaintValidation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("complaint").value == "") {
+                ssnMessage = $('#complaint-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#complaint-message');
+                ssnMessage.hide();
+            }
+            var complaint = $("#complaint option:selected").text();
+            if (complaint == "Yes") {
+                if (document.getElementById("complaint_type").value == "") {
+                    ssnMessage = $('#complaint_type-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#complaint_type-message');
+                    ssnMessage.hide();
+                }
+            }
+            else {
+                ssnMessage = $('#complaint_type-message');
+                ssnMessage.hide();
+            }
+
+
+            if (document.getElementById("complaint_no").value == "") {
+                ssnMessage = $('#complaint_no-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#complaint_no-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+        function AddComplaintData() {
+
+            if (ComplaintValidation() == true) {
+
+                //document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt3").value;
+
+                document.getElementById("itemcnt3").value = cnt;
+                // Find a <table> element with id="myTable":
+                var upload = $("#complaint_upload").val();
+                if (upload != "") {
+                    uploadServerPath = UploadComplaintDocument(cnt);
+                }
+                else {
+                    DisplayComplaintDocument("", cnt);
+                }
+
+            }
+        }
+        function UploadComplaintDocument(ind) {
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("complaint_upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("complaint_upload").files[i];
+                formData.append("complaint_upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadMultipleDocument", "CustSatisfaction")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    DisplayComplaintDocument(result, ind);
+                    return result;
+                }
+            });
+        }
+
+        function DisplayComplaintDocument(Filepath, cnt) {
+            var filename = "";
+            if (Filepath != "") {
+                var sfile = Filepath.split(',');
+                var sfilecont = sfile.length;
+                var sfilename = "";
+
+                for (var i = 0; i < sfilecont; i++) {
+                    sfilename = sfile[i].substring(sfile[i].lastIndexOf('/') + 1);
+                    filename = sfilename.substring(0, sfilename.indexOf(".")) + ',' + filename
+                }
+                filename = filename.slice(0, -1);
+            }
+
+
+            document.getElementById("hidden card3").style.display = "block";
+            var cnt = document.getElementById("itemcnt3").value;
+
+            document.getElementById("itemcnt3").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list3");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            //var cell4 = row.insertCell(4);
+
+
+
+            var complaint_type = $.map($("#complaint_type option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var complaint_typeVal = $("#complaint_type").val();
+
+            //var complaint = $("#complaint").val();
+
+            var complaint_no = $("#complaint_no").val();
+
+            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+            @*cell1.innerHTML = "<select class='form-control select-fixed-single' id='complaint " + cnt + "' name='complaint " + cnt + "'><option value='" + complaint + "' selected>" + complaint + "</option>@if (ViewBag.YesNo != null)
+            {
+                foreach (var item in ViewBag.YesNo)
+                { <option value='@item'>@item</option> }
+                }</select>";*@
+            cell1.innerHTML = "<select class='form-control select-fixed-single' id='complaint_type " + cnt + "' name='complaint_type " + cnt + "'><option value='" + complaint_typeVal + "' selected>" + complaint_type + "</option>@if (ViewBag.complaint_type != null)
+            {
+                foreach (var item in ViewBag.complaint_type)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+            cell2.innerHTML = "<input class='form-control' type='number' id='complaint_no " + cnt + "' name='complaint_no " + cnt + "' value='" + complaint_no + "' />";
+
+
+            cell3.innerHTML = "<input type='hidden' id='complaint_upload1 " + cnt + "' name='complaint_upload1 " + cnt + "' value='" + Filepath + "'>" + filename;
+
+
+            cnt++;
+            document.getElementById("itemcnt3").value = cnt;
+
+            //reintialisation
+
+            // Badge position
+            $('.maxlength-badge-position').maxlength({
+                alwaysShow: true,
+                placement: 'top'
+            });
+
+            //auto resize
+            autosize($('.elastic'));
+            $('.select-fixed-single').select2({
+                minimumResultsForSearch: Infinity,
+                width: 150
+            });
+
+            document.getElementById("hidden card3").classList.remove(hideClass);
+            document.getElementById("hidden card3").classList.add(showClass);
+
+            document.getElementById("complaint_no").value = "";
+            //$("#complaint").val('').trigger('change');
+            $("#complaint_type").val('').trigger('change');
+            document.getElementById("complaint_upload").value = "";
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

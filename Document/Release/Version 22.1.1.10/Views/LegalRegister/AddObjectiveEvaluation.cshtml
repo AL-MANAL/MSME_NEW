@@ -1,0 +1,164 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+
+@{
+    ViewBag.Title = "AddLegalRegisterEvaluation";
+    DateTime dtTodate = Convert.ToDateTime(ViewBag.LegalRegister_Eval_On);
+
+    dtTodate=dtTodate.AddDays(1);
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Legal Compliance Evaluation</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("AddLegalRegisterEvaluation", "LegalRegister", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>ObjectivesModels</legend>
+        <input type="hidden" id="id_requirements" name="id_requirements" value="@ViewBag.id_requirements" />
+        <input type="hidden" id="LegalRegister_Eval_On" name="LegalRegister_Eval_On" value="@ViewBag.LegalRegister_Eval_On" />
+      
+        <input type="hidden" id="Duedate" name="Duedate" value="@ViewBag.Duedate" />
+
+        <table id="tabcontent">
+             <tr>                         
+               
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.comply)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="comply" name="comply" required  />
+                    </div>
+                </td> 
+                </tr>
+
+            <tr>
+                  <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Comply_action)
+                    </div>
+                </td>
+                <td>
+
+                    <div class="editor-field">
+                        <input type="text" id="Comply_action" name="Comply_action" required readonly />
+                    </div>
+                </td>            
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.personel_responsible)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="personel_responsible" name="personel_responsible" required />
+                    </div>
+                </td>
+                </tr>
+
+           @* <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Trend)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Trend" name="Trend" required />
+                        <p>Positive, Negative etc. </p>
+                    </div>
+                </td>           
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.NCR_Ref)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         <input type="text" id="NCR_Ref" name="NCR_Ref" required />
+                    </div>
+            </tr>*@
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Evidence)
+                    </div>
+                </td>
+                <td>
+                    <input type="file" name="Evidence" id="Evidence" title="Objective Evidence" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx,image/*"
+                        style="height: 38px;"/>
+                </td>
+            </tr>
+        </table>
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back","LegalRegisterEvaluationList", new {   id_requirements = ViewBag.id_requirements, LegalRequirement_Id= ViewBag.LegalRequirement_Id })
+            <input type="submit" value="Create" />
+        </div>
+    </fieldset>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(function () {
+            var LegalRegister_Eval_On = $('#LegalRegister_Eval_On').val();
+            var Duedate = $('#Duedate').val();
+
+            $('#LegalRegister_Eval_On').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                minDate: Todate,
+                maxDate: Target_Date
+            });
+
+            $('#Duedate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                minDate: Obj_Estld_On,
+                maxDate: Target_Date
+            });            
+             
+        
+            });
+        $("#LegalRegister_Eval_On").datepicker("setDate", new Date());
+        $("#Duedate").datepicker("setDate", new Date());
+           
+        ;
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only pdf, jpg, jpeg, gif, png format");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

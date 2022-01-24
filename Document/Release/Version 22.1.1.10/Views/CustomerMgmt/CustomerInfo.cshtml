@@ -1,0 +1,88 @@
+﻿@model ISOStd.Models.CustomerModels
+@{
+    Layout = null;
+    ISOStd.Models.CustomerContactsModelsList objCustomerContactsList = new ISOStd.Models.CustomerContactsModelsList();
+    if (ViewBag.CustomerContactsList != null)
+    {
+        objCustomerContactsList = ViewBag.CustomerContactsList;
+    }
+}
+<h4 style="text-align:center;border-bottom:1px solid #808080">Customer Info</h4>
+<p>
+    <label><b>Division:</b></label>@Html.DisplayFor(model => model.branch)
+</p>
+<p>
+    <label><b>Department:</b></label>@Html.DisplayFor(model => model.Department)
+  
+</p>
+<p>
+    <label><b>Location:</b></label>@Html.DisplayFor(model => model.Location)
+</p>
+
+<p>
+    <label><b>Company Name:</b></label>@Html.DisplayFor(model => model.CompanyName)
+    <label><b>Address:</b></label>@Html.DisplayFor(model => model.Address)
+</p>
+<p>
+    <label><b>Company Code:</b></label>@Html.DisplayFor(model => model.Cust_Code)
+    <label><b>City:</b></label>@Html.DisplayFor(model => model.City)
+</p>
+<p>
+    <label><b>Country:</b></label>@Html.DisplayFor(model => model.Country)
+    <label><b>P.O. Box No:</b></label>@Html.DisplayFor(model => model.PostalCode)
+</p>
+<p>
+    <label><b>Customer Type:</b></label>@Html.DisplayFor(model => model.CustType)
+    <label><b>Fax No:</b></label>@Html.DisplayFor(model => model.FaxNumber)
+</p>
+<p>
+    <label><b>Company Email Id:</b></label>@Html.DisplayFor(model => model.Email_Id)
+    <label><b>VatNo:</b></label>@Html.DisplayFor(model => model.VatNo)
+</p>
+<p>
+    <label><b>LicenceExpiry:</b></label>
+    @if (Model.LicenceExpiry != null && Model.LicenceExpiry > Convert.ToDateTime("01/01/0001"))
+    {<code>
+            @Model.LicenceExpiry.ToString("dd/MM/yyyy")
+        </code>
+    }
+
+</p>
+@if (objCustomerContactsList.lstCustomerContacts != null && @objCustomerContactsList.lstCustomerContacts.Count > 0)
+{
+    <div>
+        <table>
+            <tr>
+
+                <td colspan="4">
+                    <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height: 30px; cursor: pointer;">
+                        <label for="Plan_Details" style="color: white; padding-left: 5px;">Contact Details</label>
+                    </div>
+                </td>
+            </tr>
+            <tr style="font-size: 13px;">
+                <th style="color: #0099ff; border: 1px solid #ddd;">Name</th>
+                <th style="color: #0099ff; border: 1px solid #ddd;">Phone Number</th>
+                <th style="color: #0099ff; border: 1px solid #ddd;">Mobile Number</th>
+                <th style="color: #0099ff; border: 1px solid #ddd;">Email Id</th>
+            </tr>
+            @for (int index = 0; index < objCustomerContactsList.lstCustomerContacts.Count; index++)
+            {
+                string ContactPerson = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(objCustomerContactsList.lstCustomerContacts[index].ContactPerson);
+                string EmailId = objCustomerContactsList.lstCustomerContacts[index].EmailId;
+                string PhoneNumber = objCustomerContactsList.lstCustomerContacts[index].PhoneNumber;
+                string MobileNumber = objCustomerContactsList.lstCustomerContacts[index].MobileNumber;
+                <tr>
+                    <td>@ContactPerson</td>
+                    <td>@PhoneNumber</td>
+                    <td>@MobileNumber</td>
+                    <td>@EmailId</td>
+
+                </tr>
+            }
+
+        </table>
+    </div>
+
+
+}

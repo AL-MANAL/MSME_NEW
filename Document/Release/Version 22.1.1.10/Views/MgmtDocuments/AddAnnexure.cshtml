@@ -1,0 +1,277 @@
+﻿@model ISOStd.Models.MgmtDocumentsModels
+
+@{
+    ViewBag.Title = "AddAnnexure";
+}
+
+
+
+@section featured {
+
+
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MgmtDocumentsList", "MgmtDocuments", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Internal Documents</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Annexure</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+
+}
+
+
+@using (Html.BeginForm("AddAnnexure", "MgmtDocuments", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title"> For Document: @ViewBag.DocType</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div class="container-fluid">
+
+
+                <input type="hidden" id="idMgmt" name="idMgmt" value="@ViewBag.idMgmt" />
+                <table class="table table-lg">
+                    <tbody>
+                      
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @*          @Html.LabelFor(model => model.DocRef)*@
+                                Annexure Ref<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input type="text" id="DocRef" name="DocRef" class="form-control" required />
+                                @Html.ValidationMessageFor(m => m.DocRef)
+                            </td>
+                            <td class="col-xs-3 col-md-2"class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.DocName)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input type="text" id="DocName" name="DocName" class="form-control" required />
+                                @Html.ValidationMessageFor(m => m.DocName)
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.IssueNo)
+
+                            </td>
+                            <td class="col">
+
+                                <input type="number" id="IssueNo" name="IssueNo" max="99" min="0" class="form-control" />
+                                @Html.ValidationMessageFor(m => m.IssueNo)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.RevNo)
+                                <text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+
+
+                                @Html.EditorFor(m => m.RevNo, new { htmlAttributes = new { @type = "number", @min = "0", @class = "form-control", @required = "required" } })
+
+                                @Html.ValidationMessageFor(m => m.RevNo)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.PreparedBy)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="PreparedBy" name="PreparedBy" required>
+                                    @if (ViewBag.EmpLists != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpLists)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.PreparedBy)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.DocDate)<text style="color:red;">
+                            </td>
+                            <td class="col">
+
+                                <input type="date" id="DocDate" name="DocDate" required class="form-control" />
+                                @Html.ValidationMessageFor(m => m.DocDate)
+                            </td>
+                           
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.ApprovedBy)<text style="color:red;">*</text>
+
+                            </td>
+
+                            <td class="col">
+
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="ApprovedBy" name="ApprovedBy" required>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.ApprovedBy)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.DocUploadPath)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc required />
+                                @*<input type="file" name="fileUploader" id="file" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" required class="bootstrap-uploader" data-fouc />*@
+
+
+
+
+
+
+
+
+
+                                <br />
+                                @Html.ValidationMessage("file", "This field is required")
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "AnnexureList", new { idMgmt = ViewBag.idMgmt
+    }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+        </div>
+    </div>
+
+
+}
+
+@section Scripts
+{
+    <script>
+                                 //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+}
+

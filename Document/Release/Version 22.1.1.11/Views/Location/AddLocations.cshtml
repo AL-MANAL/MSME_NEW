@@ -1,0 +1,597 @@
+﻿@model ISOStd.Models.LocationModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddLocations";
+    DataSet dsLocations = new DataSet();
+    if (ViewBag.dsLocations != null)
+    {
+        dsLocations = ViewBag.dsLocations;
+    }
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <span class="breadcrumb-item active">Location</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Location</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                @using (Html.BeginForm("AddLocations", "Location", FormMethod.Post, new { id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <div class="container-fluid">
+                        <table class="table table-lg">
+
+                            <tbody>
+                                @*<tr>
+                                    <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Location</td>
+                                </tr>*@
+                                <tr>
+                                    <td>
+                                        Country
+                                    </td>
+                                    <td>
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="id_country" name="id_country" required="required" onchange="GetLocations()">
+                                            <option value="" hidden>Select</option>
+                                            @if (ViewBag.Country != null && ViewBag.CountryHeader != null)
+                                            {
+                                                foreach (var data in ViewBag.CountryHeader)
+                                                {
+                                                    if (data.Value == ViewBag.Country)
+                                                    {
+                                                        <option value='@data.Value' selected title="@data.Value">@data.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@data.Value' title="@data.Value">@data.Text</option>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (ViewBag.CountryHeader != null)
+                                                {
+                                                    foreach (var data in ViewBag.CountryHeader)
+                                                    {
+                                                        <option value='@data.Value' title="@data.Value">@data.Text</option>
+
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.id_country)
+
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Area
+                                    </td>
+                                    <td>
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="area_type" name="area_type" onchange="GetLocationsWithArea()">
+                                            <option value="" hidden>Select</option>
+                                            @*@if (ViewBag.Area != null && ViewBag.AreaName != null)
+                                            {
+                                                foreach (var data in ViewBag.AreaName)
+                                                {
+                                                    if (data.Value == ViewBag.Area)
+                                                    {
+                                                        <option value='@data.Value' selected title="@data.Value">@data.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@data.Value' title="@data.Value">@data.Text</option>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (ViewBag.AreaName != null)
+                                                {
+                                                    foreach (var data in ViewBag.AreaName)
+                                                    {
+                                                        <option value='@data.Value' title="@data.Value">@data.Text</option>
+                                                    }
+                                                }
+                                            }*@
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.area_type)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Location
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" id="location_name" name="location_name" value="@Model.location_name" required />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                   
+                        <div class="card-footer bg-white ml-auto">
+                            <button type="submit" name="button" id="btncreate" value="Save" class="btn bg-indigo-400 float-right" onclick="ProgressIconFunction('#form1')">Submit<i class="icon-paperplane ml-2"></i></button>
+                        </div> 
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Location List</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="container-fluid">
+                    <table id="tbl_Agenda" class="table table-lg">
+                        <tbody>
+                            @if (dsLocations.Tables.Count > 0 && dsLocations.Tables[0].Rows.Count > 0)
+                            {
+                                @*<tr>
+                                    <td colspan="3" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Items List</td>
+                                </tr>*@
+                                <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                    <th class="col col-xs-10">Location</th>                                   
+                                    <th class="col col-xs-2">Action</th>                                   
+                                </tr>
+                                for (int item = 0; item < dsLocations.Tables[0].Rows.Count; item++)
+                                {
+                                    <tr class="row">
+                                        <td class="col col-xs-10">
+                                            <input class="form-control" type="text" id="location_name @dsLocations.Tables[0].Rows[item]["id_location"].ToString()"
+                                                   name="location_name @dsLocations.Tables[0].Rows[item]["id_location"].ToString()" value="@dsLocations.Tables[0].Rows[item]["location_name"].ToString()" />
+                                        </td>                                       
+                                        <td class="col col-xs-2">
+                                           <span class='badge badge-info' style='cursor: pointer;' title='Update Item' onclick="UpdateItems(@dsLocations.Tables[0].Rows[item]["id_location"].ToString())">Edit</span>
+                                           <span class='badge badge-danger' onclick="DeleteItems(@dsLocations.Tables[0].Rows[item]["id_location"].ToString(), @dsLocations.Tables[0].Rows[item]["id_country"].ToString())" style='cursor:pointer;' title='Delete Item'>Delete</span>                                           
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+         $(document).ready(function () {
+
+   @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+             GetAreaList();
+         });
+
+         function UpdateItems(id_location) {
+             var location_name = document.getElementById("location_name " + id_location).value;
+          
+             jQuery.ajax({
+                 url: '@Url.Action("UpdateLocation", "Location")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_location': id_location, 'location_name': location_name },
+                 success: function (result) {
+                     var params = {
+                         id_country: id_country
+                     };
+                     //// Add new params to the querystring dictionary
+                     queryString = $.param(params);
+
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname +
+                         "?" +(queryString);
+                 }
+             });
+         }
+
+function DeleteItems(id_location, id_country) {
+
+             var token = $('[name=__RequestVerificationToken]').val();
+             var headers = {};
+             headers["__RequestVerificationToken"] = token;
+     bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Location?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+
+                     jQuery.ajax({
+                         url: '@Url.Action("DeleteLocation", "Location")',
+                         type: 'POST',
+                         dataType: "json",
+                         headers: headers,
+                         data: { 'id_location': id_location, 'id_country': id_country },
+                         success: function (result) {
+                             var params = {
+                                 id_country: id_country
+                             };
+                             //// Add new params to the querystring dictionary
+                             queryString = $.param(params);
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                                '?' + queryString;
+                         }
+                         });
+                      
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+         }
+        function GetAreaList() {
+            id_country = $("#id_country").val();
+            if (id_country != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAreaTypeNameList", "Location")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { 'branch': branch },
+                    success: function (result) {
+
+                        if (result != null && result.length > 0) {
+
+
+                            $('#area_type').children('option').remove();
+                            $("#area_type").trigger('change');
+                            $("#area_type").append("<option value='" + '' + "'>" + "Select" + "</option>");
+                            $.each(result, function (index, item) {
+                                $("#area_type").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#area_type").trigger('change');
+                            });
+                            $('#area_type').trigger('change');
+                            return;
+                        }
+                        else {
+
+                            $('#area_type').children('option').remove();
+                            $("#area_type").trigger('change');
+                            //$('#id_country').val(null).trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+        }
+        
+        function GetLocations() {
+            id_country = $("#id_country").val();
+            if (id_country != ""){
+            GetAreaList();
+
+            var id_country = document.getElementById("id_country").value;
+
+            jQuery.ajax({
+                url: '@Url.Action("GetLocations", "Location")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'id_country': id_country.toString() },
+                success: function (result) {
+
+
+                    var table = document.getElementById("tbl_Agenda");
+
+                    while (table.rows.length > 0) {
+                        table.deleteRow(0);
+                    }
+
+                    if (result != "") {
+
+                        //var thTitleRow = table.insertRow();
+                        //thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                        //var cellTitle0 = thTitleRow.insertCell(0);
+
+                        //cellTitle0.innerHTML = "Items List";
+                        //table.rows[0].cells[0].colSpan = 2;
+                        //table.rows[0].cells[0].style = "color:#fff";
+
+                        var theaderRow = table.insertRow();
+                        theaderRow.className = "row";
+                        theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                        var cellth0 = theaderRow.insertCell(0);
+                        cellth0.className = "col col-xs-10";
+                        var cellth1 = theaderRow.insertCell(1);
+                        cellth1.className = "col col-xs-10";
+
+                        cellth0.innerHTML = "<th>Name</th>";
+                        cellth1.innerHTML = "<th>Action</th>";
+
+                        //table.rows[1].cells[0].style = "color:#0099ff";
+                        //table.rows[1].cells[1].style = "color:#0099ff";
+
+                        var list = result;
+                        $.each(list, function (index, item) {
+
+                            // Create an empty <tr> element and add it to the 1st position of the table:
+                            var row = table.insertRow();
+                            row.className = "row";
+                            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+
+                            var cell0 = row.insertCell(0);
+                            cell0.className = "col col-xs-10";
+                            var cell1 = row.insertCell(1);
+                            cell1.className = "col col-xs-10";
+
+                            var Id = item.Value;
+
+                            var data = item.Text;
+                            //var dataarray = new Array();
+
+                            //dataarray = data.split("__");                                                         
+
+                            cell0.innerHTML = " <input class='form-control' type='text' id='location_name " + Id + "' name='location_name " + Id + "' value='" + data + "'/>";
+                            //cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
+                            cell1.innerHTML =
+
+                                "<span class='badge badge-info' style='cursor: pointer;' title='Update Location'  onclick='UpdateItems(" + item.Value + ")'>Edit</span>"
+                                + " <span class='badge badge-danger' onclick='DeleteItems(" + item.Value + ", " + id_country + ")' style='cursor:pointer;' title='Delete Location'>Delete</span>";
+                        });
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Dropdown Location',
+                    //        message: 'No Location exists, please add Loction.'
+                    //    });
+                    //}
+                }
+            });
+        }
+        } 
+
+        function GetLocationsWithArea()
+        {            
+            var id_country = document.getElementById("id_country").value;
+            var area_type = document.getElementById("area_type").value;
+            if (area_type != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("GetLocationsWithArea", "Location")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: {
+                        'id_country': id_country.toString(), 'area_type': area_type.toString()
+                    },
+                    success: function (result) {
+                        var table = document.getElementById("tbl_Agenda");
+
+                        while (table.rows.length > 0) {
+                            table.deleteRow(0);
+                        }
+
+                        if (result != "") {
+
+                            //var thTitleRow = table.insertRow();
+                            //thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                            //var cellTitle0 = thTitleRow.insertCell(0);
+
+                            //cellTitle0.innerHTML = "Items List";
+                            //table.rows[0].cells[0].colSpan = 2;
+                            //table.rows[0].cells[0].style = "color:#fff";
+
+                            var theaderRow = table.insertRow();
+                            theaderRow.className = "row";
+                            theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                            var cellth0 = theaderRow.insertCell(0);
+                            cellth0.className = "col col-xs-10";
+                            var cellth1 = theaderRow.insertCell(1);
+                            cellth1.className = "col col-xs-10";
+
+                            cellth0.innerHTML = "<th>Name</th>";
+                            cellth1.innerHTML = "<th>Action</th>";
+
+                            //table.rows[1].cells[0].style = "color:#0099ff";
+                            //table.rows[1].cells[1].style = "color:#0099ff";
+
+                            var list = result;
+                            $.each(list, function (index, item) {
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+                                row.className = "row";
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+
+                                var cell0 = row.insertCell(0);
+                                cell0.className = "col col-xs-10";
+                                var cell1 = row.insertCell(1);
+                                cell1.className = "col col-xs-10";
+
+                                var Id = item.Value;
+
+                                var data = item.Text;
+                                //var dataarray = new Array();
+
+                                //dataarray = data.split("__");                                                         
+
+                                cell0.innerHTML = " <input class='form-control' type='text' id='location_name " + Id + "' name='location_name " + Id + "' value='" + data + "'/>";
+                                //cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
+                                cell1.innerHTML =
+
+                                    "<span class='badge badge-info' style='cursor: pointer;' title='Update Location'  onclick='UpdateItems(" + item.Value + ")'>Edit</span>"
+                                    + " <span class='badge badge-danger' onclick='DeleteItems(" + item.Value + ", " + id_country + ")' style='cursor:pointer;' title='Delete Location'>Delete</span>";
+                            });
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Dropdown Location',
+                        //        message: 'No Location exists, please add Loction.'
+                        //    });
+                        //}
+                    }
+                });
+            }
+            else if (area_type == "") {
+              var id_country = document.getElementById("id_country").value;
+            
+            jQuery.ajax({
+                 url: '@Url.Action("GetLocations", "Location")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_country': id_country.toString() },
+                success: function (result) {
+
+
+                     var table = document.getElementById("tbl_Agenda");
+                     
+                     while (table.rows.length > 0) {
+                         table.deleteRow(0);
+                     }
+
+                     if (result != "") {
+
+                          var theaderRow = table.insertRow();
+                          theaderRow.className = "row";
+                          theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                          var cellth0 = theaderRow.insertCell(0);
+                          cellth0.className = "col col-xs-10";
+                          var cellth1 = theaderRow.insertCell(1);
+                          cellth1.className = "col col-xs-10";
+                        
+                         cellth0.innerHTML = "<th>Name</th>";                       
+                         cellth1.innerHTML = "<th>Action</th>";
+
+                         //table.rows[1].cells[0].style = "color:#0099ff";
+                         //table.rows[1].cells[1].style = "color:#0099ff";
+                        
+                         var list = result;
+                         $.each(list, function (index, item) {
+
+                             // Create an empty <tr> element and add it to the 1st position of the table:
+                             var row = table.insertRow();
+                                 row.className = "row";
+                             // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+
+                               var cell0 = row.insertCell(0);
+                                cell0.className = "col col-xs-10";
+                                var cell1 = row.insertCell(1);
+                                cell1.className = "col col-xs-10";                               
+
+                             var Id = item.Value;
+
+                             var data = item.Text;
+                             //var dataarray = new Array();
+
+                             //dataarray = data.split("__");                                                         
+
+                             cell0.innerHTML = " <input class='form-control' type='text' id='location_name " + Id + "' name='location_name " + Id + "' value='" + data + "'/>";
+                             //cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
+                             cell1.innerHTML =
+
+                             "<span class='badge badge-info' style='cursor: pointer;' title='Update Location'  onclick='UpdateItems(" + item.Value+ ")'>Edit</span>"
+                                    + " <span class='badge badge-danger' onclick='DeleteItems(" + item.Value + ", " + id_country + ")' style='cursor:pointer;' title='Delete Location'>Delete</span>";
+                            });
+                        }
+                     //   else {
+                     //    bootbox.alert({
+                     //    title: 'Dropdown Location',
+                     //    message: 'No Location exists, please add Loction.'
+                     //});
+                     //   }
+                 }
+             });
+                }
+        }
+        
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

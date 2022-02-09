@@ -1300,6 +1300,176 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+        public MultiSelectList GetNCRStatusList()
+        {
+            DropdownNCList NcdropList = new DropdownNCList();
+            NcdropList.NcDropdownList = new List<DropdownNCItems>();
+            try
+            {
+                string sSqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='NCR Status' order by item_desc desc";
+                DataSet dsNc = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsNc.Tables.Count > 0 && dsNc.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsNc.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownNCItems ncmodel = new DropdownNCItems()
+                        {
+                            Id = dsNc.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsNc.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        NcdropList.NcDropdownList.Add(ncmodel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in GetNCRStatusList: " + ex.ToString());
+            }
+            return new MultiSelectList(NcdropList.NcDropdownList, "Id", "Name");
+        }
+
+        public MultiSelectList GetNCDispositionActionList()
+        {
+            DropdownNCList NcdropList = new DropdownNCList();
+            NcdropList.NcDropdownList = new List<DropdownNCItems>();
+            try
+            {
+                string sSqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='NC Disposition Action' order by item_desc asc";
+                DataSet dsNc = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsNc.Tables.Count > 0 && dsNc.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsNc.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownNCItems ncmodel = new DropdownNCItems()
+                        {
+                            Id = dsNc.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsNc.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        NcdropList.NcDropdownList.Add(ncmodel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in GetNCDispositionActionList: " + ex.ToString());
+            }
+            return new MultiSelectList(NcdropList.NcDropdownList, "Id", "Name");
+        }
+
+        public MultiSelectList GetRCATechniqueList()
+        {
+            DropdownNCList NcdropList = new DropdownNCList();
+            NcdropList.NcDropdownList = new List<DropdownNCItems>();
+            try
+            {
+                string sSqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='RCA Technique' order by item_desc asc";
+                DataSet dsNc = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsNc.Tables.Count > 0 && dsNc.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsNc.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownNCItems ncmodel = new DropdownNCItems()
+                        {
+                            Id = dsNc.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsNc.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        NcdropList.NcDropdownList.Add(ncmodel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in GetRCATechniqueList: " + ex.ToString());
+            }
+            return new MultiSelectList(NcdropList.NcDropdownList, "Id", "Name");
+        }
+
+        public MultiSelectList GetNCActionImplementList()
+        {
+            DropdownNCList NcdropList = new DropdownNCList();
+            NcdropList.NcDropdownList = new List<DropdownNCItems>();
+            try
+            {
+                string sSqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='NC Action Implementation' order by item_desc asc";
+                DataSet dsNc = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsNc.Tables.Count > 0 && dsNc.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsNc.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownNCItems ncmodel = new DropdownNCItems()
+                        {
+                            Id = dsNc.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsNc.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        NcdropList.NcDropdownList.Add(ncmodel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in GetNCActionImplementList: " + ex.ToString());
+            }
+            return new MultiSelectList(NcdropList.NcDropdownList, "Id", "Name");
+        }
+
+        public string GetNCDispositionActionById(string sStatus)
+        {
+            try
+            {
+                DataSet dsEmp = objGlobaldata.Getdetails("select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                      + "and header_desc='NC Disposition Action' and (item_id='" + sStatus + "' or item_desc='" + sStatus + "')");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Name"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in GetNCDispositionActionById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public string GetRCATechniqueById(string sStatus)
+        {
+            try
+            {
+                DataSet dsEmp = objGlobaldata.Getdetails("select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                      + "and header_desc='RCA Technique' and (item_id='" + sStatus + "' or item_desc='" + sStatus + "')");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Name"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in GetRCATechniqueById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public string GetNCActionImplementById(string sStatus)
+        {
+            try
+            {
+                DataSet dsEmp = objGlobaldata.Getdetails("select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                      + "and header_desc='NC Action Implementation' and (item_id='" + sStatus + "' or item_desc='" + sStatus + "')");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Name"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in GetNCActionImplementById: " + ex.ToString());
+            }
+            return "";
+        }
     }   
 
     public class NCModelsList

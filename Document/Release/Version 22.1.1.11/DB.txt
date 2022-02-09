@@ -1,0 +1,45 @@
+"INSERT INTO `msme_new`.`t_screen_notification` (`screen_name`, `field_name`, `emp_id`) VALUES ('NC', 'NC reported by', '3,5');
+"
+
+"INSERT INTO `msme_new`.`sequence_generator` (`module_name`, `modifier`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('CustSatisfaction', 'CS', '0', '1', '2023', '1', 'February');
+"
+
+"ALTER TABLE `msme_new`.`t_cust_satisfaction` 
+ADD COLUMN `ref_no` VARCHAR(45) NULL AFTER `cust_satisfied`;"
+
+"ALTER TABLE `msme_new`.`t_cust_satisfaction` 
+ADD COLUMN `action_initiated_by` VARCHAR(45) NULL AFTER `ref_no`;
+"
+
+"if vmodname='CustSatisfaction' then
+
+if vyearname!=vnextyear then
+update sequence_generator
+set next_no=next_no+init_no
+where module_name=vmodname;
+
+select next_no into vnextno from sequence_generator where module_name=vmodname;
+if vnextno < 10 then
+select concat('0',vnextno) into vnextno;
+end if;
+
+select month(now()) into vmonth;
+if vmonth < 10 then
+select concat('0',vmonth) into vmonth;
+end if;
+
+select concat(modifier,'-',brname,'-',vnextno) as ReportNO
+from sequence_generator where module_name=vmodname;
+
+
+else
+
+update sequence_generator
+set next_no=init_no,next_year=year(date_add(now(), interval 1 year))
+where module_name=vmodname;
+
+select concat(modifier,'-',brname,'-',vnextno) as ReportNO
+from sequence_generator where module_name=vmodname;
+
+end if;
+end if;"

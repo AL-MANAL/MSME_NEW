@@ -1,0 +1,692 @@
+﻿@model ISOStd.Models.HseIndModels
+
+@{
+    ViewBag.Title = "AddHseInd";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("HseIndList", "HseInd", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Hse Induction List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Update Hse Ind</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ }
+
+@using (Html.BeginForm("HseIndEdit", "HseInd", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+  
+        <input type="hidden" id="id_Hse_insp" name="id_Hse_insp" value="@Model.id_Hse_insp" />
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Hse Induction List</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+
+                    <table class="table table-lg">
+
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Hse_DateTime)<text style="color:red;"> *</text>
+
+                                </td>
+                                <td class="col">
+
+                                    @if (Model.Hse_DateTime > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input type="date" id="Hse_DateTime" name="Hse_DateTime" value="@Model.Hse_DateTime.ToString("yyyy-MM-dd")" required="required"
+                                               class="form-control" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="Hse_DateTime" name="Hse_DateTime" required="required" />
+                                    }
+                                    Hr: <select class="select-fixed-single" data-fouc name="PlanTimeInHour" id="PlanTimeInHour">
+                                        @if (ViewBag.PlanTimeInHour != null)
+                                        {
+                                            foreach (var data in ViewBag.PlanTimeInHour)
+                                            {
+                                                if (Convert.ToInt16(Model.Hse_DateTime.ToString("HH")) == Convert.ToInt16(data))
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    Min:
+                                    <select class="select-fixed-single" data-fouc name="PlanTimeInMin" id="PlanTimeInMin">
+                                        @if (ViewBag.PlanTimeInMin != null)
+                                        {
+                                            foreach (var data in ViewBag.PlanTimeInMin)
+                                            {
+                                                if (Convert.ToInt16(Model.Hse_DateTime.ToString("mm")) == Convert.ToInt16(data))
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.ReportNo)
+                                </td>
+                                <td class="col">
+                                    @Html.EditorFor(model => model.ReportNo, new { htmlAttributes = new { @readonly = "readonly", @style = "background: #efefe6;", @class = "form-control" } })
+                                </td>                              
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Project)
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Project" name="Project">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Project != null)
+                                        {
+                                            foreach (var item in ViewBag.Project)
+                                            {
+                                                if (Model.Project == item.Text)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Location)<text style="color:red;"> *</text>
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Location" name="Location" onchange="getReportNo()" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Location != null)
+                                        {
+                                            foreach (var item in ViewBag.Location)
+                                            {
+                                                if (item.Text == Model.Location)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.EmpType)<text style="color:red;">*</text>
+                                </td>
+                                <td class="col">
+                                    @*<select class="chosen-select" id="EmpType" name="EmpType" required onchange="GetEmpType()">
+            <option value='' hidden>Select</option>*@
+                                    @if (ViewBag.EmpType != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpType)
+                                        {
+                                            if (item == Model.EmpType)
+                                            {
+                                                @*<option value='@item' selected>@item</option>*@
+                                                <input type="radio" name="EmpType" value='@item' checked required onchange="GetEmpType()" />@item
+                                            }
+                                            else
+                                            {
+                                                <input type="radio" name="EmpType" value='@item' required onchange="GetEmpType()" />@item
+                                            }
+                                        }
+                                    }
+                                    @*</select>*@
+
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Employee)
+
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" multiple="multiple" data-fouc id="Employee" name="Employee" required disabled style="background: #efefe6;">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Employee != null)
+                                        {
+                                            foreach (var item in ViewBag.Employee)
+                                            {
+                                                //if (item.Text == Model.Employee)
+                                                if (Array.IndexOf(Model.Employee.ToString().Split(','), item.Value) >= 0)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                               
+                            </tr>
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Visitors)
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Visitors" name="Visitors" multiple="multiple" required disabled style="background: #efefe6;">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Visitors != null)
+                                        {
+                                            foreach (var item in ViewBag.Visitors)
+                                            {
+                                                //if (item.Text == Model.Visitors)
+                                                if (Array.IndexOf(Model.Visitors.ToString().Split(','), item.Value) >= 0)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Others)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <input type="text" class="form-control" id="Others" name="Others" value="@Model.Others" disabled style="background: #efefe6;" />
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Dept)<text style="color:red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Dept" name="Dept" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Dept != null)
+                                        {
+                                            foreach (var data in ViewBag.Dept)
+                                            {
+                                                if (Array.IndexOf(Model.Dept.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.Dept.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.General_Behavior)<text style="color:red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="General_Behavior" name="General_Behavior" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.HseInd != null)
+                                        {
+                                            foreach (var data in ViewBag.HseInd)
+                                            {
+                                                if (Array.IndexOf(Model.General_Behavior.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.General_Behavior.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Site_Details_Responsibilities)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Site_Details_Responsibilities" name="Site_Details_Responsibilities" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.HseInd != null)
+                                        {
+                                            foreach (var data in ViewBag.HseInd)
+                                            {
+                                                if (Array.IndexOf(Model.Site_Details_Responsibilities.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.Site_Details_Responsibilities.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Personal_Protective_Equipments_Compliance)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Personal_Protective_Equipments_Compliance" name="Personal_Protective_Equipments_Compliance" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.HseInd != null)
+                                        {
+                                            foreach (var data in ViewBag.HseInd)
+                                            {
+                                                if (Array.IndexOf(Model.Personal_Protective_Equipments_Compliance.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.Personal_Protective_Equipments_Compliance.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+
+                                </td>
+
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.First_Aid)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="First_Aid" name="First_Aid" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.HseInd != null)
+                                        {
+                                            foreach (var data in ViewBag.HseInd)
+                                            {
+                                                if (Array.IndexOf(Model.First_Aid.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.First_Aid.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Emergency_Assistance)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Emergency_Assistance" name="Emergency_Assistance" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.HseInd != null)
+                                        {
+                                            foreach (var data in ViewBag.HseInd)
+                                            {
+                                                if (Array.IndexOf(Model.Emergency_Assistance.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.Emergency_Assistance.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+
+                                </td>
+
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.IMS)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="IMS" name="IMS" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.HseInd != null)
+                                        {
+                                            foreach (var data in ViewBag.HseInd)
+                                            {
+                                                if (Array.IndexOf(Model.IMS.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.IMS.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Equipments_Procedures)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Equipments_Procedures" name="Equipments_Procedures" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.HseInd != null)
+                                        {
+                                            foreach (var data in ViewBag.HseInd)
+                                            {
+                                                if (Array.IndexOf(Model.Equipments_Procedures.ToString().Split(','), data.Text) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else if (Array.IndexOf(Model.Equipments_Procedures.ToString().Split(','), " " + data.Text) >= 0)
+                                                {
+
+                                                    <option value="@data.Value" selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Induction_given_by)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="Induction_given_by" name="Induction_given_by" value="@Model.Induction_given_by" required />
+
+
+                                </td>
+
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Remarks)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks" required>@Model.Remarks</textarea>
+
+                                </td>
+                            </tr>
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+          
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                @Html.ActionLink("Back to List", "HseIndList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+
+            </div>
+        </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        
+                       //----zzz
+                    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+                    });
+
+    //zzz----
+
+
+        $(function () {
+
+            //var EmpType = $("#EmpType option:selected").text();
+            var EmpType = $("input[name='EmpType']:checked").val();
+
+            if (EmpType == "Yes") {
+
+                $('#Employee').prop('disabled', false).trigger("change");
+                document.getElementById("Employee").style.background = "#fff";
+
+                $('#Visitors').prop('disabled', true).trigger("change");
+                document.getElementById("Visitors").style.background = "#efefe6";
+
+                $("#Others").prop('disabled', true);
+                document.getElementById("Others").style.background = "#efefe6";               
+            }
+            else if (EmpType == "No") {
+
+                $('#Visitors').prop('disabled', false).trigger("change");
+                document.getElementById("Visitors").style.background = "#fff";
+
+                $("#Others").prop('disabled', false);
+                document.getElementById("Others").style.background = "#fff";               
+
+                $('#Employee').prop('disabled', true).trigger("change");
+                document.getElementById("Visitors").style.background = "#efefe6";
+            }
+
+
+           
+
+
+            
+
+        });
+
+         function getReportNo()
+           {
+            var Location = $('#Location :selected').text();
+
+            if (Location != "Select") {
+             jQuery.ajax({
+                    url: '@Url.Action("FunGetReportNo", "HseInd")',
+                    type: 'POST',
+                    dataType: "json",
+
+                 data: { 'Location': Location },
+                    success: function (result) {
+                        document.getElementById("ReportNo").value = result;
+                    }
+                });
+              }
+        }
+
+        function GetEmpType() {
+            //var Employee = document.getElementById("Employee");
+          //  var Visitors = document.getElementById("Visitors");
+            //var EmpType = $("#EmpType option:selected").text();
+            var EmpType = $("input[name='EmpType']:checked").val();
+
+            if (EmpType == "Yes") {
+                //document.getElementById("Injuries").required = "required";
+                $('#Employee').prop('disabled', false).trigger("change");
+                document.getElementById("Employee").style.background = "#fff";
+
+                $('#Visitors').prop('disabled', true).trigger("change");
+                document.getElementById("Visitors").style.background = "#efefe6";
+                $('#Visitors').val('').trigger("change");
+
+            }
+            else if (EmpType == "No") {
+
+                $('#Visitors').prop('disabled', false).trigger("change");
+                document.getElementById("Visitors").style.background = "#fff";
+
+                $('#Employee').prop('disabled', true).trigger("change");
+                document.getElementById("Visitors").style.background = "#efefe6";
+                $('#Employee').val('').trigger("change");
+
+            }
+        }
+
+    </script>
+}
+
+

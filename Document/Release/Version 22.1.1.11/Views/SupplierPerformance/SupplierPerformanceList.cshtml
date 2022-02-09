@@ -1,0 +1,639 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.SupplierPerformanceModels>
+
+    @{
+        ViewBag.Title = "";
+       ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    }
+
+   @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item">Home</span>
+                        </a>
+                        <span class="breadcrumb-item active">External Provider Performance Criteria </span>
+                    </div>
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                <div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+        <style>
+            .hidden {
+                display: none !important;
+            }
+        </style>
+        <div class="card">
+
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">External Provider Performance Criteria</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="card-header bg-white header-elements-sm-inline">
+                    @if (Obj.GetCurrentUserSession().SupplierPer.Contains("3"))
+                    {
+                        <div class="header-elements">
+                            <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddSupplierPerformance", "SupplierPerformance")' title="Add New">
+                                <span class="ladda-label">Add External Provider Performance Criteria</span>
+                                <span class="ladda-spinner"></span>
+                            </a>
+                        </div>
+                    }
+                    <div class="header-elements">
+                        <a href="#" data-toggle="popover" data-trigger="hover">External Provider Performance Criteria</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="options d-flex flex-fill">
+                    @using (Html.BeginForm("SupplierPerformanceList", "SupplierPerformance", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+                    {
+                        if (ViewBag.Branch != null)
+                        {
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                                <option value='' hidden>Division</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var item in ViewBag.Branch)
+                                    {
+                                        if (item.Value == ViewBag.Branch_name)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="supplier">
+                    <thead>
+
+                        <tr>
+                            <th>
+                                Sl No
+                            </th>
+                            <th style="width:250px;min-width:250px; max-width:250px;word-wrap:break-word">
+                                @Html.DisplayNameFor(model => model.First().Supplier_Name)
+                            </th>
+                            <th style="width:100px;min-width:100px; max-width:250px;word-wrap:break-word">
+                                @Html.DisplayNameFor(model => model.First().Eval_FromDate)
+                            </th>
+                            <th style="width:100px;min-width:100px; max-width:250px;word-wrap:break-word">
+                                @Html.DisplayNameFor(model => model.First().Eval_ToDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().total_delv)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().accept_delv)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().ontime_delv)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().lowest_price)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().supp_price)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().QUALITY)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().PRICE)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().SERVICE)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().SHE)
+                            </th>
+                            <th>
+                                Rating
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Action_sup)
+                            </th>
+                            <th>
+                                Rating
+                            </th>
+                            <th class="not-export-column">Edit</th>
+                            <th class="not-export-column">Delete</th>                         
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model)
+                            {
+                                i = i + 1;
+                                string Action = "", Rating = "";
+                                if (item.Action_sup.Contains("&"))
+                                {
+                                    Action = item.Action_sup.Split('&')[0];
+                                    Rating = item.Action_sup.Split('&')[1];
+                                }
+                                <tr>
+                                    <td>
+                                        @i
+                                    </td>
+                                    <td>
+                                        @if (item.Supplier_Name != "")
+                                        {
+                                            @Html.ActionLink(item.Supplier_Name.ToString(), "SupplierPerformanceDetails", new { Sup_Perf_id = item.Sup_Perf_id.ToString() }, new { data_toggle = "popoverInfo", data_trigger = "hover", id = item.Sup_Perf_id, onclick = "HyperLinkProgressIconFunction()" })
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Eval_FromDate > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @item.Eval_FromDate.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Eval_ToDate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.total_delv)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.accept_delv)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ontime_delv)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.lowest_price)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.supp_price)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.QUALITY)%
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.PRICE)%
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SERVICE)%
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SHE)%
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.rating)%
+                                    </td>
+                                    <td>
+                                        @Action
+                                    </td>
+                                    <td>
+                                        @Rating
+                                    </td>
+                                    <td>
+
+                                        <a href='@Url.Action("SupplierPerformanceEdit", "SupplierPerformance", new { Sup_Perf_id = item.Sup_Perf_id })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                            <span class="badge badge-info">Edit</span>
+                                        </a>
+
+                                    </td>
+                                        <td>
+
+                                            <span class="badge badge-danger" title="Delete" onclick="DeleteItems(@item.Sup_Perf_id)" style="cursor:pointer;">Delete</span>
+                                        </td>                                   
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+ @section scripts {
+                <script type="text/javascript">
+
+                    //----zzz
+                    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                   @:     text: '@TempData["alertdata"]',
+                                   @:     type: 'error'
+                                   @: }).show();
+                                        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                 @:       text: '@TempData["Successdata"]',
+                                 @:       type: 'success'
+         @:}).show();
+        }
+                    });
+                    //zzz----
+
+
+                    function setDataInfo(id) {
+
+                        var set_data = '';
+                        var element = $(this);
+                        var id = element.attr("id");
+                        $.ajax({
+                            url: '@Url.Action("SupplierPerformanceInfo", "SupplierPerformance")',
+                            methos: "post",
+                            async: false,
+                            data: { id: id },
+                            success: function (data) {
+                                set_data = data;
+
+                            }
+
+                        });
+
+                        return set_data;
+                    }
+
+                    function setData() {
+
+                        var set_data = '';
+                        var element = $(this);
+                        //var id = element.attr("id");
+                        $.ajax({
+                            url: '@Url.Action("DisplaySupplierPerformance", "SupplierPerformance")',
+                            methos: "post",
+                            async: false,
+                            //data: { id: id },
+                            success: function (data) {
+                                set_data = data;
+
+                            }
+
+                        });
+
+                        return set_data;
+                    }
+                    var supplier = function () {
+
+                     var ShowEdit = @(Obj.GetCurrentUserSession().SupplierPer.Contains("3") ? "true" : "false");
+                var ShowDel = @(Obj.GetCurrentUserSession().SupplierPer.Contains("5") ? "true" : "false");
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    width: 100,
+                                    targets: [16, 17]
+                                }, {
+                                        'targets': [17],
+                                        'visible': ShowDel
+                                    }, {
+                                        'targets': [16],
+                                        'visible': ShowEdit                                   
+                                    }],
+
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+ var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().SupplierPer.Contains("4") ? "true" : "false");
+                            if (Delclass == false) { myClass = 'hidden' };
+
+                            var table = $('#supplier').DataTable({
+                                drawCallback: function () {
+                                    $('[data-toggle="popoverInfo"]').popover({
+
+                                        html: true,
+                                        content: setDataInfo,
+                                        container: 'body'
+                                        //data: setData,
+                                    });
+                                    $('[data-toggle="popover"]').popover({
+
+                                        html: true,
+                                        content: setData,
+                                        container: 'body'
+                                        //data: setData,
+                                    });
+                                },
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                stateSaveParams: function (settings, data) {
+                                    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                        delete data.columns[i].visible;
+                                        delete data.columns[i].search;
+                                    }
+                                },
+
+                                scrollY: '350px',
+                                scrollCollapse: true,
+                               
+
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass,
+                                           //className: 'btn btn-light',
+                                            title: 'SupplierPerf Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'SupplierPerf Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'SupplierPerf Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'SupplierPerf Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'SupplierPerf Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+                            });
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+
+                                    table.columns.adjust().draw();
+                                    $("#supplier").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#supplier').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#supplier").resize();
+
+                            });
+
+                            $('#supplier').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#supplier").resize();
+
+                            });
+
+                            $('#supplier').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#supplier").resize();
+
+                            });
+
+
+                            $('#supplier').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#supplier").resize();
+
+                            });
+
+
+                            $('#supplier').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#supplier").resize();
+
+                            });
+
+
+                            //.on('order.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+                            //.on('search.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+
+                            //.on('column-visibility.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize();
+                            //})
+                        };
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        supplier.init();
+                    });
+
+                    function DeleteItems(Sup_Perf_id) {
+                        bootbox.confirm({
+                            title: 'Confirm dialog',
+                            message: 'Are you Sure you want to Delete the current Record?',
+                            buttons: {
+                                confirm: {
+                                    label: 'Yes',
+                                    className: 'btn-primary'
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                    className: 'btn-link'
+                                }
+                            },
+                            callback: function (r) {
+                                if (r == true) {
+                                    jQuery.ajax({
+
+                                        url: '@Url.Action("SupplierPerformanceDelete", "SupplierPerformance")',
+                                type: 'POST',
+                                dataType: "json",
+                                data: { 'Sup_Perf_id': Sup_Perf_id },
+                                success: function (result) {
+
+
+                                    //// Add new params to the querystring dictionary
+
+
+                                    window.location.href =
+                                        window.location.protocol + "//" +
+                                        window.location.host +
+                                        window.location.pathname
+
+                                }
+                            });
+                            return true;
+                        }
+                        else if (r == false) {
+                            bootbox.hideAll();
+                            return false;
+                        }
+                    }
+                });
+                    }
+
+                    function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("SupplierPerformanceListSearch", "SupplierPerformance")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });  
+            }
+                </script>
+
+            }

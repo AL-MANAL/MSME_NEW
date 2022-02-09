@@ -73,51 +73,58 @@ namespace ISOStd.Controllers
                 {
                     objModel.eval_date = dateValue;
                 }
-                if (enquiries_uploadList[0] != null)
+                if(enquiries_upload != null)
                 {
-                    objModel.enquiries_upload = "";
-                    foreach (var file in enquiries_upload)
+                    if (enquiries_uploadList[0] != null)
                     {
-                        try
+                        objModel.enquiries_upload = "";
+                        foreach (var file in enquiries_upload)
                         {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
-                            string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objModel.enquiries_upload = objModel.enquiries_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
+                                string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objModel.enquiries_upload = objModel.enquiries_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
-                        }
+                        objModel.enquiries_upload = objModel.enquiries_upload.Trim(',');
                     }
-                    objModel.enquiries_upload = objModel.enquiries_upload.Trim(',');
-                }
-                else
-                {
-                    ViewBag.Message = "You have not specified a file.";
-                }
-                if (orders_uploadList[0] != null)
-                {
-                    objModel.orders_upload = "";
-                    foreach (var file in orders_upload)
+                    else
                     {
-                        try
-                        {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
-                            string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objModel.orders_upload = objModel.orders_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
-                        }
+                        ViewBag.Message = "You have not specified a file.";
                     }
-                    objModel.orders_upload = objModel.orders_upload.Trim(',');
                 }
-                else
+                if (orders_upload != null)
                 {
-                    ViewBag.Message = "You have not specified a file.";
+                    if (orders_uploadList[0] != null)
+                    {
+                        objModel.orders_upload = "";
+                        foreach (var file in orders_upload)
+                        {
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
+                                string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objModel.orders_upload = objModel.orders_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
+                            }
+                        }
+                        objModel.orders_upload = objModel.orders_upload.Trim(',');
+                    }
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+
                 }
 
                 // QULAITY
@@ -159,7 +166,7 @@ namespace ISOStd.Controllers
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt3"]); i++)
                 {
                     CustSatisfactionModels objModels = new CustSatisfactionModels();
-                    if (form["complaint " + i] != null && form["complaint " + i] != "")
+                    if (form["complaint_type " + i] != null && form["complaint_type " + i] != "")
                     {
                        
                         objModels.complaint_type = form["complaint_type " + i];
@@ -393,79 +400,86 @@ namespace ISOStd.Controllers
                 {
                     objModel.eval_date = dateValue;
                 }
-                if (enquiries_uploadList[0] != null)
+                if (enquiries_upload != null)
                 {
-                    objModel.enquiries_upload = "";
-                    foreach (var file in enquiries_upload)
+                    if (enquiries_uploadList[0] != null)
                     {
-                        try
+                        objModel.enquiries_upload = "";
+                        foreach (var file in enquiries_upload)
                         {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
-                            string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objModel.enquiries_upload = objModel.enquiries_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
+                                string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objModel.enquiries_upload = objModel.enquiries_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
-                        }
+                        objModel.enquiries_upload = objModel.enquiries_upload.Trim(',');
                     }
-                    objModel.enquiries_upload = objModel.enquiries_upload.Trim(',');
-                }
-                else
-                {
-                    ViewBag.Message = "You have not specified a file.";
-                }
-                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
-                {
-                    objModel.enquiries_upload = objModel.enquiries_upload + "," + form["QCDocsVal"];
-                    objModel.enquiries_upload = objModel.enquiries_upload.Trim(',');
-                }
-                else if (form["QCDocsVal"] == null && QCDelete != null && enquiries_uploadList[0] == null)
-                {
-                    objModel.enquiries_upload = null;
-                }
-                else if (form["QCDocsVal"] == null && enquiries_uploadList[0] == null)
-                {
-                    objModel.enquiries_upload = null;
-                }
-
-                if (orders_uploadList[0] != null)
-                {
-                    objModel.orders_upload = "";
-                    foreach (var file in orders_upload)
+                    else
                     {
-                        try
-                        {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
-                            string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objModel.orders_upload = objModel.orders_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
-                        }
+                        ViewBag.Message = "You have not specified a file.";
                     }
-                    objModel.orders_upload = objModel.orders_upload.Trim(',');
+                    if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                    {
+                        objModel.enquiries_upload = objModel.enquiries_upload + "," + form["QCDocsVal"];
+                        objModel.enquiries_upload = objModel.enquiries_upload.Trim(',');
+                    }
+                    else if (form["QCDocsVal"] == null && QCDelete != null && enquiries_uploadList[0] == null)
+                    {
+                        objModel.enquiries_upload = null;
+                    }
+                    else if (form["QCDocsVal"] == null && enquiries_uploadList[0] == null)
+                    {
+                        objModel.enquiries_upload = null;
+                    }
                 }
-                else
+                   
+                if (orders_upload != null)
                 {
-                    ViewBag.Message = "You have not specified a file.";
+                    if (orders_uploadList[0] != null)
+                    {
+                        objModel.orders_upload = "";
+                        foreach (var file in orders_upload)
+                        {
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustSatisfaction"), Path.GetFileName(file.FileName));
+                                string sFilename = "CS" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objModel.orders_upload = objModel.orders_upload + "," + "~/DataUpload/MgmtDocs/CustSatisfaction/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCustSatisfaction: " + ex.ToString());
+                            }
+                        }
+                        objModel.orders_upload = objModel.orders_upload.Trim(',');
+                    }
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+                    if (form["QCDocsVal1"] != null && form["QCDocsVal1"] != "")
+                    {
+                        objModel.orders_upload = objModel.orders_upload + "," + form["QCDocsVal1"];
+                        objModel.orders_upload = objModel.orders_upload.Trim(',');
+                    }
+                    else if (form["QCDocsVal1"] == null && QCDelete1 != null && orders_uploadList[0] == null)
+                    {
+                        objModel.orders_upload = null;
+                    }
+                    else if (form["QCDocsVal1"] == null && orders_uploadList[0] == null)
+                    {
+                        objModel.orders_upload = null;
+                    }
                 }
-                if (form["QCDocsVal1"] != null && form["QCDocsVal1"] != "")
-                {
-                    objModel.orders_upload = objModel.orders_upload + "," + form["QCDocsVal1"];
-                    objModel.orders_upload = objModel.orders_upload.Trim(',');
-                }
-                else if (form["QCDocsVal1"] == null && QCDelete1 != null && orders_uploadList[0] == null)
-                {
-                    objModel.orders_upload = null;
-                }
-                else if (form["QCDocsVal1"] == null && orders_uploadList[0] == null)
-                {
-                    objModel.orders_upload = null;
-                }
+                    
                 // QULAITY
                 CustSatisfactionModelsList objQList = new CustSatisfactionModelsList();
                 objQList.CSList = new List<CustSatisfactionModels>();
@@ -550,7 +564,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                string sSqlstmt = "select id_cust_satisfaction,branch,Department,Location,cust_name,prod_delivered,contact_details,eval_date,frm_date,to_date," +
+                string sSqlstmt = "select id_cust_satisfaction,ref_no,branch,Department,Location,cust_name,prod_delivered,contact_details,eval_date,frm_date,to_date," +
                     "(case when review_status=0 then 'Pending for Review'  when review_status=1 then 'Rejected'  when review_status=2 then 'Approved' end) as review_status,review_status as review_status_id"
                     + " from t_cust_satisfaction where active = 1";
 
@@ -578,12 +592,13 @@ namespace ISOStd.Controllers
                                 id_cust_satisfaction = dsList.Tables[0].Rows[i]["id_cust_satisfaction"].ToString(),
                                 branch =objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["Department"].ToString()),
-                                Location = objGlobaldata.GetMultiWorkLocationById(dsList.Tables[0].Rows[i]["Location"].ToString()),
+                                Location = objGlobaldata.GetLocationNameById(dsList.Tables[0].Rows[i]["Location"].ToString()),
                                 cust_name =objGlobaldata.GetCustomerNameById(dsList.Tables[0].Rows[i]["cust_name"].ToString()),
                                 prod_delivered = (dsList.Tables[0].Rows[i]["prod_delivered"].ToString()),
                                 contact_details = dsList.Tables[0].Rows[i]["contact_details"].ToString(),
                                 review_status = dsList.Tables[0].Rows[i]["review_status"].ToString(),
                                 review_status_id = dsList.Tables[0].Rows[i]["review_status_id"].ToString(),
+                                ref_no = dsList.Tables[0].Rows[i]["ref_no"].ToString(),
                             };
 
                             DateTime dtDocDate;
@@ -678,7 +693,7 @@ namespace ISOStd.Controllers
                             id_cust_satisfaction = (dsModelsList.Tables[0].Rows[0]["id_cust_satisfaction"].ToString()),
                             branch = objGlobaldata.GetCompanyBranchNameById(dsModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetDeptNameById(dsModelsList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetMultiWorkLocationById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
+                            Location = objGlobaldata.GetLocationNameById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
                             cust_name = objGlobaldata.GetCustomerNameById(dsModelsList.Tables[0].Rows[0]["cust_name"].ToString()),
                             prod_delivered = (dsModelsList.Tables[0].Rows[0]["prod_delivered"].ToString()),
                             contact_details = (dsModelsList.Tables[0].Rows[0]["contact_details"].ToString()),
@@ -778,10 +793,10 @@ namespace ISOStd.Controllers
                     string id_cust_satisfaction = Request.QueryString["id_cust_satisfaction"];
 
                     string sSqlstmt = "select id_cust_satisfaction,branch,Department,Location,cust_name,prod_delivered,contact_details,repeat_enquiries,no_enquiries,repeat_orders,"
-                    + "no_orders,enquiries_upload,orders_upload,survey_form,csi,reviewed_by,eval_date,frm_date,to_date,complaint,cust_satisfied from t_cust_satisfaction where id_cust_satisfaction=" + id_cust_satisfaction;
+                    + "no_orders,enquiries_upload,orders_upload,survey_form,csi,reviewed_by,eval_date,frm_date,to_date,complaint,cust_satisfied,action_initiated_by from t_cust_satisfaction where id_cust_satisfaction=" + id_cust_satisfaction;
 
                     DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
+                    ViewBag.curr_user = objGlobaldata.GetCurrentUserSession().empid;
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
 
@@ -790,7 +805,7 @@ namespace ISOStd.Controllers
                             id_cust_satisfaction = (dsModelsList.Tables[0].Rows[0]["id_cust_satisfaction"].ToString()),
                             branch = objGlobaldata.GetCompanyBranchNameById(dsModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetDeptNameById(dsModelsList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetMultiWorkLocationById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
+                            Location = objGlobaldata.GetLocationNameById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
                             cust_name = objGlobaldata.GetCustomerNameById(dsModelsList.Tables[0].Rows[0]["cust_name"].ToString()),
                             prod_delivered = (dsModelsList.Tables[0].Rows[0]["prod_delivered"].ToString()),
                             contact_details = (dsModelsList.Tables[0].Rows[0]["contact_details"].ToString()),
@@ -805,7 +820,7 @@ namespace ISOStd.Controllers
                             reviewed_by = (dsModelsList.Tables[0].Rows[0]["reviewed_by"].ToString()),
                             complaint = (dsModelsList.Tables[0].Rows[0]["complaint"].ToString()),
                             cust_satisfied = objGlobaldata.GetDropdownitemById(dsModelsList.Tables[0].Rows[0]["cust_satisfied"].ToString()),
-
+                            action_initiated_by= (dsModelsList.Tables[0].Rows[0]["action_initiated_by"].ToString()),
                         };
                         DateTime dtDocDate = new DateTime();
                         if (dsModelsList.Tables[0].Rows[0]["frm_date"].ToString() != ""
@@ -908,7 +923,7 @@ namespace ISOStd.Controllers
                
          
 
-                if (objModel.FunAddActionList(objQList))
+                if (objModel.FunUpdateActionInitiated(objModel,objQList))
                 {
                     TempData["Successdata"] = "Improvement actions updated successfully";
                 }
@@ -949,7 +964,7 @@ namespace ISOStd.Controllers
                             id_cust_satisfaction = (dsModelsList.Tables[0].Rows[0]["id_cust_satisfaction"].ToString()),
                             branch = objGlobaldata.GetCompanyBranchNameById(dsModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetDeptNameById(dsModelsList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetMultiWorkLocationById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
+                            Location = objGlobaldata.GetLocationNameById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
                             cust_name = objGlobaldata.GetCustomerNameById(dsModelsList.Tables[0].Rows[0]["cust_name"].ToString()),
                             prod_delivered = (dsModelsList.Tables[0].Rows[0]["prod_delivered"].ToString()),
                             contact_details = (dsModelsList.Tables[0].Rows[0]["contact_details"].ToString()),
@@ -1107,7 +1122,7 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select id_cust_satisfaction,branch,Department,Location,cust_name,prod_delivered,contact_details,repeat_enquiries,no_enquiries,repeat_orders,"
                      +"(case when review_status=0 then 'Pending for Review'  when review_status=1 then 'Rejected'  when review_status=2 then 'Approved' end) as review_status,"
-                        + "no_orders,enquiries_upload,orders_upload,survey_form,csi,reviewed_by,eval_date,frm_date,to_date,complaint,cust_satisfied,review_status,review_comment,review_date from t_cust_satisfaction where id_cust_satisfaction=" + id_cust_satisfaction;
+                        + "no_orders,enquiries_upload,orders_upload,survey_form,csi,reviewed_by,eval_date,frm_date,to_date,complaint,cust_satisfied,review_status,review_comment,review_date,action_initiated_by,ref_no from t_cust_satisfaction where id_cust_satisfaction=" + id_cust_satisfaction;
 
                     DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1119,7 +1134,7 @@ namespace ISOStd.Controllers
                             id_cust_satisfaction = (dsModelsList.Tables[0].Rows[0]["id_cust_satisfaction"].ToString()),
                             branch = objGlobaldata.GetCompanyBranchNameById(dsModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetDeptNameById(dsModelsList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetMultiWorkLocationById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
+                            Location = objGlobaldata.GetLocationNameById(dsModelsList.Tables[0].Rows[0]["Location"].ToString()),
                             cust_name = objGlobaldata.GetCustomerNameById(dsModelsList.Tables[0].Rows[0]["cust_name"].ToString()),
                             prod_delivered = (dsModelsList.Tables[0].Rows[0]["prod_delivered"].ToString()),
                             contact_details = (dsModelsList.Tables[0].Rows[0]["contact_details"].ToString()),
@@ -1136,6 +1151,8 @@ namespace ISOStd.Controllers
                             cust_satisfied = objGlobaldata.GetDropdownitemById(dsModelsList.Tables[0].Rows[0]["cust_satisfied"].ToString()),
                             review_status = (dsModelsList.Tables[0].Rows[0]["review_status"].ToString()),
                             review_comment = (dsModelsList.Tables[0].Rows[0]["review_comment"].ToString()),
+                            ref_no = (dsModelsList.Tables[0].Rows[0]["ref_no"].ToString()),
+                            action_initiated_by =objGlobaldata.GetEmpHrNameById(dsModelsList.Tables[0].Rows[0]["action_initiated_by"].ToString()),
                         };
                         DateTime dtDocDate = new DateTime();
                         if (dsModelsList.Tables[0].Rows[0]["frm_date"].ToString() != ""

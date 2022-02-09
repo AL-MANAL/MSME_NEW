@@ -1,0 +1,409 @@
+﻿@model ISOStd.Models.TrainingStaffModels
+
+@{
+    ViewBag.Title = "AddTrainingStaff";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingStaffList", "TrainingStaff", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Staff Training</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Staff Training</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddTrainingStaff", "TrainingStaff", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Staff Training</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.date_taining)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <input class="form-control" type="date" id="date_taining" name="date_taining" required />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.dept_head)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="dept_head" name="dept_head">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.DeptHead != null)
+                                {
+                                    foreach (var item in ViewBag.DeptHead)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.employee)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="employee" name="employee" onchange="GetEmpDetails()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            Designation
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="Designation" name="Designation" disabled />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            Division
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="Division" name="Division" disabled />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            Department
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="DeptID" name="DeptID" disabled />
+                        </td>
+                    </tr>
+                   
+                       
+                        @*<td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.comments)
+                        </td>
+                        <td class="col">
+                            <textarea class="form-control" id="comments" name="comments"></textarea>
+                        </td>*@
+                    
+                </table>
+                <br />
+                @*Training Details*@
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold">
+                        <i class="icon-file-text mr-2"></i>Training Details
+                    </legend>                  
+
+                    <table class="table table-lg" id="table1">
+                        <tbody>                            
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Type of Training</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="training_type" name="training_type" multiple>
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.TrainingType != null)
+                                        {
+                                            foreach (var item in ViewBag.TrainingType)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.training_type)
+                                    <span class="field-validation-error"><span id="training_type-message" style="display: none;">Please select Type of Training.</span></span>
+                                </td>
+                                @*<th class="col-xs-3 col-md-2" style="font-weight: bold;">Required On or Before</th>
+                                <td class="col">
+                                    <input class="form-control" type='date' id='scheduled_date' name="scheduled_date"/>
+                                    @Html.ValidationMessageFor(model => model.scheduled_date)
+                                    <span class="field-validation-error"><span id="scheduled_date-message" style="display: none;" for="basic">Please select <S></S>cheduled Date.</span></span>
+                                </td>*@
+
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Criticality</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="criticality" name="criticality">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Citicality != null)
+                                        {
+                                            foreach (var item in ViewBag.Citicality)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="criticality-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.criticality)
+                                    </td>
+</tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Justification</th>
+                                <td class="col">
+                                   <textarea class="form-control" id="justification" name="justification"></textarea>
+                                    @Html.ValidationMessageFor(model => model.justification)
+                                    <span class="field-validation-error"><span id="justification-message" style="display: none;">Please write Justification.</span></span>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <span>
+                                        <img src='@Url.Content("~/images/icon_add.png")' onclick='AddTrainingStaffInfo()' style='cursor:pointer; padding-right: 5px;' title="Press to add N number in Supplied Material Details" />Add
+                                    </span>
+                                    <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Supplied Material details</code></span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </fieldset>
+
+
+
+                <div class="card invisible" id="hidden_card" @*style="display:none"*@>
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Training Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Training Type</th>
+                                    <th>Required On or Before</th>
+                                    <th>Justification</th>                                   
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "TrainingStaffList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Request Training</button>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function GetEmpDetails() {
+            var Emp = $('#employee').val();
+            $.ajax({
+                url: '@Url.Action("FunGetEmpDetails", "TrainingStaff")',
+                type: 'post',
+                dataType: 'json',
+                data: { 'EmpId': Emp },
+                success: function (result) {
+                    if (result != null) {
+                        document.getElementById('Division').value = result.Work_Location;
+                        document.getElementById('DeptID').value = result.DeptID;
+                        document.getElementById('Designation').value = result.Designation;
+                    }
+                },
+                error: function (err) {
+                    bootbox.alert("Error:" + err);
+                }
+            });
+        }
+
+        function AddTrainingStaffInfo() {
+
+        if (Validation() == true) {                
+
+            var cnt = document.getElementById("itemcnt").value;
+
+            document.getElementById("itemcnt").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);          
+
+           
+            //var training_type = $('#training_type').val();
+            //var training_typeName = $("#training_type option:selected").toArray().map(item => item.text).join(); 
+
+            var training_type = $.map($("#training_type option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var training_typeVal = $("#training_type").val();
+
+            var justification = $('#justification').val();
+
+            //var scheduled_date = reformatDate($("#scheduled_date").val());
+
+            var criticality = $.map($("#criticality option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var criticalityVal = $("#criticality").val();
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            //cell1.innerHTML = "<input type='hidden' id='training_type" + cnt + "' name='training_type" + cnt + "' value='" + training_type + "'>" + training_typeName;
+
+            cell1.innerHTML = "<select class='select-fixed-single' id='training_type" + cnt + "' name='training_type" + cnt + "'><option value='" + training_typeVal + "' selected>" + training_type + "</option>@if (ViewBag.TrainingType != null)
+            {
+                foreach (var item in ViewBag.TrainingType)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+            //cell2.innerHTML = "<input type='hidden' id='scheduled_date" + cnt + "' name='scheduled_date" + cnt + "' value='" + scheduled_date + "'>" + scheduled_date;
+            cell2.innerHTML = "<select class='select-fixed-single' id='criticality" + cnt + "' name='criticality" + cnt + "'><option value='" + criticalityVal + "' selected>" + criticality + "</option>@if (ViewBag.Citicality != null)
+            {
+                foreach (var item in ViewBag.Citicality)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+          
+            cell3.innerHTML = "<textarea id='justification" + cnt + "' name='justification" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + justification + "</textarea>";
+            // Badge position
+            $('.maxlength-badge-position').maxlength({
+                alwaysShow: true,
+                placement: 'top'
+            });
+            //auto resize
+            autosize($('.elastic'));
+            $('.select-fixed-single').select2({
+                minimumResultsForSearch: Infinity,
+                width: 150
+            });
+
+            cnt++;
+            document.getElementById("itemcnt").value = cnt;
+
+            document.getElementById("hidden_card").classList.remove(hideClass);
+            document.getElementById("hidden_card").classList.add(showClass);
+            ResetControl();
+            }
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("training_type").value == "") {
+                ssnMessage = $('#training_type-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#training_type-message');
+                ssnMessage.hide();
+            }
+
+            //if (document.getElementById("scheduled_date").value == "") {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.hide();
+            //}
+
+            if (document.getElementById("justification").value == "") {
+                ssnMessage = $('#justification-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#justification-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("criticality").value == "") {
+                ssnMessage = $('#criticality-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#criticality-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function ResetControl() {
+            $("#training_type").val('').trigger('change');
+            //document.getElementById("scheduled_date").value = "";
+            document.getElementById("justification").value = "";
+            $("#criticality").val('').trigger('change');
+        }
+
+        function reformatDate(dateStr) {
+            dArr = dateStr.split("-");  // ex input 2010-01-18
+            return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+                var cnt = document.getElementById("itemcnt").value;
+                cnt--;
+                if (cnt == "0") {
+                    document.getElementById("hidden_card").classList.remove(showClass);
+                    document.getElementById("hidden_card").classList.add(hideClass);
+                }
+            }                    
+        
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

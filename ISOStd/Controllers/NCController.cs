@@ -37,7 +37,7 @@ namespace ISOStd.Controllers
                 objModel.nc_reportedby = objGlobaldata.GetCurrentUserSession().empid;
 
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.ReportedBy = objGlobaldata.GetQADeptandTopmgmtEmployeeList();
+                ViewBag.ReportedBy = objGlobaldata.GetSceenNotificationEmpList("NC", "NC reported by");
                 ViewBag.RiskLevel = objGlobaldata.GetDropdownList("NC Risklevel");
                 ViewBag.Category = objGlobaldata.GetDropdownList("NC Category");
                 ViewBag.RelatedAspect = objGlobaldata.GetDropdownList("NC Related Aspect");
@@ -340,7 +340,7 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.ReportedBy = objGlobaldata.GetQADeptandTopmgmtEmployeeList();
+                ViewBag.ReportedBy = objGlobaldata.GetSceenNotificationEmpList("NC", "NC reported by");
                 ViewBag.RiskLevel = objGlobaldata.GetDropdownList("NC Risklevel");
                 ViewBag.Category = objGlobaldata.GetDropdownList("NC Category");
                 ViewBag.RelatedAspect = objGlobaldata.GetDropdownList("NC Related Aspect");

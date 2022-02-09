@@ -1,22 +1,25 @@
-﻿using ISOStd.Filters;
-using ISOStd.Models;
-using Rotativa;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ISOStd.Models;
+using System.Data;
+using System.Net;
+using System.IO;
+using PagedList;
+using PagedList.Mvc;
+using Rotativa;
+using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class GenerateAuditChecklistController : Controller
     {
-        private clsGlobal objGlobaldata = new clsGlobal();
+        clsGlobal objGlobaldata = new clsGlobal();
 
-        //Generate Checklist
+        //Generate Checklist 
         public GenerateAuditChecklistController()
         {
             ViewBag.Menutype = "Audit";
@@ -25,6 +28,7 @@ namespace ISOStd.Controllers
 
         public ActionResult GenerateAuditChecklist()
         {
+
             //  AuditElementsModels obj = new AuditElementsModels();
             GenerateAuditChecklistModels objChkList = new GenerateAuditChecklistModels();
             try
@@ -37,12 +41,12 @@ namespace ISOStd.Controllers
                 // ViewBag.Department = objGlobaldata.GetDepartmentListbox(objGlobaldata.GetCurrentUserSession().division);
                 //  ViewBag.location = objGlobaldata.GetDivisionLocationList(objGlobaldata.GetCurrentUserSession().division);
                 // ViewBag.division = objGlobaldata.GetCompanyBranchListbox();
-                // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
+                // ViewBag.Department = objGlobaldata.GetDepartmentListbox();               
                 //// ViewBag.AuditCriteria = objGlobaldata.GetAuditCriteria();
                 objChkList.prepared_by = objGlobaldata.GetCurrentUserSession().empid;
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.IsoStd = objGlobaldata.GetIsoStdListbox();
-                ViewBag.Directorate = objGlobaldata.GetCompanyBranchListbox();
+                ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
             }
             catch (Exception ex)
             {
@@ -59,19 +63,39 @@ namespace ISOStd.Controllers
         {
             try
             {
-                objChecklist.grp = form["grp"];
-                if (objChecklist.grp == "" || objChecklist.grp == null)
+                objChecklist.branch = form["branch"];
+                if (objChecklist.branch == "" || objChecklist.branch == null)
                 {
-                    objChecklist.grp_common = "common";
+                    objChecklist.branch_common = "common";
                 }
                 else
                 {
-                    objChecklist.grp_common = "";
+                    objChecklist.branch_common = "";
                 }
 
-                // objChecklist.location = form["location"];
+                objChecklist.dept_name = form["dept_name"];
+                if (objChecklist.dept_name == "" || objChecklist.dept_name == null)
+                {
+                    objChecklist.dept_name_common = "common";
+                }
+                else
+                {
+                    objChecklist.dept_name_common = "";
+                }
+
+                objChecklist.team = form["team"];
+                if (objChecklist.team == "" || objChecklist.team == null)
+                {
+                    objChecklist.team_common = "common";
+                }
+                else
+                {
+                    objChecklist.team_common = "";
+                }
+                // objChecklist.location = form["location"];                                
 
                 // objChecklist.ChecklistRef = objGlobaldata.GetMultiCompanyBranchNameById(form["division"]) + "-"+ objGlobaldata.GetDivisionLocationById(form["location"]) + "-"+ objGlobaldata.GetDeptNameById(form["Department"]) + "-00" + objChecklist.Itemno;
+
 
                 //Reported By
                 for (int i = 0; i < Convert.ToInt16(form["count"]); i++)
@@ -141,20 +165,21 @@ namespace ISOStd.Controllers
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
                 string sSearchtext = "";
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
                 string sSqlstmt = "select id_AuditChecklist,location,ChecklistRef," +
-                    "prepared_by,created_on,ammended_on,notified_to,directorate,grp,grp_common from t_auditchecklist where Active=1";
+                    "prepared_by,created_on,ammended_on,notified_to,branch,dept_name,dept_name_common,team,team_common,branch_common from t_auditchecklist where Active=1";
 
                 if (branch_name != null && branch_name != "")
                 {
-                    sSearchtext = sSearchtext + " and directorate='" + branch_name + "' ";
+                    sSearchtext = sSearchtext + " and (branch='" + branch_name + "' or branch='') ";
                     ViewBag.Branch_name = branch_name;
                 }
                 else
                 {
-                    sSearchtext = sSearchtext + " and directorate='" + sBranch_name + "' ";
+                    sSearchtext = sSearchtext + " and (branch='" + sBranch_name + "' or branch='') ";
+                    ViewBag.Branch_name = sBranch_name;
                 }
 
                 sSqlstmt = sSqlstmt + sSearchtext;
@@ -177,9 +202,12 @@ namespace ISOStd.Controllers
                                 //  AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsChecklistModelsList.Tables[0].Rows[i]["AuditCriteria"].ToString()),
                                 prepared_by = objGlobaldata.GetMultiHrEmpNameById(dsChecklistModelsList.Tables[0].Rows[i]["prepared_by"].ToString()),
                                 notified_to = objGlobaldata.GetMultiHrEmpNameById(dsChecklistModelsList.Tables[0].Rows[i]["notified_to"].ToString()),
-                                directorate = objGlobaldata.GetMultiCompanyBranchNameById(dsChecklistModelsList.Tables[0].Rows[i]["directorate"].ToString()),
-                                grp = objGlobaldata.GetMultiDeptNameById(dsChecklistModelsList.Tables[0].Rows[i]["grp"].ToString()),
-                                grp_common = dsChecklistModelsList.Tables[0].Rows[i]["grp_common"].ToString(),
+                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsChecklistModelsList.Tables[0].Rows[i]["branch"].ToString()),
+                                dept_name = objGlobaldata.GetMultiDeptNameById(dsChecklistModelsList.Tables[0].Rows[i]["dept_name"].ToString()),
+                                dept_name_common = dsChecklistModelsList.Tables[0].Rows[i]["dept_name_common"].ToString(),
+                                //team = objGlobaldata.GetTeamNameByID(dsChecklistModelsList.Tables[0].Rows[i]["team"].ToString()),
+                                team_common = dsChecklistModelsList.Tables[0].Rows[i]["team_common"].ToString(),
+                                branch_common = dsChecklistModelsList.Tables[0].Rows[i]["branch_common"].ToString(),
                             };
                             DateTime dtDocDate;
                             if (dsChecklistModelsList.Tables[0].Rows[i]["created_on"].ToString() != ""
@@ -223,20 +251,20 @@ namespace ISOStd.Controllers
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
                 string sSearchtext = "";
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
                 string sSqlstmt = "select id_AuditChecklist,location,ChecklistRef," +
-                    "prepared_by,created_on,ammended_on,notified_to,directorate,grp,grp_common from t_auditchecklist where Active=1";
+                    "prepared_by,created_on,ammended_on,notified_to,branch,dept_name,dept_name_common,team,team_common from t_auditchecklist where Active=1";
 
                 if (branch_name != null && branch_name != "")
                 {
-                    sSearchtext = sSearchtext + " and directorate='" + branch_name + "' ";
+                    sSearchtext = sSearchtext + " and branch='" + branch_name + "' ";
                     ViewBag.Branch_name = branch_name;
                 }
                 else
                 {
-                    sSearchtext = sSearchtext + " and directorate='" + sBranch_name + "' ";
+                    sSearchtext = sSearchtext + " and branch='" + sBranch_name + "' ";
                 }
 
                 sSqlstmt = sSqlstmt + sSearchtext;
@@ -260,9 +288,12 @@ namespace ISOStd.Controllers
                                 //dept_common = dsChecklistModelsList.Tables[0].Rows[i]["dept_common"].ToString(),
                                 prepared_by = objGlobaldata.GetMultiHrEmpNameById(dsChecklistModelsList.Tables[0].Rows[i]["prepared_by"].ToString()),
                                 notified_to = objGlobaldata.GetMultiHrEmpNameById(dsChecklistModelsList.Tables[0].Rows[i]["notified_to"].ToString()),
-                                directorate = objGlobaldata.GetMultiCompanyBranchNameById(dsChecklistModelsList.Tables[0].Rows[i]["directorate"].ToString()),
-                                grp = objGlobaldata.GetMultiDeptNameById(dsChecklistModelsList.Tables[0].Rows[i]["grp"].ToString()),
-                                grp_common = dsChecklistModelsList.Tables[0].Rows[i]["grp_common"].ToString(),
+                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsChecklistModelsList.Tables[0].Rows[i]["branch"].ToString()),
+                                dept_name = objGlobaldata.GetMultiDeptNameById(dsChecklistModelsList.Tables[0].Rows[i]["dept_name"].ToString()),
+                                dept_name_common = dsChecklistModelsList.Tables[0].Rows[i]["dept_name_common"].ToString(),
+                                //team = objGlobaldata.GetTeamNameByID(dsChecklistModelsList.Tables[0].Rows[i]["team"].ToString()),
+                                team_common = dsChecklistModelsList.Tables[0].Rows[i]["team_common"].ToString(),
+
                             };
                             DateTime dtDocDate;
                             if (dsChecklistModelsList.Tables[0].Rows[i]["created_on"].ToString() != ""
@@ -306,10 +337,11 @@ namespace ISOStd.Controllers
                 //ViewBag.AuditCriteria = objGlobaldata.GetAuditCriteria();
                 if (Request.QueryString["id_AuditChecklist"] != null && Request.QueryString["id_AuditChecklist"] != "")
                 {
+
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
 
                     string sSqlstmt = "select id_AuditChecklist,location,ChecklistRef," +
-                   "prepared_by,created_on,ammended_on,notified_to,directorate,grp,grp_common from t_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
+                   "prepared_by,created_on,ammended_on,notified_to,branch,dept_name,dept_name_common,team,team_common,branch_common from t_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -327,9 +359,12 @@ namespace ISOStd.Controllers
                             // dept_common = dsAudit.Tables[0].Rows[0]["dept_common"].ToString(),
                             prepared_by = /*objGlobaldata.GetMultiHrEmpNameById*/(dsAudit.Tables[0].Rows[0]["prepared_by"].ToString()),
                             notified_to = /*objGlobaldata.GetMultiHrEmpNameById*/(dsAudit.Tables[0].Rows[0]["notified_to"].ToString()),
-                            directorate = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsAudit.Tables[0].Rows[0]["directorate"].ToString()),
-                            grp = /*objGlobaldata.GetMultiDeptNameById*/(dsAudit.Tables[0].Rows[0]["grp"].ToString()),
-                            grp_common = dsAudit.Tables[0].Rows[0]["grp_common"].ToString(),
+                            branch = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsAudit.Tables[0].Rows[0]["branch"].ToString()),
+                            dept_name = /*objGlobaldata.GetMultiDeptNameById*/(dsAudit.Tables[0].Rows[0]["dept_name"].ToString()),
+                            dept_name_common = dsAudit.Tables[0].Rows[0]["dept_name_common"].ToString(),
+                            // team = /*objGlobaldata.GetTeamNameByID*/(dsAudit.Tables[0].Rows[0]["team"].ToString()),
+                            team_common = dsAudit.Tables[0].Rows[0]["team_common"].ToString(),
+                            branch_common = dsAudit.Tables[0].Rows[0]["branch_common"].ToString(),
                         };
 
                         if (dsAudit.Tables[0].Rows[0]["prepared_by"].ToString() != "")
@@ -362,8 +397,10 @@ namespace ISOStd.Controllers
                         ViewBag.IsoStd = objGlobaldata.GetIsoStdListbox();
                         //DirectorateModels objDocType = new DirectorateModels();
                         // DirectorateGroupModels objGrp = new DirectorateGroupModels();
-                        ViewBag.Directorate = objGlobaldata.GetCompanyBranchListbox();
-                        ViewBag.Group = objGlobaldata.GetDepartmentListbox(dsAudit.Tables[0].Rows[0]["directorate"].ToString());
+                        // GroupTeamModels objTeam = new GroupTeamModels();
+                        ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
+                        ViewBag.Group = objGlobaldata.GetDepartmentListbox(dsAudit.Tables[0].Rows[0]["branch"].ToString());
+                        //ViewBag.Team = objGlobaldata.GetDocTeamListbyGroup(dsAudit.Tables[0].Rows[0]["dept_name"].ToString());
 
                         GenerateAuditChecklistModelsList ObjList = new GenerateAuditChecklistModelsList();
                         ObjList.AuditCheckList = new List<GenerateAuditChecklistModels>();
@@ -396,6 +433,7 @@ namespace ISOStd.Controllers
                                 ViewBag.AuditTransList = ObjList;
                             }
                         }
+
                     }
                 }
                 else
@@ -420,18 +458,36 @@ namespace ISOStd.Controllers
         {
             try
             {
-                objAudit.grp = form["grp"];
-
-                if (objAudit.grp == "" || objAudit.grp == null)
+                objAudit.dept_name = form["dept_name"];
+                objAudit.team = form["team"];
+                objAudit.branch = form["branch"];
+                if (objAudit.branch == "" || objAudit.branch == null)
                 {
-                    objAudit.grp_common = "common";
+                    objAudit.branch_common = "common";
                 }
                 else
                 {
-                    objAudit.grp_common = "";
+                    objAudit.branch_common = "";
+                }
+                if (objAudit.dept_name == "" || objAudit.dept_name == null)
+                {
+                    objAudit.dept_name_common = "common";
+                }
+                else
+                {
+                    objAudit.dept_name_common = "";
                 }
 
+                if (objAudit.team == "" || objAudit.team == null)
+                {
+                    objAudit.team_common = "common";
+                }
+                else
+                {
+                    objAudit.team_common = "";
+                }
                 // int cnt = Convert.ToInt16(form["itemcnt"]);
+
 
                 //objAudit.location = form["location"];
                 //objAudit.division = form["division"];
@@ -443,6 +499,7 @@ namespace ISOStd.Controllers
 
                 //    objAudit.Questions = quest;
                 //}
+
 
                 //Reported By
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
@@ -515,10 +572,13 @@ namespace ISOStd.Controllers
                 //ViewBag.AuditCriteria = objGlobaldata.GetAuditCriteria();
                 if (Request.QueryString["id_AuditChecklist"] != null && Request.QueryString["id_AuditChecklist"] != "")
                 {
+                    ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("AuditChecklist");
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
 
                     string sSqlstmt = "select id_AuditChecklist,location,ChecklistRef," +
-                   "prepared_by,created_on,ammended_on,notified_to,directorate,grp,grp_common from t_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
+                   "prepared_by,created_on,ammended_on,notified_to,branch,dept_name,dept_name_common,team,team_common,approved_by,apprv_status as apprv_status_id,approved_date,apprv_comments,approver_upload,"
+                   + "(CASE WHEN apprv_status = '0' THEN 'Pending for approval' WHEN apprv_status = '1' THEN 'Rejected' WHEN apprv_status = '2' THEN 'Approved' END) as apprv_status"
+                   + " from t_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -536,9 +596,16 @@ namespace ISOStd.Controllers
                             // dept_common = dsAudit.Tables[0].Rows[0]["dept_common"].ToString(),
                             prepared_by = objGlobaldata.GetMultiHrEmpNameById(dsAudit.Tables[0].Rows[0]["prepared_by"].ToString()),
                             notified_to = objGlobaldata.GetMultiHrEmpNameById(dsAudit.Tables[0].Rows[0]["notified_to"].ToString()),
-                            directorate = objGlobaldata.GetMultiCompanyBranchNameById(dsAudit.Tables[0].Rows[0]["directorate"].ToString()),
-                            grp = objGlobaldata.GetMultiDeptNameById(dsAudit.Tables[0].Rows[0]["grp"].ToString()),
-                            grp_common = dsAudit.Tables[0].Rows[0]["grp_common"].ToString(),
+                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAudit.Tables[0].Rows[0]["branch"].ToString()),
+                            dept_name = objGlobaldata.GetMultiDeptNameById(dsAudit.Tables[0].Rows[0]["dept_name"].ToString()),
+                            dept_name_common = dsAudit.Tables[0].Rows[0]["dept_name_common"].ToString(),
+                            //team = objGlobaldata.GetTeamNameByID(dsAudit.Tables[0].Rows[0]["team"].ToString()),
+                            team_common = dsAudit.Tables[0].Rows[0]["team_common"].ToString(),
+                            approved_by = dsAudit.Tables[0].Rows[0]["approved_by"].ToString(),
+                            apprv_status = dsAudit.Tables[0].Rows[0]["apprv_status"].ToString(),
+                            apprv_comments = dsAudit.Tables[0].Rows[0]["apprv_comments"].ToString(),
+                            apprv_status_id = dsAudit.Tables[0].Rows[0]["apprv_status_id"].ToString(),
+                            approver_upload = dsAudit.Tables[0].Rows[0]["approver_upload"].ToString(),
                         };
 
                         //if (dsAudit.Tables[0].Rows[0]["prepared_by"].ToString() != "")
@@ -563,7 +630,11 @@ namespace ISOStd.Controllers
                         {
                             objAudit.ammended_on = dtDocDate;
                         }
-
+                        if (dsAudit.Tables[0].Rows[0]["approved_date"].ToString() != ""
+                           && DateTime.TryParse(dsAudit.Tables[0].Rows[0]["approved_date"].ToString(), out dtDocDate))
+                        {
+                            objAudit.approved_date = dtDocDate;
+                        }
                         GenerateAuditChecklistModelsList ObjList = new GenerateAuditChecklistModelsList();
                         ObjList.AuditCheckList = new List<GenerateAuditChecklistModels>();
                         string sSqlstmt1 = "select id_auditchecklist_trans,id_AuditChecklist,IsoStd,Clause,Questions"
@@ -612,6 +683,53 @@ namespace ISOStd.Controllers
             return View(objAudit);
         }
 
+        //Approve
+        public ActionResult AuditChecklistApprove(GenerateAuditChecklistModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> approver_upload)
+        {
+            try
+            {
+                HttpPostedFileBase files = Request.Files[0];
+                if (approver_upload != null && files.ContentLength > 0)
+                {
+                    objModel.approver_upload = "";
+                    foreach (var file in approver_upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Audit"), Path.GetFileName(file.FileName));
+                            string sFilename = "Checklist" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.approver_upload = objModel.approver_upload + "," + "~/DataUpload/MgmtDocs/Audit/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in AuditChecklistApprove-upload: " + ex.ToString());
+                        }
+                    }
+                    objModel.approver_upload = objModel.approver_upload.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (objModel.FunUpdateApproveAuditChecklist(objModel))
+                {
+                    TempData["Successdata"] = "Updated Successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AuditChecklistApprove: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+
         [AllowAnonymous]
         public ActionResult AuditChecklistInfo(int id)
         {
@@ -623,10 +741,11 @@ namespace ISOStd.Controllers
                 //ViewBag.AuditCriteria = objGlobaldata.GetAuditCriteria();
                 if (id > 0)
                 {
+
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
 
                     string sSqlstmt = "select id_AuditChecklist,location,ChecklistRef," +
-                   "prepared_by,created_on,ammended_on,notified_to,directorate,grp,grp_common from t_auditchecklist where id_AuditChecklist='" + id + "'";
+                   "prepared_by,created_on,ammended_on,notified_to,branch,dept_name,dept_name_common,team,team_common from t_auditchecklist where id_AuditChecklist='" + id + "'";
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -644,9 +763,12 @@ namespace ISOStd.Controllers
                             // dept_common = dsAudit.Tables[0].Rows[0]["dept_common"].ToString(),
                             prepared_by = objGlobaldata.GetMultiHrEmpNameById(dsAudit.Tables[0].Rows[0]["prepared_by"].ToString()),
                             notified_to = objGlobaldata.GetMultiHrEmpNameById(dsAudit.Tables[0].Rows[0]["notified_to"].ToString()),
-                            directorate = objGlobaldata.GetMultiCompanyBranchNameById(dsAudit.Tables[0].Rows[0]["directorate"].ToString()),
-                            grp = objGlobaldata.GetMultiDeptNameById(dsAudit.Tables[0].Rows[0]["grp"].ToString()),
-                            grp_common = dsAudit.Tables[0].Rows[0]["grp_common"].ToString(),
+                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAudit.Tables[0].Rows[0]["branch"].ToString()),
+                            dept_name = objGlobaldata.GetMultiDeptNameById(dsAudit.Tables[0].Rows[0]["dept_name"].ToString()),
+                            dept_name_common = dsAudit.Tables[0].Rows[0]["dept_name_common"].ToString(),
+                            //team = objGlobaldata.GetTeamNameByID(dsAudit.Tables[0].Rows[0]["team"].ToString()),
+                            team_common = dsAudit.Tables[0].Rows[0]["team_common"].ToString(),
+
                         };
 
                         //if (dsAudit.Tables[0].Rows[0]["prepared_by"].ToString() != "")
@@ -731,10 +853,11 @@ namespace ISOStd.Controllers
                 //ViewBag.AuditCriteria = objGlobaldata.GetAuditCriteria();
                 if (form["id_AuditChecklist"] != null && form["id_AuditChecklist"] != "")
                 {
+
                     string sid_AuditChecklist = form["id_AuditChecklist"];
 
                     string sSqlstmt = "select id_AuditChecklist,location,ChecklistRef," +
-                   "prepared_by,created_on,ammended_on,notified_to,directorate,grp,grp_common from t_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
+                   "prepared_by,created_on,ammended_on,notified_to,branch,dept_name,dept_name_common,team,team_common from t_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -752,9 +875,12 @@ namespace ISOStd.Controllers
                             // dept_common = dsAudit.Tables[0].Rows[0]["dept_common"].ToString(),
                             prepared_by = objGlobaldata.GetMultiHrEmpNameById(dsAudit.Tables[0].Rows[0]["prepared_by"].ToString()),
                             notified_to = objGlobaldata.GetMultiHrEmpNameById(dsAudit.Tables[0].Rows[0]["notified_to"].ToString()),
-                            directorate = objGlobaldata.GetMultiCompanyBranchNameById(dsAudit.Tables[0].Rows[0]["directorate"].ToString()),
-                            grp = objGlobaldata.GetMultiDeptNameById(dsAudit.Tables[0].Rows[0]["grp"].ToString()),
-                            grp_common = dsAudit.Tables[0].Rows[0]["grp_common"].ToString(),
+                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAudit.Tables[0].Rows[0]["branch"].ToString()),
+                            dept_name = objGlobaldata.GetMultiDeptNameById(dsAudit.Tables[0].Rows[0]["dept_name"].ToString()),
+                            dept_name_common = dsAudit.Tables[0].Rows[0]["dept_name_common"].ToString(),
+                            //team = objGlobaldata.GetTeamNameByID(dsAudit.Tables[0].Rows[0]["team"].ToString()),
+                            team_common = dsAudit.Tables[0].Rows[0]["team_common"].ToString(),
+
                         };
 
                         //if (dsAudit.Tables[0].Rows[0]["prepared_by"].ToString() != "")
@@ -819,6 +945,7 @@ namespace ISOStd.Controllers
                                 ViewBag.AuditTransList = ObjList;
                             }
                         }
+
                     }
                 }
                 else
@@ -860,6 +987,7 @@ namespace ISOStd.Controllers
         //            string sSqlstmt = "select idt_checklist,t.id_AuditChecklist,Itemno,Department,AuditCriteria,AuditNo,AuditDate,"
         //            + "Auditors,Auditee,Notes,Remarks,Questions from t_generateauditchecklist t,t_auditchecklist tt where t.id_AuditChecklist=tt.id_AuditChecklist and idt_checklist='" + sidt_checklist + "'";
 
+
         //            DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
         //            if (dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
@@ -890,6 +1018,7 @@ namespace ISOStd.Controllers
 
         //                DataSet dsAuditElement = objGlobaldata.Getdetails(sSqlstmt);
 
+
         //                AuditPerformanceModelsList objAuditPerformanceList = new AuditPerformanceModelsList();
         //                objAuditPerformanceList.lstAudit = new List<AuditPerformanceModels>();
 
@@ -899,6 +1028,7 @@ namespace ISOStd.Controllers
         //                {
         //                    AuditPerformanceModels objElements = new AuditPerformanceModels
         //                    {
+
         //                        id_element = obj.GetAuditQuestionNameById(dsAuditElement.Tables[0].Rows[i]["id_element"].ToString()),
         //                        id_auditratings = obj.GetAuditRatingNameById(dsAuditElement.Tables[0].Rows[i]["id_auditratings"].ToString()),
         //                        comment = dsAuditElement.Tables[0].Rows[i]["comment"].ToString(),
@@ -971,6 +1101,7 @@ namespace ISOStd.Controllers
 
         //            DataSet dsAuditElement = objGlobaldata.Getdetails(sSqlstmt);
 
+
         //            AuditPerformanceModelsList objAuditPerformanceList = new AuditPerformanceModelsList();
         //            objAuditPerformanceList.lstAudit = new List<AuditPerformanceModels>();
 
@@ -980,6 +1111,7 @@ namespace ISOStd.Controllers
         //            {
         //                AuditPerformanceModels objElements = new AuditPerformanceModels
         //                {
+
         //                    id_element = obj.GetAuditQuestionNameById(dsAuditElement.Tables[0].Rows[i]["id_element"].ToString()),
         //                    id_auditratings = obj.GetAuditRatingNameById(dsAuditElement.Tables[0].Rows[i]["id_auditratings"].ToString()),
         //                    comment = dsAuditElement.Tables[0].Rows[i]["comment"].ToString(),
@@ -1024,6 +1156,7 @@ namespace ISOStd.Controllers
         //                "t_generateauditchecklist tt , t_internal_audit ttt where t.id_AuditChecklist=tt.id_AuditChecklist " +
         //                "and tt.AuditNo=ttt.AuditID and idt_checklist ='" + sidt_checklist + "'";
 
+
         //            DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
         //            if (dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
@@ -1055,6 +1188,7 @@ namespace ISOStd.Controllers
         //                dsAudit = objGlobaldata.GetReportDetails(dsAudit, objAudit.AuditNum, logged_by, "AUDIT CHECKLIST REPORT");
         //                ViewBag.CompanyInfo = dsAudit;
 
+
         //                ViewBag.ChecklistDetails = objAudit;
 
         //                sSqlstmt = "SELECT id_AuditPerformanceChecklist,idt_checklist,id_element,id_auditratings,"
@@ -1064,6 +1198,8 @@ namespace ISOStd.Controllers
         //                DataSet dsAuditElement = objGlobaldata.Getdetails(sSqlstmt);
         //                ViewBag.AuditElement = dsAuditElement;
         //                AuditElementsModels obj = new AuditElementsModels();
+
+
 
         //                ViewBag.AuditRating = obj.GetAuditRating();
         //            }
@@ -1121,6 +1257,7 @@ namespace ISOStd.Controllers
                     ViewBag.location = objGlobaldata.GetDivisionLocationList(sDivision);
                     ViewBag.division = objGlobaldata.GetCompanyBranchListbox();
                     ViewBag.IsoStd = objGlobaldata.GetIsoStdListbox();
+
                 }
                 else
                 {
@@ -1160,6 +1297,7 @@ namespace ISOStd.Controllers
                 ViewBag.division = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.IsoStd = objGlobaldata.GetIsoStdListbox();
 
+
                 if (objElementModels.FunAddAuditElements(objElementModels))
                 {
                     TempData["Successdata"] = "Added Questions added successfully";
@@ -1169,6 +1307,7 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
                 ViewBag.AuditElements = obj.GetAuditElementsListboxByIsoStd(objElementModels.Department, objElementModels.IsoStd);
+
             }
             catch (Exception ex)
             {
@@ -1215,10 +1354,12 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 if (form["id_AuditChecklist"] != null && form["id_AuditChecklist"] != "")
                 {
                     GenerateAuditChecklistModels Doc = new GenerateAuditChecklistModels();
                     string sid_AuditChecklist = form["id_AuditChecklist"];
+
 
                     if (Doc.FunDeleteAuditChecklist(sid_AuditChecklist))
                     {
@@ -1236,6 +1377,7 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Audit checklist Id cannot be Null or empty";
                     return Json("Failed");
                 }
+
             }
             catch (Exception ex)
             {
@@ -1247,9 +1389,11 @@ namespace ISOStd.Controllers
 
         public ActionResult AuditQuestionDelete(string id_element, string Department)
         {
+
             AuditElementsModels obj = new AuditElementsModels();
             try
             {
+
                 if (obj.FunDeleteQuestions(id_element))
                 {
                     TempData["Successdata"] = "Question deleted successfully";
@@ -1258,6 +1402,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+
                 }
             }
             catch (Exception ex)
@@ -1271,9 +1416,11 @@ namespace ISOStd.Controllers
 
         public JsonResult AuditQuestionDelete1(string id_element, string Department)
         {
+
             AuditElementsModels obj = new AuditElementsModels();
             try
             {
+
                 if (obj.FunDeleteQuestions(id_element))
                 {
                     TempData["Successdata"] = "Question deleted successfully";
@@ -1282,6 +1429,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+
                 }
             }
             catch (Exception ex)
@@ -1308,6 +1456,7 @@ namespace ISOStd.Controllers
                 {
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
 
+
                     string sSqlstmt = "select id_AuditChecklist,Itemno,Department,AuditCriteria,Questions from t_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
 
                     DataSet dsChecklistModelsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -1315,6 +1464,7 @@ namespace ISOStd.Controllers
                     {
                         for (int i = 0; i < dsChecklistModelsList.Tables[0].Rows.Count; i++)
                         {
+
                             objAuditChecklistModels = new GenerateAuditChecklistModels
                             {
                                 id_AuditChecklist = Convert.ToInt16(dsChecklistModelsList.Tables[0].Rows[i]["id_AuditChecklist"].ToString()),
@@ -1322,6 +1472,7 @@ namespace ISOStd.Controllers
                                 Department = dsChecklistModelsList.Tables[0].Rows[i]["Department"].ToString(),
                                 AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsChecklistModelsList.Tables[0].Rows[i]["AuditCriteria"].ToString()),
                                 Questions = dsChecklistModelsList.Tables[0].Rows[i]["Questions"].ToString(),
+
                             };
                             ViewBag.AuditElements = obj.GetAuditElementsListbox(dsChecklistModelsList.Tables[0].Rows[i]["Department"].ToString());
                         }
@@ -1367,13 +1518,15 @@ namespace ISOStd.Controllers
                 //{
                 //    for (int j = 0; j < dsChecklistModelsList.Tables[0].Rows.Count; j++)
                 //    {
+
                 //        //GenerateAuditChecklistModels objAuditChecklistModels = new GenerateAuditChecklistModels
                 //        //{
                 //        //   Department = dsChecklistModelsList.Tables[0].Rows[i]["Department"].ToString(),
-                //        //};
+                //        //};        
                 //        dept = dsChecklistModelsList.Tables[0].Rows[j]["Department"].ToString();
                 //    }
                 //}
+
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["AuditDate"], out dateValue) == true)
@@ -1424,10 +1577,12 @@ namespace ISOStd.Controllers
         [HttpPost]
         public ActionResult PerformAuditReport(FormCollection form)
         {
+
             string id_AuditChecklist = form["id_AuditChecklist"];
             string sDepartment = form["Department"];
             try
             {
+
                 if (id_AuditChecklist != null)
                 {
                     GenerateAuditChecklistModels objAuditChecklistModels = new GenerateAuditChecklistModels();
@@ -1437,6 +1592,7 @@ namespace ISOStd.Controllers
                     ViewBag.AuditRating = obj.GetAuditRating();
                     ViewBag.Department = objGlobaldata.GetDepartmentListbox();
                     ViewBag.AuditElements = obj.GetAuditElementsListbox(sDepartment);
+
                 }
                 else
                 {
@@ -1500,8 +1656,10 @@ namespace ISOStd.Controllers
 
             try
             {
+
                 if (Request.QueryString["id_AuditChecklist"] != null && Request.QueryString["id_AuditChecklist"] != "")
                 {
+
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
                     string sSqlstmt = "select idt_checklist,id_AuditChecklist,AuditNo,AuditDate,Auditors,Auditee from t_generateauditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "' and Active=1";
 
@@ -1509,6 +1667,9 @@ namespace ISOStd.Controllers
 
                     if (dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
                     {
+
+
+
                         for (int i = 0; i < dsAudit.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -1520,6 +1681,8 @@ namespace ISOStd.Controllers
                                     AuditNo = objGlobaldata.GetAuditNoById(dsAudit.Tables[0].Rows[i]["AuditNo"].ToString()),
                                     Auditors = dsAudit.Tables[0].Rows[i]["Auditors"].ToString(),
                                     Auditee = (dsAudit.Tables[0].Rows[i]["Auditee"].ToString()),
+
+
                                 };
                                 DateTime dtValue;
                                 if (DateTime.TryParse(dsAudit.Tables[0].Rows[i]["AuditDate"].ToString(), out dtValue))
@@ -1541,6 +1704,7 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("AuditChecklistList");
                     }
+
                 }
                 else
                 {
@@ -1560,6 +1724,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult AuditPerformanceEdit()
         {
+
             try
             {
                 if (Request.QueryString["idt_checklist"] != null && Request.QueryString["idt_checklist"] != "")
@@ -1569,6 +1734,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select t.id_AuditChecklist,Itemno,Department,AuditCriteria,Questions,idt_checklist,AuditNo,"
                     + "AuditDate,Auditors,Auditee,Notes,Remarks from t_auditchecklist t,t_generateauditchecklist tt where t.id_AuditChecklist=tt.id_AuditChecklist"
                     + " and idt_checklist='" + sidt_checklist + "'";
+
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1634,6 +1800,7 @@ namespace ISOStd.Controllers
                         ViewBag.Department = objGlobaldata.GetDepartmentListbox();
                         ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                         return View(objPerformance);
+
                     }
                     else
                     {
@@ -1670,6 +1837,8 @@ namespace ISOStd.Controllers
                 objAuditChecklist.Remarks = form["Remarks"];
                 objAuditChecklist.Department = form["Department"];
 
+
+
                 DateTime dateValue;
                 if (DateTime.TryParse(form["AuditDate"], out dateValue) == true)
                 {
@@ -1698,12 +1867,14 @@ namespace ISOStd.Controllers
                         if (upload != null)
                         {
                             objElements.evidence_upload = form["evidence_upload" + i];
+
                         }
 
                         objAudit.lstAudit.Add(objElements);
                     }
                     i++;
                 }
+
 
                 if (objAuditChecklist.FunUpdateAuditPerformance(objAuditChecklist, objAudit))
                 {
@@ -1728,10 +1899,13 @@ namespace ISOStd.Controllers
         {
             try
             {
+
+
                 if (form["idt_checklist"] != null && form["idt_checklist"] != "")
                 {
                     GenerateAuditChecklistModels Doc = new GenerateAuditChecklistModels();
                     string sidt_checklist = form["idt_checklist"];
+
 
                     if (Doc.FunDeleteChecklist(sidt_checklist))
                     {
@@ -1749,6 +1923,7 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Audit checklist Id cannot be Null or empty";
                     return Json("Failed");
                 }
+
             }
             catch (Exception ex)
             {
@@ -1773,6 +1948,8 @@ namespace ISOStd.Controllers
                         Auditee = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["Auditee"].ToString()),
                         Auditor = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["Auditor"].ToString()),
                     };
+
+
                 }
             }
             return Json(objPerf);

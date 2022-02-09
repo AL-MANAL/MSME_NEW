@@ -49,19 +49,14 @@
             </div>
         </div>
         <div class="card-body">
-            <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AuditPlan", "AuditProcess")' title="Create Audit Plan">
-                <span class="ladda-label">Create Audit Plan</span>
-                <span class="ladda-spinner"></span>
-            </a>
-            <br />
-            <hr />
+          
 
             @if (ViewBag.Branch != null)
             {
                 <div class="row">
                     <div class="col-md-4">
                         <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
-                            <option value='' hidden>Division</option>
+                            @*<option value='' hidden>Division</option>*@
                             @if (ViewBag.Branch != null)
                             {
                                 foreach (var item in ViewBag.Branch)
@@ -94,11 +89,11 @@
                         @Html.DisplayNameFor(model => model.First().branch)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().group_name)
+                        @Html.DisplayNameFor(model => model.First().dept_name)
                     </th>
-                    @*<th>
+                    <th>
                         @Html.DisplayNameFor(model => model.First().team)
-                    </th>*@
+                    </th>
                     <th>
                         @Html.DisplayNameFor(model => model.First().auditors)
                     </th>
@@ -133,11 +128,11 @@
                                 @Html.DisplayFor(model => item.branch)
                             </td>
                             <td>
-                                @Html.DisplayFor(model => item.group_name)
+                                @Html.DisplayFor(model => item.dept_name)
                             </td>
-                            @*<td>
+                            <td>
                                 @Html.DisplayFor(model => item.team)
-                            </td>*@
+                            </td>
                             <td>
                                 @Html.DisplayFor(model => item.auditors_name)
                             </td>
@@ -163,7 +158,7 @@
                                                 @if (item.auditors.Contains(Obj.GetCurrentUserSession().empid))
                                                 {
                                             <a class="dropdown-item" href='@Url.Action("RaiseNonconformity", "AuditProcess", new { Plan_Id = item.Plan_Id, Audit_Id = item.Audit_Id })' title="Raise NC">
-                                                <i class="icon-pencil7"></i>Raise NC
+                                                <i class="icon-pencil7"></i>Finding Report
                                             </a> 
                                                 }
                                             <a class="dropdown-item" href='@Url.Action("NonconformityList", "AuditProcess", new {Plan_Id = item.Plan_Id})' title="NC List">

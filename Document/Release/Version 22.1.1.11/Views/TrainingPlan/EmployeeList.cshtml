@@ -1,0 +1,54 @@
+﻿@using System.Data
+@{
+    Layout = null;
+    DataSet dsPersonName = ViewBag.Person_Name;
+    
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Employee List</h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-striped table-hover datatable-responsive">
+            <thead>
+                <tr class="bg-brown">
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                  
+                    <th>Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsPersonName.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @obj.GetEmpIDByEmpNo(dsPersonName.Tables[0].Rows[i]["Empid"].ToString())
+                        </td>
+                        <td>
+                           @(dsPersonName.Tables[0].Rows[i]["Empname"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpDesignationByHrEmpId(dsPersonName.Tables[0].Rows[i]["Empid"].ToString())
+                        </td>
+                      
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+    </div>
+
+</div>
+
+
+

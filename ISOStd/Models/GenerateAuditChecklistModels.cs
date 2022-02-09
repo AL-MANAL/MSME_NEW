@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.IO;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace ISOStd.Models
 {
@@ -57,10 +58,10 @@ namespace ISOStd.Models
         [Required]
         [Display(Name = "Auditee(s)")]
         public string Auditee { get; set; }
-       
+
         [Display(Name = "Other Notes")]
         public string Notes { get; set; }
-       
+
         [Display(Name = "Remarks")]
         public string Remarks { get; set; }
 
@@ -90,15 +91,15 @@ namespace ISOStd.Models
         public string notified_to { get; set; }
 
         [Display(Name = "Division")]
-        public string directorate { get; set; }       
+        public string branch { get; set; }
 
         [Display(Name = "Department")]
-        public string grp { get; set; }
-        public string grp_common { get; set; }
+        public string dept_name { get; set; }
+        public string dept_name_common { get; set; }
 
-        //[Display(Name = "Team")]
-        //public string team { get; set; }
-        //public string team_common { get; set; }
+        [Display(Name = "Team")]
+        public string team { get; set; }
+        public string team_common { get; set; }
 
         public string ReportStatus { get; set; }
         public string AuditNum { get; set; }
@@ -115,13 +116,32 @@ namespace ISOStd.Models
         [Display(Name = "Questions")]
         public string Questions { get; set; }
 
+        public string branch_common { get; set; }
+
+        //t_auditchecklist
+        [Display(Name = "To be approved by")]
+        public string approved_by { get; set; }
+
+        [Display(Name = "Approval Status")]
+        public string apprv_status { get; set; }
+
+        [Display(Name = "Approval Date")]
+        public DateTime approved_date { get; set; }
+
+        [Display(Name = "Comments")]
+        public string apprv_comments { get; set; }
+
+        public string apprv_status_id { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string approver_upload { get; set; }
         internal bool FunAddAuditChecklist(GenerateAuditChecklistModels objchecklist, GenerateAuditChecklistModelsList objList)
         {
             try
             {
 
                 string sSqlstmt = "insert into t_auditchecklist (AuditCriteria,location,ChecklistRef,prepared_by," +
-                    "notified_to,directorate,grp,grp_common";
+                    "notified_to,branch,dept_name,dept_name_common,team,team_common,branch_common";
                 string sFields = "", sFieldValue = "";
                 if (objchecklist.created_on != null && objchecklist.created_on > Convert.ToDateTime("01/01/0001"))
                 {
@@ -133,11 +153,20 @@ namespace ISOStd.Models
                     sFields = sFields + ", ammended_on";
                     sFieldValue = sFieldValue + ", '" + objchecklist.ammended_on.ToString("yyyy/MM/dd") + "'";
                 }
-
+                if (objchecklist.approved_by != null && objchecklist.approved_by != "")
+                {
+                    sFields = sFields + ", approved_by";
+                    sFieldValue = sFieldValue + ", '" + approved_by + "'";
+                }
+                else
+                {
+                    sFields = sFields + ", apprv_status";
+                    sFieldValue = sFieldValue + ", '2'";
+                }
                 sSqlstmt = sSqlstmt + sFields;
-                sSqlstmt = sSqlstmt + ") values('"+ objchecklist.AuditCriteria + "','" + objchecklist.location + "','" + objchecklist.ChecklistRef 
-                    + "','" + objchecklist.prepared_by + "','" + objchecklist.notified_to + "','" + objchecklist.directorate 
-                    + "','" + objchecklist.grp + "','" + objchecklist.grp_common + "'";
+                sSqlstmt = sSqlstmt + ") values('" + objchecklist.AuditCriteria + "','" + objchecklist.location + "','" + objchecklist.ChecklistRef
+                    + "','" + objchecklist.prepared_by + "','" + objchecklist.notified_to + "','" + objchecklist.branch
+                    + "','" + objchecklist.dept_name + "','" + objchecklist.dept_name_common + "','" + objchecklist.team + "','" + objchecklist.team_common + "','" + objchecklist.branch_common + "'";
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
                 //return objGlobalData.ExecuteQuery(sSqlstmt);
@@ -154,7 +183,7 @@ namespace ISOStd.Models
                     {
                         //string LocationName = objGlobalData.GetCompanyBranchNameById(audit_division);
                         //string DeptName = "Common";
-                        //if (grp_common.ToLower() != "common")
+                        //if (dept_name_common.ToLower() != "common")
                         //{
                         //    DeptName = objGlobalData.GetDeptNameById(Department);
                         //}
@@ -165,11 +194,19 @@ namespace ISOStd.Models
                         if (dsData != null && dsData.Tables.Count > 0)
                         {
                             ChecklistRef = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
-                        }                     
+                        }
 
                         string sql = "update t_auditchecklist set ChecklistRef='" + ChecklistRef + "' where id_AuditChecklist = '" + iid_AuditChecklist + "'";
 
-                        return objGlobalData.ExecuteQuery(sql);
+                        if (objGlobalData.ExecuteQuery(sql))
+                        {
+                            if (objchecklist.approved_by != null && objchecklist.approved_by != "")
+                            {
+                                return SendAuditCheckistmail(iid_AuditChecklist, "Audit Checklist");
+                            }
+                            else
+                                return true;
+                        }
                     }
 
                 }
@@ -181,7 +218,158 @@ namespace ISOStd.Models
             }
             return false;
         }
+        internal bool SendAuditCheckistmail(int id_AuditChecklist, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
 
+                string sSqlstmt = "select id_AuditChecklist,ChecklistRef,prepared_by,approved_by"
+                    + " from t_auditchecklist where id_AuditChecklist='" + id_AuditChecklist + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["prepared_by"].ToString());
+
+
+                    sHeader = "<tr><td colspan=3><b>Checklist Ref:<b></td> <td colspan=3>"
+                        + (dsList.Tables[0].Rows[0]["ChecklistRef"].ToString()) + "</td></tr>"
+                          + "<tr><td colspan=3><b>Prepared By:<b></td> <td colspan=3>" + objGlobalData.GetEmpHrNameById(dsList.Tables[0].Rows[0]["prepared_by"].ToString()) + "</td></tr>";
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Audit Checklist");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendAuditCheckistmail: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunUpdateApproveAuditChecklist(GenerateAuditChecklistModels objModel)
+        {
+            try
+            {
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+                string sSqlstmt = "update t_auditchecklist set apprv_status='" + apprv_status + "',apprv_comments='" + apprv_comments + "',approved_date='" + sApprovedDate + "',approver_upload='" + approver_upload + "' where id_AuditChecklist='" + id_AuditChecklist + "'";
+
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    return SendAuditCheckistApprovemail(id_AuditChecklist, apprv_status, "Audit Checklist Approve Status");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateApproveAuditChecklist: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool SendAuditCheckistApprovemail(int id_AuditChecklist, string iStatus, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select id_AuditChecklist,ChecklistRef,prepared_by,approved_by,apprv_comments,"
+                     + "(CASE WHEN apprv_status = '0' THEN 'Pending for approval' WHEN apprv_status = '1' THEN 'Rejected' WHEN apprv_status = '2' THEN 'Approved' end) as apprv_status"
+                     + " from t_auditchecklist where id_AuditChecklist='" + id_AuditChecklist + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["prepared_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["prepared_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["approved_by"].ToString());
+
+
+
+                    sHeader = "<tr><td colspan=3><b>Checklist Ref:<b></td> <td colspan=3>"
+                        + (dsList.Tables[0].Rows[0]["ChecklistRef"].ToString()) + "</td></tr>"
+                          + "<tr><td colspan=3><b>Prepared By:<b></td> <td colspan=3>" + objGlobalData.GetEmpHrNameById(dsList.Tables[0].Rows[0]["prepared_by"].ToString()) + "</td></tr>"
+                           + "<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["apprv_status"].ToString()) + "</td></tr>"
+                            + "<tr><td colspan=3><b>Comments:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["apprv_comments"].ToString()) + "</td></tr>";
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Audit Checklist");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendAuditCheckistApprovemail: " + ex.ToString());
+            }
+            return false;
+        }
         internal bool FunAddChkListTrans(GenerateAuditChecklistModelsList objList)
         {
             try
@@ -255,7 +443,7 @@ namespace ISOStd.Models
             }
             return false;
         }
-               
+
         internal bool FunAddAuditPerformance(GenerateAuditChecklistModels objAuditChecklist, AuditPerformanceModelsList objAudit)
         {
             try
@@ -339,34 +527,34 @@ namespace ISOStd.Models
             {
                 //if (cnt > 0)
                 //{
-                    string sSqlstmt = "update t_auditchecklist set  prepared_by='" + objAudit.prepared_by + "',AuditCriteria='" + objAudit.AuditCriteria + "',notified_to='" + objAudit.notified_to
-                       + "',directorate='" + objAudit.directorate + "',grp='" + objAudit.grp + "',grp_common='" + objAudit.grp_common + "'";
+                string sSqlstmt = "update t_auditchecklist set  prepared_by='" + objAudit.prepared_by + "',AuditCriteria='" + objAudit.AuditCriteria + "',notified_to='" + objAudit.notified_to
+                   + "',branch='" + objAudit.branch + "',dept_name='" + objAudit.dept_name + "',dept_name_common='" + objAudit.dept_name_common + "',team='" + objAudit.team + "',team_common='" + objAudit.team_common + "',branch_common='" + objAudit.branch_common + "'";
 
-                    if (objAudit.created_on != null && objAudit.created_on > Convert.ToDateTime("01/01/0001"))
+                if (objAudit.created_on != null && objAudit.created_on > Convert.ToDateTime("01/01/0001"))
+                {
+                    sSqlstmt = sSqlstmt + ", created_on='" + objAudit.created_on.ToString("yyyy/MM/dd") + "'";
+                }
+
+                if (objAudit.ammended_on != null && objAudit.ammended_on > Convert.ToDateTime("01/01/0001"))
+                {
+                    sSqlstmt = sSqlstmt + ", ammended_on='" + objAudit.ammended_on.ToString("yyyy/MM/dd") + "'";
+                }
+
+                sSqlstmt = sSqlstmt + " where id_AuditChecklist='" + objAudit.id_AuditChecklist + "';";
+                //return objGlobalData.ExecuteQuery(sSqlstmt);
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    if (id_AuditChecklist > 0 && Convert.ToInt32(objList.AuditCheckList.Count) > 0)
                     {
-                        sSqlstmt = sSqlstmt + ", created_on='" + objAudit.created_on.ToString("yyyy/MM/dd") + "'";
+                        objList.AuditCheckList[0].id_AuditChecklist = id_AuditChecklist;
+                        FunAddChkListTrans(objList);
                     }
-
-                    if (objAudit.ammended_on != null && objAudit.ammended_on > Convert.ToDateTime("01/01/0001"))
+                    else
                     {
-                        sSqlstmt = sSqlstmt + ", ammended_on='" + objAudit.ammended_on.ToString("yyyy/MM/dd") + "'";
+                        FunUpdateChkListTrans(id_AuditChecklist.ToString());
                     }
-
-                    sSqlstmt = sSqlstmt + " where id_AuditChecklist='" + objAudit.id_AuditChecklist + "';";
-                    //return objGlobalData.ExecuteQuery(sSqlstmt);
-                    if (objGlobalData.ExecuteQuery(sSqlstmt))
-                    {
-                        if (id_AuditChecklist > 0 && Convert.ToInt32(objList.AuditCheckList.Count) > 0)
-                        {
-                            objList.AuditCheckList[0].id_AuditChecklist = id_AuditChecklist;
-                            FunAddChkListTrans(objList);
-                        }
-                        else
-                        {
-                            FunUpdateChkListTrans(id_AuditChecklist.ToString());
-                        }
                     return true;
-                    }
+                }
                 //else
                 //{
 
@@ -381,7 +569,7 @@ namespace ISOStd.Models
             {
                 objGlobalData.AddFunctionalLog("Exception in FunUpdateAuditChecklist: " + ex.ToString());
             }
-            return false;           
+            return false;
         }
     }
     public class AuditElementsModels
@@ -391,19 +579,19 @@ namespace ISOStd.Models
         [Required]
         [Display(Name = "Id")]
         public string id_element { get; set; }
-      
+
         [Display(Name = "Element")]
         public string Audit_Elements { get; set; }
-     
+
         [Display(Name = "Department")]
         public string Department { get; set; }
-      
+
         [Display(Name = "location")]
         public string location { get; set; }
-        
+
         [Display(Name = "division")]
         public string division { get; set; }
-        
+
         [Display(Name = "Audit Criteria")]
         public string IsoStd { get; set; }
 
@@ -416,7 +604,7 @@ namespace ISOStd.Models
         public int Options { get; set; }
 
         public DataSet GetAuditRating()
-        {           
+        {
             DataSet dsRating = new DataSet();
             try
             {
@@ -477,7 +665,7 @@ namespace ISOStd.Models
                     {
                         AuditElementsModels data = new AuditElementsModels()
                         {
-                            id_element =dsElement.Tables[0].Rows[i]["id_element"].ToString(),
+                            id_element = dsElement.Tables[0].Rows[i]["id_element"].ToString(),
                             Audit_Elements = dsElement.Tables[0].Rows[i]["Audit_Elements"].ToString()
                         };
 
@@ -523,7 +711,7 @@ namespace ISOStd.Models
             return new MultiSelectList(AuditElemt.lstAuditElement, "id_element", "Audit_Elements");
         }
 
-        public MultiSelectList GetAuditElementsListboxByIsoStd(string Department,string IsoStd)
+        public MultiSelectList GetAuditElementsListboxByIsoStd(string Department, string IsoStd)
         {
             AuditElementsModelsList AuditElemt = new AuditElementsModelsList();
             AuditElemt.lstAuditElement = new List<AuditElementsModels>();
@@ -553,7 +741,7 @@ namespace ISOStd.Models
                 DataSet dsElement = objGlobalData.Getdetails(sSqlstmt);
 
 
-               // DataSet dsElement = objGlobalData.Getdetails("select id_element,Audit_Elements from t_auditelements where IsoStd='" + IsoStd + "' and Department='" + Department + "' and Active=1");
+                // DataSet dsElement = objGlobalData.Getdetails("select id_element,Audit_Elements from t_auditelements where IsoStd='" + IsoStd + "' and Department='" + Department + "' and Active=1");
                 if (dsElement.Tables.Count > 0 && dsElement.Tables[0].Rows.Count > 0)
                 {
                     for (int i = 0; i < dsElement.Tables[0].Rows.Count; i++)
@@ -695,7 +883,7 @@ namespace ISOStd.Models
             return false;
         }
 
- 
+
 
     }
     public class AuditPerformanceModels

@@ -1,0 +1,3484 @@
+﻿@model ISOStd.Models.WorkPermitModels
+@{
+    ViewBag.title = "";
+    int icnt = 0;
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+    ISOStd.Models.WorkPermitModelsList objInList = new ISOStd.Models.WorkPermitModelsList();
+    if (ViewBag.objInList != null)
+    {
+        objInList = ViewBag.objInList;
+        icnt = objInList.PermitList.Count;
+    }
+    if (ViewBag.Rating != null)
+    {
+        dsrating = ViewBag.Rating;
+    }
+    Dictionary<string, string> dicObjHydroList = new Dictionary<string, string>();
+    Dictionary<string, string> dicExcvHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicExcvSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicExcvSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotTypeList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotWelfareList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicHotSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicFalseHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicFalseSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicFalseSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicShaftHazardList = new Dictionary<string, string>();
+    Dictionary<string, string> dicShaftSiteList = new Dictionary<string, string>();
+    Dictionary<string, string> dicShaftSafetyList = new Dictionary<string, string>();
+    Dictionary<string, string> dicPneumaticList = new Dictionary<string, string>();
+    Dictionary<string, string> dicElectricalList = new Dictionary<string, string>();
+    Dictionary<string, string> dicConfinedList = new Dictionary<string, string>();
+
+    if (ViewBag.dicObjConfinedList != null)
+    {
+        dicConfinedList = ViewBag.dicObjConfinedList;
+    }
+    if (ViewBag.dicObjHydroList != null)
+    {
+        dicObjHydroList = ViewBag.dicObjHydroList;
+    }
+
+    if (ViewBag.dicExcvHazardList != null)
+    {
+        dicExcvHazardList = ViewBag.dicExcvHazardList;
+    }
+    if (ViewBag.dicExcvSiteList != null)
+    {
+        dicExcvSiteList = ViewBag.dicExcvSiteList;
+    }
+    if (ViewBag.dicExcvSafetyList != null)
+    {
+        dicExcvSafetyList = ViewBag.dicExcvSafetyList;
+    }
+    if (ViewBag.dicHotTypeList != null)
+    {
+        dicHotTypeList = ViewBag.dicHotTypeList;
+    }
+    if (ViewBag.dicHotHazardList != null)
+    {
+        dicHotHazardList = ViewBag.dicHotHazardList;
+    }
+    if (ViewBag.dicHotWelfareList != null)
+    {
+        dicHotWelfareList = ViewBag.dicHotWelfareList;
+    }
+    if (ViewBag.dicHotSiteList != null)
+    {
+        dicHotSiteList = ViewBag.dicHotSiteList;
+    }
+    if (ViewBag.dicHotSafetyList != null)
+    {
+        dicHotSafetyList = ViewBag.dicHotSafetyList;
+    }
+    if (ViewBag.dicFalseHazardList != null)
+    {
+        dicFalseHazardList = ViewBag.dicFalseHazardList;
+    }
+    if (ViewBag.dicFalseSiteList != null)
+    {
+        dicFalseSiteList = ViewBag.dicFalseSiteList;
+    }
+    if (ViewBag.dicFalseSafetyList != null)
+    {
+        dicFalseSafetyList = ViewBag.dicFalseSafetyList;
+    }
+    if (ViewBag.dicShaftHazardList != null)
+    {
+        dicShaftHazardList = ViewBag.dicShaftHazardList;
+    }
+    if (ViewBag.dicShaftSiteList != null)
+    {
+        dicShaftSiteList = ViewBag.dicShaftSiteList;
+    }
+    if (ViewBag.dicShaftSafetyList != null)
+    {
+        dicShaftSafetyList = ViewBag.dicShaftSafetyList;
+    }
+    if (ViewBag.dicPneumaticList != null)
+    {
+        dicPneumaticList = ViewBag.dicPneumaticList;
+    }
+    if (ViewBag.dicElectricalList != null)
+    {
+        dicElectricalList = ViewBag.dicElectricalList;
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("WorkPermitList", "WorkPermit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Work Permit</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Work Permit</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+@using (Html.BeginForm("WorkPermitEdit", "WorkPermit", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+  <input type="hidden" id="spermit_type" name="spermit_type" value="@Model.permit_type"/>
+  <input type="hidden" id="id_work_permit" name="id_work_permit" value="@Model.id_work_permit"/>
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Work Permit</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.dept)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="dept" name="dept" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.dept.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="location" name="location" multiple="multiple" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col" colspan="4">
+                            Specification of Work (Filled by Permit Requestor / Activity Responsible Person )
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.permit_type)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.permit_type)
+                            </div>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.permit_location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.permit_location)
+                            </div>
+                            @*<div class="editor-field">
+                    <input type="text" id="location" name="location" value="@Model.location" required />
+                </div>*@
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.permitno)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @*<div class="editor-field">
+                    <input type="text" id="permitno" name="permitno" value="@Model.permitno" required />
+                </div>*@
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.permitno)
+
+                            </div>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.start_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+
+                            <div class="editor-field">
+                                <p>
+                                    @if (Model.start_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="start_date" name="start_date" value="@Model.start_date.ToString("yyyy-MM-dd")"
+                                               required="required" style="width:150px" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="start_date" name="start_date" required="required" style="width: 150px" />
+                                    }
+
+                                    Hr:
+                                    <select name="StartTimeInHour" id="StartTimeInHour" style="width: 35px;">
+                                        @if (ViewBag.PlanTimeInHour != null)
+                                        {
+                                            foreach (var data in ViewBag.PlanTimeInHour)
+                                            {
+                                                if (Convert.ToInt16(Model.start_date.ToString("HH")) == Convert.ToInt16(data))
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    Min:
+                                    <select name="StartTimeInMin" id="StartTimeInMin" style="width: 43px;">
+                                        @if (ViewBag.PlanTimeInMin != null)
+                                        {
+                                            foreach (var data in ViewBag.PlanTimeInMin)
+                                            {
+                                                if (Convert.ToInt16(Model.start_date.ToString("mm")) == Convert.ToInt16(data))
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </p>
+                                @Html.ValidationMessageFor(m => m.start_date)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.area)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.area, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(m => m.area)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.finish_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+
+                            <div class="editor-field">
+                                <p>
+                                    @if (Model.finish_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="finish_date" name="finish_date" value="@Model.finish_date.ToString("yyyy-MM-dd")"
+                                               required="required" style="width:150px" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="finish_date" name="finish_date" required="required" style="width:150px" />
+                                    }
+
+                                    Hr:
+                                    <select name="FinishTimeInHour" id="FinishTimeInHour" style="width: 35px;">
+                                        @if (ViewBag.PlanTimeInHour != null)
+                                        {
+                                            foreach (var data in ViewBag.PlanTimeInHour)
+                                            {
+                                                if (Convert.ToInt16(Model.finish_date.ToString("HH")) == Convert.ToInt16(data))
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    Min:
+                                    <select name="FinishTimeInMin" id="FinishTimeInMin" style="width: 43px;">
+                                        @if (ViewBag.PlanTimeInMin != null)
+                                        {
+                                            foreach (var data in ViewBag.PlanTimeInMin)
+                                            {
+                                                if (Convert.ToInt16(Model.finish_date.ToString("mm")) == Convert.ToInt16(data))
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </p>
+                                @Html.ValidationMessageFor(m => m.finish_date)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.job_performer)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.job_performer, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.no_days)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.no_days, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.contractor)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.contractor, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.resp_pers)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="resp_pers" name="resp_pers" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (item.Value == Model.resp_pers)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.resp_pers)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.contactno)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.contactno, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.dept)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="dept" name="dept" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Dept != null)
+                                    {
+                                        foreach (var item in ViewBag.Dept)
+                                        {
+                                            if (item.Value == Model.dept)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.dept)
+                            </div>
+                        </td>*@
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.section)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.section, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.resp_section)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.resp_section, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.equipment)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.equipment, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.jobno)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.jobno, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.access_level)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.access_level, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.workorder)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.workorder, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.no_person)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.no_person, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.upload)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+                                    <div class="editor-label">
+                                        <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                    </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.pressure)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="pressure" name="pressure" readonly style="background-color: #efefe6" />Bars/psi
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.IA)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc class="chosen-select" id="IA" name="IA" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (item.Value == Model.IA)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.IA)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.work_type)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                @if (ViewBag.work != null)
+                                {
+                                    foreach (var item in ViewBag.work)
+                                    {
+                                        if (item == Model.work_type)
+                                        {
+                                            <input type="radio" name="work_type" checked value='@item' />@item
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" name="work_type" value='@item' />@item
+                                        }
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.drawings)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (ViewBag.YesNo != null)
+                                {
+                                    foreach (var item in ViewBag.YesNo)
+                                    {
+                                        if (item == Model.drawings)
+                                        {
+                                            <input type="radio" name="drawings" checked value='@item' />@item
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" name="drawings" value='@item' />@item
+                                        }
+                                    }
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.rescue_plan)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (ViewBag.YesNo != null)
+                                {
+                                    foreach (var item in ViewBag.YesNo)
+                                    {
+                                        if (item == Model.rescue_plan)
+                                        {
+                                            <input type="radio" name="rescue_plan" checked value='@item' />@item
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" name="rescue_plan" value='@item' />@item
+                                        }
+                                    }
+                                }
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.method_state)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (ViewBag.YesNo != null)
+                                {
+                                    foreach (var item in ViewBag.YesNo)
+                                    {
+                                        if (item == Model.method_state)
+                                        {
+                                            <input type="radio" name="method_state" checked value='@item' />@item
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" name="method_state" value='@item' />@item
+                                        }
+                                    }
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.work_level)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (ViewBag.YesNo != null)
+                                {
+                                    foreach (var item in ViewBag.YesNo)
+                                    {
+                                        if (item == Model.method_state)
+                                        {
+                                            <input type="radio" name="work_level" checked value='@item' />@item
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" name="work_level" value='@item' />@item
+                                        }
+                                    }
+                                }
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col" colspan="4">
+                            <div class="editor-label">
+                                Description
+                            </div>
+                            <div class="editor-field">
+                                @Html.TextAreaFor(model => model.description, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col" colspan="4">
+                            <div class="editor-label">
+                                Controls & Comments
+                            </div>
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments" name="comments">@Model.comments</textarea>
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+
+	    </div>
+        </div>
+        <fieldset class="border p-2">
+<legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>COMPLETION, SUSPENSION OR CANCELLATION of WORK</legend>
+<table class="table table-lg">
+
+ <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.work_status)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                              <select class="form-control select-search select2-hidden-accessible" data-fouc id="work_status" name="work_status" >
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Status != null)
+                                {
+                                    foreach (var item in ViewBag.Status)
+                                    {
+                                        if (item == Model.work_status)
+                                        {
+                                            <option value='@item' selected>@item</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                   <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.completion_date)
+                        </div>
+                    </td>
+                    <td class="col">
+
+                        <div class="editor-field">
+                            <p>
+                                @if (Model.completion_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="completion_date" name="completion_date" value="@Model.completion_date.ToString("yyyy-MM-dd")"
+                                            style="width:150px" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="completion_date" name="completion_date"  style="width: 150px" />
+                                }
+
+                                Hr:
+                                <select name="CompTimeInHour" id="CompTimeInHour" style="width: 35px;">
+                                    @if (ViewBag.PlanTimeInHour != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInHour)
+                                        {
+                                            if (Convert.ToInt16(Model.completion_date.ToString("HH")) == Convert.ToInt16(data))
+                                            {
+                                        <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                        <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                Min:
+                                <select name="CompTimeInMin" id="CompTimeInMin" style="width: 43px;">
+                                    @if (ViewBag.PlanTimeInMin != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInMin)
+                                        {
+                                            if (Convert.ToInt16(Model.completion_date.ToString("mm")) == Convert.ToInt16(data))
+                                            {
+                                        <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                        <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+               <tr class="row">
+ 		    <td colspan="3" class="col">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.work_safe)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @if (ViewBag.YesNo != null)
+                            {
+                                foreach (var item in ViewBag.YesNo)
+                                {
+                                    if (item == Model.work_safe)
+                                    {
+                                <input type="radio" name="work_safe" checked value='@item'/>@item
+                                    }
+                                    else
+                                    {
+                                <input type="radio" name="work_safe" value='@item'/>@item
+                                    }
+                                }
+                            }
+                        </div>
+                    </td>
+		 </tr>
+		  <tr class="row">
+                    <td class="col" colspan="4">
+                        <div class="editor-label">
+                             Additional Comments
+                        </div>
+                        <div class="editor-field">
+  <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="add_comments" name="add_comments">@Model.add_comments</textarea>                    
+                        </div>
+                    </td>
+                </tr>
+             
+
+
+</table>
+</fieldset>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "WorkPermitList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+        </div>
+    </div>
+
+<div class="table-responsive" id="hydro" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-lg">
+            <tr>
+                        <td colspan="5">Safety Related Checks</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                     @if (ViewBag.HydroTest != null)
+                    {
+                        int iSrno = 0, cnt1 = 0;
+                        foreach (var item in ViewBag.HydroTest)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt1 = cnt1 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question1 @item.Value" name="question1 @item.Value" value="@item.Value"/>
+                            </td>
+                            @if (dicObjHydroList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.objHydroList != null)
+                                    {
+
+                                        if (dicObjHydroList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings1 @item.Value" name="id_ratings1 @item.Value" class="id_ratings1 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings1 @item.Value" name="id_ratings1 @item.Value" class="id_ratings1 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings1 @item.Value" name="id_ratings1 @item.Value" 
+                                    class="id_ratings @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt1" name="cnt1" value="@cnt1" />
+
+                            </td>
+                        </tr>
+                    }
+                </table>
+
+
+</div>
+ <div class="table-responsive" id="excavation" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-lg">
+            <tr>
+                        <td colspan="5">Hazards Identified</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                    @if (ViewBag.Hazard != null)
+                    {
+                        int iSrno = 0, cnt2 = 0;
+                        foreach (var item in ViewBag.Hazard)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt2 = cnt2 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question2 @item.Value" name="question2 @item.Value" value="@item.Value"/>
+                            </td>
+                            @if (dicExcvHazardList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.ExcvHazardList != null)
+                                    {
+
+                                        if (dicExcvHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings2 @item.Value" name="id_ratings2 @item.Value" class="id_ratings2 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings2 @item.Value" name="id_ratings2 @item.Value" class="id_ratings2 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings2 @item.Value" name="id_ratings2 @item.Value" 
+                                    class="id_ratings @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt2" name="cnt2" value="@cnt2" />
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+          <table class="table table-lg">
+                    <tr>
+                        <td>Work Site Precautions</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                     @if (ViewBag.WorkSite != null)
+                    {
+                        int iSrno = 0, cnt3 = 0;
+                        foreach (var item in ViewBag.WorkSite)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt3 = cnt3 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question3 @item.Value" name="question3 @item.Value" value="@item.Value"/>
+                            </td>
+                            @if (dicExcvSiteList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.ExcvSiteList != null)
+                                    {
+
+                                        if (dicExcvSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings3 @item.Value" name="id_ratings3 @item.Value" class="id_ratings3 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings3 @item.Value" name="id_ratings3 @item.Value" class="id_ratings3 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings3 @item.Value" name="id_ratings3 @item.Value" 
+                                    class="id_ratings3 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt3" name="cnt3" value="@cnt3" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+
+
+                </table>
+                <table class="table table-lg">
+                    <tr>
+                        <td colspan="5">Personal Protection and Safety Equipment</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                     @if (ViewBag.Safety != null)
+                    {
+                        int iSrno = 0, cnt4 = 0;
+                        foreach (var item in ViewBag.Safety)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt4 = cnt4 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question4 @item.Value" name="question4 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicExcvSafetyList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.ExcvSafetyList != null)
+                                    {
+
+                                        if (dicExcvSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings4 @item.Value" name="id_ratings4 @item.Value" class="id_ratings4 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings4 @item.Value" name="id_ratings4 @item.Value" class="id_ratings4 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings4 @item.Value" name="id_ratings4 @item.Value" 
+                                    class="id_ratings4 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt4" name="cnt4" value="@cnt4" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+
+                </table>
+
+</div>   
+ <div class="table-responsive" id="hotwork" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-lg">
+            <tr>
+                        <td colspan="4">Type of work</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                    @if (ViewBag.HotType != null)
+                    {
+                        int iSrno = 0, cnt5 = 0;
+                        foreach (var item in ViewBag.HotType)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt5 = cnt5 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question5 @item.Value" name="question5 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicHotTypeList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.HotTypeList != null)
+                                    {
+
+                                        if (dicHotTypeList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings5 @item.Value" name="id_ratings5 @item.Value" class="id_ratings4 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings5 @item.Value" name="id_ratings5 @item.Value" class="id_ratings4 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings5 @item.Value" name="id_ratings5 @item.Value" 
+                                    class="id_ratings5 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt5" name="cnt5" value="@cnt5" />
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+          <table class="table table-lg">
+                    <tr>
+                        <td colspan="4">Hazards Identified</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                     @if (ViewBag.HotHazard != null)
+                    {
+                        int iSrno = 0, cnt6 = 0;
+                        foreach (var item in ViewBag.HotHazard)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt6 = cnt6 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question6 @item.Value" name="question6 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicHotHazardList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.HotHazardList != null)
+                                    {
+
+                                        if (dicHotHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings6 @item.Value" name="id_ratings6 @item.Value" class="id_ratings4 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings6 @item.Value" name="id_ratings6 @item.Value" class="id_ratings4 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings6 @item.Value" name="id_ratings6 @item.Value" 
+                                    class="id_ratings6 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt6" name="cnt6" value="@cnt6" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+
+
+                </table>
+               <table class="table table-lg">
+                    <tr>
+                        <td colspan="4">Welfare</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                     @if (ViewBag.Welfare != null)
+                    {
+                        int iSrno = 0, cnt7 = 0;
+                        foreach (var item in ViewBag.Welfare)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt7 = cnt7 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question7 @item.Value" name="question7 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicHotWelfareList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.HotWelfareList != null)
+                                    {
+
+                                        if (dicHotWelfareList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings7 @item.Value" name="id_ratings7 @item.Value" class="id_ratings7 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings7 @item.Value" name="id_ratings7 @item.Value" class="id_ratings7 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings7 @item.Value" name="id_ratings7 @item.Value" 
+                                    class="id_ratings6 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt7" name="cnt7" value="@cnt7" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+                </table>
+                <table class="table table-lg">
+                    <tr>
+                        <td colspan="4">Work Site Precautions</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                @if (ViewBag.HotWorkSite != null)
+                    {
+                        int iSrno = 0, cnt8 = 0;
+                        foreach (var item in ViewBag.HotWorkSite)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt8 = cnt8 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question8 @item.Value" name="question8 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicHotSiteList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.HotSiteList != null)
+                                    {
+
+                                        if (dicHotSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings8 @item.Value" name="id_ratings8 @item.Value" class="id_ratings8 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings8 @item.Value" name="id_ratings8 @item.Value" class="id_ratings8 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings8 @item.Value" name="id_ratings8 @item.Value" 
+                                    class="id_ratings8 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt8" name="cnt8" value="@cnt8" />
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+                 <table class="table table-lg">
+                    <tr>
+                        <td colspan="4">Personal Protection and Safety Equipment</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                    @if (ViewBag.Safety != null)
+                    {
+                        int iSrno = 0, cnt9 = 0;
+                        foreach (var item in ViewBag.Safety)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt9 = cnt9 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question9 @item.Value" name="question9 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicHotSafetyList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.HotSafetyList != null)
+                                    {
+
+                                        if (dicHotSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings9 @item.Value" name="id_ratings9 @item.Value" class="id_ratings9 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings9 @item.Value" name="id_ratings9 @item.Value" class="id_ratings9 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings9 @item.Value" name="id_ratings9 @item.Value" 
+                                    class="id_ratings8 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt9" name="cnt9" value="@cnt9" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+                </table>
+
+</div>
+ <div class="table-responsive" id="falsework" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-lg">
+            <tr>
+                        <td colspan="4">Hazards Identified</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                 @if (ViewBag.FalseHazard != null)
+                    {
+                        int iSrno = 0, cnt10 = 0;
+                        foreach (var item in ViewBag.FalseHazard)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt10 = cnt10 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question10 @item.Value" name="question10 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicFalseHazardList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.FalseHazardList != null)
+                                    {
+
+                                        if (dicFalseHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings10 @item.Value" name="id_ratings10 @item.Value" class="id_ratings10 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings10 @item.Value" name="id_ratings10 @item.Value" class="id_ratings10 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings10 @item.Value" name="id_ratings10 @item.Value" 
+                                    class="id_ratings10 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt10" name="cnt10" value="@cnt10" />
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+          <table class="table table-lg">
+                    <tr>
+                        <td colspan="4">Work Site Precautions</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                     @if (ViewBag.FalseWorkSite != null)
+                    {
+                        int iSrno = 0, cnt11 = 0;
+                        foreach (var item in ViewBag.FalseWorkSite)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt11 = cnt11 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question11 @item.Value" name="question11 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicFalseSiteList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.FalseSiteList != null)
+                                    {
+
+                                        if (dicFalseSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings11 @item.Value" name="id_ratings11 @item.Value" class="id_ratings11 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings11 @item.Value" name="id_ratings11 @item.Value" class="id_ratings11 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings11 @item.Value" name="id_ratings11 @item.Value" 
+                                    class="id_ratings11 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt11" name="cnt11" value="@cnt11" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+
+                </table>
+              <table class="table table-lg">
+                    <tr>
+                        <td colspan="4">Personal Protection and Safety Equipment</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                    @if (ViewBag.FalseSafety != null)
+                    {
+                        int iSrno = 0, cnt12 = 0;
+                        foreach (var item in ViewBag.FalseSafety)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt12 = cnt12 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question12 @item.Value" name="question12 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicFalseSafetyList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.FalseSafetyList != null)
+                                    {
+
+                                        if (dicFalseSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings12 @item.Value" name="id_ratings12 @item.Value" class="id_ratings12 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings12 @item.Value" name="id_ratings12 @item.Value" class="id_ratings12 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings12 @item.Value" name="id_ratings12 @item.Value" 
+                                    class="id_ratings12 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt12" name="cnt12" value="@cnt12" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+                </table>
+
+</div>
+    
+<div class="table-responsive" id="ShaftWork" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-lg">
+            <tr>
+                        <td colspan="4">Hazards Identified</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                     @if (ViewBag.ShaftHazard != null)
+                    {
+                        int iSrno = 0, cnt13 = 0;
+                        foreach (var item in ViewBag.ShaftHazard)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt13 = cnt13 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question13 @item.Value" name="question13 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicShaftHazardList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.ShaftHazardList != null)
+                                    {
+
+                                        if (dicShaftHazardList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings13 @item.Value" name="id_ratings13 @item.Value" class="id_ratings13 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings13 @item.Value" name="id_ratings13 @item.Value" class="id_ratings13 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings13 @item.Value" name="id_ratings13 @item.Value" 
+                                    class="id_ratings13 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt13" name="cnt13" value="@cnt13" />
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+         <table class="table table-lg">
+                    <tr>
+                        <td colspan="4" >Work Site Precautions</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                  @if (ViewBag.ShaftWorkSite != null)
+                    {
+                        int iSrno = 0, cnt14 = 0;
+                        foreach (var item in ViewBag.ShaftWorkSite)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt14 = cnt14 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question14 @item.Value" name="question14 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicShaftSiteList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.ShaftSiteList != null)
+                                    {
+
+                                        if (dicShaftSiteList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings14 @item.Value" name="id_ratings14 @item.Value" class="id_ratings14 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings14 @item.Value" name="id_ratings14 @item.Value" class="id_ratings14 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings14 @item.Value" name="id_ratings14 @item.Value" 
+                                    class="id_ratings14 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt14" name="cnt14" value="@cnt14" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+                </table>
+              <table class="table table-lg">
+                    <tr>
+                        <td colspan="4" >Personal Protection and Safety Equipment</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+
+                    </tr>
+                       @if (ViewBag.Safety != null)
+                    {
+                        int iSrno = 0, cnt15 = 0;
+                        foreach (var item in ViewBag.Safety)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt15 = cnt15 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question15 @item.Value" name="question15 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicShaftSafetyList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.ShaftSafetyList != null)
+                                    {
+
+                                        if (dicShaftSafetyList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings15 @item.Value" name="id_ratings15 @item.Value" class="id_ratings15 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings15 @item.Value" name="id_ratings15 @item.Value" class="id_ratings15 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings15 @item.Value" name="id_ratings15 @item.Value" 
+                                    class="id_ratings15 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt15" name="cnt15" value="@cnt15" />
+
+                            </td>
+                        </tr>
+                    }
+
+
+
+                </table>
+
+</div>
+  
+
+   
+ <div class="table-responsive" id="pneumatic" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-bordered table-striped table-hover datatable-responsive">
+              <thead>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                  </thead>
+          <tbody>
+                       @if (ViewBag.Pneumatic != null)
+                    {
+                        int iSrno = 0, cnt16 = 0;
+                        foreach (var item in ViewBag.Pneumatic)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt16 = cnt16 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question16 @item.Value" name="question16 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicPneumaticList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.PneumaticList != null)
+                                    {
+
+                                        if (dicPneumaticList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings16 @item.Value" name="id_ratings16 @item.Value" class="id_ratings16 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings16 @item.Value" name="id_ratings16 @item.Value" class="id_ratings16 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings16 @item.Value" name="id_ratings16 @item.Value" 
+                                    class="id_ratings16 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt16" name="cnt16" value="@cnt16" />
+
+                            </td>
+                        </tr>
+                    }
+                </table>
+</div>
+
+   <div class="table-responsive" id="electrical" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-lg">
+            
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                @if (ViewBag.Electrical != null)
+                    {
+                        int iSrno = 0, cnt17 = 0;
+                        foreach (var item in ViewBag.Electrical)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt17 = cnt17 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question17 @item.Value" name="question17 @item.Value" value="@item.Value"/>
+                            </td>
+
+                            @if (dicElectricalList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.ElectricalList != null)
+                                    {
+
+                                        if (dicElectricalList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings17 @item.Value" name="id_ratings17 @item.Value" class="id_ratings17 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings17 @item.Value" name="id_ratings17 @item.Value" class="id_ratings17 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < 2; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings17 @item.Value" name="id_ratings17 @item.Value" 
+                                    class="id_ratings17 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt17" name="cnt17" value="@cnt17" />
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+</div>
+   <div class="table-responsive" id="confined" style="display: none">
+                       <h2 class="bg-dark pl-sm-2">Performance of Work (Filled by Responsible Person/ Activity Engineer or Supervisor)(Use These Questions When Assessing the Risks – Use N/A if Not Applicable)</h2>
+      <table class="table table-lg">
+            <tr>
+                        <td colspan="5">Hazards Identified</td>
+                    </tr>
+                    <tr>
+                        <th>Sr. No.
+                        </th>
+                        <th>Items to Check
+                        </th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < 2; item++)
+                            {
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                            </th>
+                            }
+                        }
+                    </tr>
+                       @if (ViewBag.Confined != null)
+                    {
+                        int iSrno = 0, cnt18 = 0;
+                        foreach (var item in ViewBag.Confined)
+                        {
+
+                            iSrno = iSrno + 1;
+                            cnt18 = cnt18 + 1;
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="question18 @item.Value" name="question18 @item.Value" value="@item.Value"/>
+                            </td>
+                            @if (dicConfinedList.ContainsKey(item.Value))
+                            {
+                                for (int rating = 0; rating < 2; rating++)
+                                {                            
+                                <td>
+                                    @if (ViewBag.objConfinedList != null)
+                                    {
+
+                                        if (dicConfinedList[item.Value] == dsrating.Tables[0].Rows[rating]["id_ratings"].ToString())
+                                        {                                            
+                                        <input type="radio" id="id_ratings18 @item.Value" name="id_ratings18 @item.Value" class="id_ratings18 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" checked required/>
+                                        }
+                                        else
+                                        {
+                                        <input type="radio" id="id_ratings18 @item.Value" name="id_ratings18 @item.Value" class="id_ratings18 @item.Value" 
+                                                value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()" required />
+                                        }
+
+                                    }
+
+                                </td>
+                                }
+                            }
+                            else
+                            {
+                                if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+
+                                    for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                    {
+                                <td>
+                                    <input type="radio" id="id_ratings18 @item.Value" name="id_ratings18 @item.Value" 
+                                    class="id_ratings18 @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_ratings"].ToString()"/>
+                                </td>
+                                    }
+                                }
+                            }
+
+
+                        </tr>
+              
+                        }
+                        <tr>
+                            <td style="display: none">
+                                <input type="hidden" id="cnt18" name="cnt18" value="@cnt18" />
+
+                            </td>
+                        </tr>
+                    }
+                </table>
+
+
+</div>
+
+     <div id="elect" style="display: none">
+     <fieldset class="border p-2">
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Authorized Personnel to work or test on the Equipment</legend>
+		      
+<table class="table table-lg">
+
+        <tr class="row">
+ 			
+                       <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                               Name
+                            </div>
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="pers_name" name="pers_name"/>
+                                 <span class="field-validation-error"><label id="pers_name-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                              ID No
+                            </div>
+                            <div class="editor-field">
+                                 <input class="form-control" type="text" id="idno" name="idno"/>
+                                 <span class="field-validation-error"><label id="idno-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                            </div>
+                        </td>
+ 			            <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                              Date
+                            </div>
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="date_in" name="date_in"/>
+                                 <span class="field-validation-error"><label id="date_in-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                            </div>
+                        </td>
+                 
+			           <td class="col-xs-3 col-md-2">
+                      <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddIn()" />
+                        </td>
+ </tr>
+
+</table>
+</fieldset>
+         </div>
+
+<div id="dvInItems"   style="display: none;">
+     <div class="card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Athorized Personnel In List</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+             <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <input type="hidden" id="itemcnts" name="itemcnts" value="@icnt" />
+
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                    <th>Action</th>
+                    <th>Name</th>
+                    <th>ID No</th>
+                    <th>Date</th>
+                    </tr>
+ @if (objInList.PermitList != null && objInList.PermitList.Count > 0)
+                    {
+                        for (int index = 0; index < objInList.PermitList.Count; index++)
+                        {
+                        <tr>
+                            <td>
+                                <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;' />
+                                <input type='hidden' id='id_work_in@(index)' name="id_work_in@(index)" value='@objInList.PermitList[index].id_work_in' />
+                            </td>
+                            <td>
+                                <input type='hidden' id='pers_name@(index)' name="pers_name@(index)" value='@objInList.PermitList[index].pers_name'>@objInList.PermitList[index].pers_name
+                            </td>
+                            <td>
+                                <input type='hidden' id='idno@(index)' name="idno@(index)" value='@objInList.PermitList[index].idno'>@objInList.PermitList[index].idno
+                            </td>
+                            <td>
+                                @if (objInList.PermitList[index].date_in != null && objInList.PermitList[index].date_in > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type='hidden' id='date_in@(index)' name="date_in@(index)" value='@objInList.PermitList[index].date_in'>@objInList.PermitList[index].date_in.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                        </tr>
+                        }
+                    }
+                </table>
+
+            </div>
+        </div>
+    </div>
+         </div>
+
+}
+
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                        @:}).show();
+                                                           }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+        @:}).show();
+                                   }
+        });
+
+        CKEDITOR.replace('editor-full', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+        $(function () {
+          
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+
+            var value = document.getElementById("spermit_type").value;
+            if (value == "Pneumatic test Permit") {
+                document.getElementById("pressure").readOnly = false;
+                document.getElementById("pressure").style.background = "#fff";
+                document.getElementById("pneumatic").style.display = "";
+                document.getElementById("pressure").required = true;
+
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                //document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+
+
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+            }
+            else if (value == "Electrical Permit") {
+                document.getElementById("electrical").style.display = "";
+                document.getElementById("elect").style.display = "";
+                document.getElementById("dvInItems").style.display = "";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                //document.getElementById("cnt17").value = 0;
+            }
+            else if (value == "Falsework Striking Permit") {
+                document.getElementById("falsework").style.display = "";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                //document.getElementById("cnt10").value = 0;
+                //document.getElementById("cnt11").value = 0;
+                //document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+            }
+            else if (value == "Hot work Permit") {
+                document.getElementById("hotwork").style.display = "";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                //document.getElementById("cnt5").value = 0;
+                //document.getElementById("cnt6").value = 0;
+                //document.getElementById("cnt7").value = 0;
+                //document.getElementById("cnt8").value = 0;
+                //document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+
+            }
+            else if (value == "Excavation Permit") {
+                document.getElementById("excavation").style.display = "";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+                document.getElementById("cnt1").value = 0;
+                //document.getElementById("cnt2").value = 0;
+                //document.getElementById("cnt3").value = 0;
+                //document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+
+            }
+            else if (value == "Shaft work Permit") {
+                document.getElementById("ShaftWork").style.display = "";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                //document.getElementById("cnt13").value = 0;
+                //document.getElementById("cnt14").value = 0;
+                //document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+            }
+            else if (value == "Hydro test Permit") {
+                document.getElementById("hydro").style.display = "";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+                //document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+            }
+            else if (value == "Confined Space Entry Permit") {
+                document.getElementById("confined").style.display = "";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+                document.getElementById("work").style.display = "";
+
+
+                document.getElementById("cnt18").value = document.getElementById("cnts18").value;
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+            }
+        });
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function AddIn() {
+
+            if (InValidation() == true) {
+
+                document.getElementById("dvInItems").style.display = "";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+
+                cell0.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                cell1.style = "width: 300px; min-width: 300px; max-width: 300px;word-wrap:break-word";
+                cell2.style = "width: 300px; min-width: 300px; max-width: 300px;word-wrap:break-word";
+                cell3.style = "width: 300px; min-width: 300px; max-width: 300px;word-wrap:break-word";
+
+
+                var pers_name = $('#pers_name').val();
+                var idno = $('#idno').val();
+                var date_in = $('#date_in').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='pers_name" + cnt + "' name='pers_name" + cnt + "' value='" + pers_name + "'>" + pers_name;
+                cell2.innerHTML = "<input type='hidden' id='idno" + cnt + "' name='idno" + cnt + "' value='" + idno + "'>" + idno;
+                cell3.innerHTML = "<input type='hidden' id='date_in" + cnt + "' name='date_in" + cnt + "' value='" + date_in + "'>" + date_in;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                document.getElementById("itemcnts").value = cnt;
+                ResetIn();
+            }
+
+        }
+
+        function InValidation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("pers_name").value == "") {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("idno").value == "") {
+                ssnMessage = $('#idno-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#idno-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("date_in").value == "") {
+                ssnMessage = $('#date_in-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#date_in-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function ResetIn() {
+            document.getElementById("pers_name").value = "";
+            document.getElementById("idno").value = "";
+            document.getElementById("date_in").value = "";
+        }
+        function setType() {
+            //setPermitNo();
+
+            var value = $("#permit_type option:selected").text();
+
+            if (value == "Pneumatic test Permit") {
+                document.getElementById("confined").style.display = "none";
+                document.getElementById("pressure").readOnly = false;
+                document.getElementById("pressure").style.background = "#fff";
+                document.getElementById("pressure").required = true;
+                document.getElementById("pneumatic").style.display = "";
+
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = document.getElementById("cnts16").value;
+                document.getElementById("cnt17").value = 0;
+                document.getElementById("cnt18").value = 0;
+
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+            }
+            else if (value == "Electrical Permit") {
+                document.getElementById("confined").style.display = "none";
+                document.getElementById("electrical").style.display = "";
+                document.getElementById("elect").style.display = "";
+                document.getElementById("dvInItems").style.display = "";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = document.getElementById("cnts17").value;
+                document.getElementById("itemcnt").value = document.getElementById("itemcnts").value;
+                document.getElementById("cnt18").value = 0;
+            }
+            else if (value == "Falsework Striking Permit") {
+                document.getElementById("confined").style.display = "none";
+                document.getElementById("falsework").style.display = "";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = document.getElementById("cnts10").value;
+                document.getElementById("cnt11").value = document.getElementById("cnts11").value;
+                document.getElementById("cnt12").value = document.getElementById("cnts12").value;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+                document.getElementById("cnt18").value = 0;
+            }
+            else if (value == "Hot work Permit") {
+                document.getElementById("confined").style.display = "none";
+                document.getElementById("hotwork").style.display = "";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = document.getElementById("cnts5").value;
+                document.getElementById("cnt6").value = document.getElementById("cnts6").value;
+                document.getElementById("cnt7").value = document.getElementById("cnts7").value;
+                document.getElementById("cnt8").value = document.getElementById("cnts8").value;
+                document.getElementById("cnt9").value = document.getElementById("cnts9").value;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+                document.getElementById("cnt18").value = 0;
+            }
+            else if (value == "Excavation Permit") {
+                document.getElementById("confined").style.display = "none";
+                document.getElementById("excavation").style.display = "";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = document.getElementById("cnts2").value;
+                document.getElementById("cnt3").value = document.getElementById("cnts3").value;
+                document.getElementById("cnt4").value = document.getElementById("cnts4").value;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+                document.getElementById("cnt18").value = 0;
+            }
+            else if (value == "Shaft work Permit") {
+                document.getElementById("confined").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = document.getElementById("cnts13").value;
+                document.getElementById("cnt14").value = document.getElementById("cnts14").value;
+                document.getElementById("cnt15").value = document.getElementById("cnts15").value;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+                document.getElementById("cnt18").value = 0;
+            }
+            else if (value == "Hydro test Permit") {
+                document.getElementById("confined").style.display = "none";
+                document.getElementById("hydro").style.display = "";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+
+
+                document.getElementById("cnt1").value = document.getElementById("cnts1").value;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+                document.getElementById("cnt18").value = 0;
+            }
+            else if (value == "Confined Space Entry Permit") {
+                document.getElementById("confined").style.display = "";
+                document.getElementById("hydro").style.display = "none";
+                document.getElementById("ShaftWork").style.display = "none";
+                document.getElementById("excavation").style.display = "none";
+                document.getElementById("hotwork").style.display = "none";
+                document.getElementById("falsework").style.display = "none";
+                document.getElementById("electrical").style.display = "none";
+                document.getElementById("pneumatic").style.display = "none";
+                document.getElementById("pressure").readOnly = true;
+                document.getElementById("pressure").value = "";
+                document.getElementById("pressure").style.background = "#efefe6";
+                document.getElementById("pressure").required = false;
+                document.getElementById("elect").style.display = "none";
+                document.getElementById("dvInItems").style.display = "none";
+                document.getElementById("itemcnt").value = 0;
+                document.getElementById("work").style.display = "";
+
+
+                document.getElementById("cnt18").value = document.getElementById("cnts18").value;
+                document.getElementById("cnt1").value = 0;
+                document.getElementById("cnt2").value = 0;
+                document.getElementById("cnt3").value = 0;
+                document.getElementById("cnt4").value = 0;
+                document.getElementById("cnt5").value = 0;
+                document.getElementById("cnt6").value = 0;
+                document.getElementById("cnt7").value = 0;
+                document.getElementById("cnt8").value = 0;
+                document.getElementById("cnt9").value = 0;
+                document.getElementById("cnt10").value = 0;
+                document.getElementById("cnt11").value = 0;
+                document.getElementById("cnt12").value = 0;
+                document.getElementById("cnt13").value = 0;
+                document.getElementById("cnt14").value = 0;
+                document.getElementById("cnt15").value = 0;
+                document.getElementById("cnt16").value = 0;
+                document.getElementById("cnt17").value = 0;
+            }
+        }
+
+         function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#dept").children('option').remove();
+                        $("#dept").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#dept").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#dept").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#location").children('option').remove();
+                    $("#location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+    }

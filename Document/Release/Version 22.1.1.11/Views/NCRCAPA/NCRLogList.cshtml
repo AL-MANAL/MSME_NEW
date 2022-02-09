@@ -1,0 +1,102 @@
+﻿@model IEnumerable<ISOStd.Models.NCRLogModels>
+
+@{
+    ViewBag.Title = "NCRLogList";
+}
+
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">NCR-Log List </span>
+</div>
+<br />
+    <div>
+        @Html.ActionLink("Add New", "AddNCRLog", null, new { CAR_ID = @ViewBag.CAR_ID }, new {@class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+        @Html.ActionLink("NCR-CAPA List", "NCRCAPAList", null,null, new {@class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+    </div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+    <br />
+<div id="content">
+    <table id="table1">
+        <tr>
+               <th style="width:40px;min-width:40px; max-width:100px;">
+                    Sl No
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NCRNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ncr_logDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NCR_Details)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NCR_Dept)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Correction_Details)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReportStatus)
+            </th>
+            <th>Action</th>
+        </tr>
+         @if (Model !=null && Model.Count() > 0)
+        {
+        int i = 0;
+            foreach (var item in Model)
+            {
+                i = i + 1;
+            <tr>
+                <td style="width:40px;min-width:40px; max-width:100px;">
+                             @i
+                        </td>
+                <td>
+                    @Html.ActionLink(item.NCRNo, "NCRLogDetails", new { idt_NCR_Log = item.idt_NCR_Log }, new { onclick="HyperLinkProgressIconFunction()" })
+                </td>               
+                <td>
+                    @Html.Label(item.Ncr_logDate.ToString("dd/MM/yyyy"))
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NCR_Details)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NCR_Dept)
+                </td>                
+                <td>
+                     @Html.DisplayFor(modelItem => item.Correction_Details)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReportStatus)
+                </td>
+                <td>
+                     @if (item.ReportStatus.ToLower() != "Closed".ToLower())
+                    {
+                    <a href='@Url.Action("NCRLogEdit", "NCRCAPA", new { idt_NCR_Log = item.idt_NCR_Log })' title="Edit NCR Log details" onclick="HyperLinkProgressIconFunction()">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span></a>
+                     }
+                </td>
+            </tr>
+        }
+         }
+        else
+        {
+            <tr>
+                <td colspan="9">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+</div>

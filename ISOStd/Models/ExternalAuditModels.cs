@@ -44,7 +44,7 @@ namespace ISOStd.Models
         [Display(Name = "Fax Number")]
         public string FaxNumber { get; set; }
 
-      
+
         //--------------------------------------------------------------------------------------
         internal bool FunAddCertificationBody(CertificationBodyModels objCertificationBody)
         {
@@ -107,8 +107,8 @@ namespace ISOStd.Models
                 objGlobalData.AddFunctionalLog("Exception in FunGetCertificateList: " + ex.ToString());
             }
             return new MultiSelectList(CertBodylist.CertBodyList, "CertId", "CertName");
-           
-        }        
+
+        }
     }
 
     public class ExternalAuditorModels
@@ -204,33 +204,33 @@ namespace ISOStd.Models
             return objExternalAuditorModelsList.ExternalAuditorList.ToList();
         }
 
-        
+
     }
 
     public class ExternalAuditModels
     {
         clsGlobal objGlobalData = new clsGlobal();
 
-       
+
         [Display(Name = "AuditID")]
         public string AuditID { get; set; }
 
         [Display(Name = "Certification Body")]
         public string CertID { get; set; }
-                
+
         [Display(Name = "Department")]
         public string DeptId { get; set; }
-                
+
         [Display(Name = "Audit Number")]
         public string AuditNum { get; set; }
-               
+
         //[Display(Name = "Auditor Name(s)")]
         //public string Auditor_name { get; set; }
 
         //[Required]
         //[Display(Name = "Audit Type")]
         //public string AuditType { get; set; }
-                
+
         [Display(Name = "Audit Date")]
         public DateTime AuditDate { get; set; }
 
@@ -245,48 +245,48 @@ namespace ISOStd.Models
         //[Required]
         [Display(Name = "No. of observations")]
         public int ObservationNo { get; set; }
-               
+
         [Display(Name = "NCR No.")]
         public string NCNo { get; set; }
-               
+
         [Display(Name = "Audit Finding")]
         [DataType(DataType.MultilineText)]
         public string AuditFindingDesc { get; set; }
-              
+
         [Display(Name = "Correction Taken")]
         [DataType(DataType.MultilineText)]
         public string CorrectionTaken { get; set; }
-                
+
         [Display(Name = "Correction Date")]
         public DateTime CorrectionDate { get; set; }
-              
+
         [Display(Name = "Proposed Corrective Action")]
         [DataType(DataType.MultilineText)]
         public string ProposedcorrectiveAction { get; set; }
-               
+
         [Display(Name = "Corrective Action Date")]
         public DateTime CorrectiveActionDate { get; set; }
-               
+
         [Display(Name = "Action Taken By")]
         public string Action_taken_by { get; set; }
-             
+
         //[Display(Name = "NCR Status")]
         //public string nc_status { get; set; }
-              
+
         [Display(Name = "Reviewed By")]
         public string reviewed_by { get; set; }
-                
+
         [Display(Name = "Finding Category")]
         public string FindingCategory { get; set; }
-                
-        [Display(Name = "Division")]
+
+        [Display(Name = "Location")]
         public string AuditLocation { get; set; }
 
         [Display(Name = "Upload document(s)")]
         public string upload { get; set; }
-    
+
         public string ExternalAuditID { get; set; }
-       
+
         [Display(Name = "Remarks")]
         public string remarks { get; set; }
 
@@ -321,10 +321,10 @@ namespace ISOStd.Models
         public string audit_criteria { get; set; }
 
         [Display(Name = "Division")]
-        public string directorate { get; set; }
+        public string branch { get; set; }
 
         [Display(Name = "Department")]
-        public string group_name { get; set; }
+        public string dept_name { get; set; }
 
         [Display(Name = "Location")]
         public string location { get; set; }
@@ -333,16 +333,16 @@ namespace ISOStd.Models
         public string entity_name { get; set; }
 
         [Display(Name = "No. of Major NCs")]
-        public string major_nc { get; set; }
+        public int major_nc { get; set; }
 
         [Display(Name = "No. of Minor NCs")]
-        public string minor_nc { get; set; }
+        public int minor_nc { get; set; }
 
         [Display(Name = "No. of Observations")]
-        public string no_observation { get; set; }
+        public int no_observation { get; set; }
 
         [Display(Name = "No. of Note-worthy findings")]
-        public string no_noteworthy { get; set; }
+        public int no_noteworthy { get; set; }
 
         [Display(Name = "Upload document(s)")]
         public string status_upload { get; set; }
@@ -358,6 +358,22 @@ namespace ISOStd.Models
 
         [Display(Name = "Company Name")]
         public string company_name { get; set; }
+
+        [Display(Name = "No. of Continual Improvements")]
+        public int no_ci { get; set; }
+
+        public int cnt_major { get; set; }
+        public int cnt_minor { get; set; }
+        public int cnt_note { get; set; }
+        public int cnt_potential { get; set; }
+        public int cnt_ci { get; set; }
+
+        public int pend_major { get; set; }
+        public int pend_minor { get; set; }
+        public int pend_potential { get; set; }
+        public int pend_note { get; set; }
+        public int pend_ci { get; set; }
+
 
         internal bool FunAddExternalAudit(ExternalAuditModels objAudit, ExternalAuditModelsList objAuditList, ExternalAuditModelsList objAuditList1)
         {
@@ -388,22 +404,21 @@ namespace ISOStd.Models
                 int id_external_audit = 0;
                 if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out id_external_audit))
                 {
-                    DataSet dsData = objGlobalData.GetReportNo("EXTAUDIT", "", objGlobalData.GetCompanyBranchNameById(directorate));
+                    DataSet dsData = objGlobalData.GetReportNo("EXTAUDIT", "", objGlobalData.GetCompanyBranchNameById(branch));
                     if (dsData != null && dsData.Tables.Count > 0)
                     {
                         audit_no = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
                     }
                     string sql1 = "update t_external_audit set audit_no='" + audit_no + "' where id_external_audit='" + id_external_audit + "'";
                     objGlobalData.ExecuteQuery(sql1);
-                    if (id_external_audit > 0 && objAuditList1.ExternalAuditList.Count > 0) 
+                    if (id_external_audit > 0)
                     {
                         objAuditList1.ExternalAuditList[0].id_external_audit = id_external_audit.ToString();
                         FunAddAuditeeList(objAuditList1);
 
                         objAuditList.ExternalAuditList[0].id_external_audit = id_external_audit.ToString();
-                        return FunAddAuditorList(objAuditList);                     
+                        return FunAddAuditorList(objAuditList);
                     }
-                    return true;
                 }
             }
             catch (Exception ex)
@@ -422,7 +437,7 @@ namespace ISOStd.Models
                 for (int i = 0; i < objAuditList.ExternalAuditList.Count; i++)
                 {
                     string sid_external_auditee = "null";
-                    sSqlstmt = sSqlstmt + "insert into t_external_auditee(id_external_auditee,id_external_audit,directorate,group_name,location";
+                    sSqlstmt = sSqlstmt + "insert into t_external_auditee(id_external_auditee,id_external_audit,branch,dept_name,team,location";
 
                     string sFieldValue = "", sFields = "", sValue = "";
                     if (objAuditList.ExternalAuditList[i].id_external_auditee != null)
@@ -431,10 +446,10 @@ namespace ISOStd.Models
                     }
 
                     sSqlstmt = sSqlstmt + sFields;
-                    sSqlstmt = sSqlstmt + ") values(" + sid_external_auditee + ",'" + objAuditList.ExternalAuditList[0].id_external_audit + "','" + objAuditList.ExternalAuditList[i].directorate + "','" + objAuditList.ExternalAuditList[i].group_name + "','" + objAuditList.ExternalAuditList[i].location + "'";
+                    sSqlstmt = sSqlstmt + ") values(" + sid_external_auditee + ",'" + objAuditList.ExternalAuditList[0].id_external_audit + "','" + objAuditList.ExternalAuditList[i].branch + "','" + objAuditList.ExternalAuditList[i].dept_name + "','" + objAuditList.ExternalAuditList[i].team + "','" + objAuditList.ExternalAuditList[i].location + "'";
                     sSqlstmt = sSqlstmt + sFieldValue + ")";
                     sValue = " ON DUPLICATE KEY UPDATE "
-                    + " id_external_auditee= values(id_external_auditee),id_external_audit= values(id_external_audit), directorate= values(directorate), group_name = values(group_name), location= values(location)";
+                    + " id_external_auditee= values(id_external_auditee),id_external_audit= values(id_external_audit), branch= values(branch), dept_name = values(dept_name), team= values(team), location= values(location)";
                     sSqlstmt = sSqlstmt + sValue + ";";
                 }
                 return objGlobalData.ExecuteQuery(sSqlstmt);
@@ -452,7 +467,7 @@ namespace ISOStd.Models
 
                 string sSqlstmt = "delete from t_external_auditor where id_external_audit='" + objAuditList.ExternalAuditList[0].id_external_audit + "'; ";
 
-          
+
                 for (int i = 0; i < objAuditList.ExternalAuditList.Count; i++)
                 {
                     string sid_external_audit = "null";
@@ -462,14 +477,14 @@ namespace ISOStd.Models
                     if (objAuditList.ExternalAuditList[i].id_external_audit != null)
                     {
                         sid_external_audit = objAuditList.ExternalAuditList[i].id_external_audit;
-                    }                   
+                    }
 
                     sSqlstmt = sSqlstmt + sFields;
                     sSqlstmt = sSqlstmt + ") values(" + sid_external_audit + ",'" + objAuditList.ExternalAuditList[0].id_external_audit + "','" + objAuditList.ExternalAuditList[i].auditor_name + "','" + objAuditList.ExternalAuditList[i].auditor_level + "','" + objAuditList.ExternalAuditList[i].contact_no + "','" + objAuditList.ExternalAuditList[i].email_address + "'";
                     sSqlstmt = sSqlstmt + sFieldValue + ")";
                     sValue = " ON DUPLICATE KEY UPDATE "
                     + " id_external_auditor= values(id_external_auditor),id_external_audit= values(id_external_audit), auditor_name= values(auditor_name), auditor_level = values(auditor_level), contact_no= values(contact_no), email_address= values(email_address)";
-                
+
                     sSqlstmt = sSqlstmt + sValue + ";";
                 }
                 return objGlobalData.ExecuteQuery(sSqlstmt);
@@ -498,7 +513,7 @@ namespace ISOStd.Models
         {
             try
             {
-                
+
                 string sSqlstmt = "update t_external_audit set audit_type='" + audit_type + "',audit_criteria='" + audit_criteria + "',upload='" + upload + "',entity_name='" + entity_name + "',notification_to='" + notification_to + "'";
 
                 if (objAudit.audit_start_date != null && objAudit.audit_start_date > Convert.ToDateTime("01/01/0001 00:00:00"))
@@ -512,7 +527,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + " where id_external_audit='" + objAudit.id_external_audit + "'";
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
                 {
-                   
+
                     if (objAuditList.ExternalAuditList.Count > 0)
                     {
                         objAuditList1.ExternalAuditList[0].id_external_audit = id_external_audit.ToString();
@@ -534,7 +549,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "update t_external_audit set audit_status='" + audit_status + "',remarks='" + remarks + "',major_nc='" + major_nc + "',minor_nc='" + minor_nc + "',no_observation='" + no_observation + "',no_noteworthy='" + no_noteworthy + "',status_upload='" + status_upload + "'";
+                string sSqlstmt = "update t_external_audit set audit_status='" + audit_status + "',remarks='" + remarks + "',major_nc='" + major_nc + "',minor_nc='" + minor_nc + "',no_observation='" + no_observation + "',no_noteworthy='" + no_noteworthy + "',status_upload='" + status_upload + "',no_ci='" + no_ci + "'";
                 if (objAudit.audit_status_date != null && objAudit.audit_status_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {
                     sSqlstmt = sSqlstmt + ",audit_status_date='" + objAudit.audit_status_date.ToString("yyyy/MM/dd") + "'";
@@ -659,7 +674,7 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "update t_external_audit_nc set nc_status='" + nc_status + "',nc_status_remarks='" + nc_status_remarks + "'";
-              
+
                 sSqlstmt = sSqlstmt + " where id_nc='" + objAudit.id_nc + "'";
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
@@ -675,7 +690,7 @@ namespace ISOStd.Models
             try
             {
                 string sAuditDate = objExternalAudit.AuditDate.ToString("yyyy-MM-dd HH':'mm':'ss");// +" " + objInternalAudit.AuditTime;
-                
+
                 string sSqlstmt = "insert into t_external_audit (CertID, AuditNum, AuditDate, MajorFindingsNo, MinorFindingNo, ObservationNo, Auditor_name, AuditLocation,remarks,upload)"
                                     + " values('" + objExternalAudit.CertID + "', '" + objExternalAudit.AuditNum + "','" + sAuditDate + "', '" + objExternalAudit.MajorFindingsNo
                                     + "', '" + objExternalAudit.MinorFindingNo + "', '" + objExternalAudit.ObservationNo + "','" + objExternalAudit.auditor_name
@@ -711,54 +726,54 @@ namespace ISOStd.Models
         //    return false;
         //}
 
-         internal bool FunAddExternalAuditFindings(ExternalAuditModelsList objExternalAuditModelsList, int ExternalAuditID)
-         {
-             try
-             {
-                 string sSqlstmt = "";
-                 for (int i = 0; i < objExternalAuditModelsList.ExternalAuditList.Count; i++)
-                 {
-                     if (objExternalAuditModelsList.ExternalAuditList[i].NCNo != null)
-                     {
-                         string sCorrectionDate = objExternalAuditModelsList.ExternalAuditList[i].CorrectionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
-                         string sCorrectiveActionDate = objExternalAuditModelsList.ExternalAuditList[i].CorrectiveActionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
+        internal bool FunAddExternalAuditFindings(ExternalAuditModelsList objExternalAuditModelsList, int ExternalAuditID)
+        {
+            try
+            {
+                string sSqlstmt = "";
+                for (int i = 0; i < objExternalAuditModelsList.ExternalAuditList.Count; i++)
+                {
+                    if (objExternalAuditModelsList.ExternalAuditList[i].NCNo != null)
+                    {
+                        string sCorrectionDate = objExternalAuditModelsList.ExternalAuditList[i].CorrectionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
+                        string sCorrectiveActionDate = objExternalAuditModelsList.ExternalAuditList[i].CorrectiveActionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
 
-                         sSqlstmt = sSqlstmt + "insert into t_external_audit_trans (ExternalAuditID, DeptId, NCNo, AuditFindingDesc, FindingCategory, CorrectionTaken, CorrectionDate, "
-                                            + " ProposedcorrectiveAction, CorrectiveActionDate, Action_taken_by, nc_status, reviewed_by,team";
-                         if (objExternalAuditModelsList.ExternalAuditList[i].nc_status.ToLower() == "closed")
-                         {
-                             sSqlstmt = sSqlstmt + ", ClosedDate";
-                             //sDynamicColumnVal = sDynamicColumnVal + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss") + "' ";
-                         }
-                         sSqlstmt = sSqlstmt + ") values('" + ExternalAuditID + "', '" + objExternalAuditModelsList.ExternalAuditList[i].DeptId 
-                            +"','"+ objExternalAuditModelsList.ExternalAuditList[i].NCNo
-                            + "', '" + objExternalAuditModelsList.ExternalAuditList[i].AuditFindingDesc + "', '" + objExternalAuditModelsList.ExternalAuditList[i].FindingCategory
-                            + "', '" + objExternalAuditModelsList.ExternalAuditList[i].CorrectionTaken + "', '" + sCorrectionDate
-                            + "', '" + objExternalAuditModelsList.ExternalAuditList[i].ProposedcorrectiveAction
-                            + "', '" + sCorrectiveActionDate + "', '" + objExternalAuditModelsList.ExternalAuditList[i].Action_taken_by + "', '"
-                            + objExternalAuditModelsList.ExternalAuditList[i].nc_status + "','" + objExternalAuditModelsList.ExternalAuditList[i].reviewed_by + "','" + objExternalAuditModelsList.ExternalAuditList[i].team + "'";
-                         
-                         if (objExternalAuditModelsList.ExternalAuditList[i].nc_status.ToLower() == "closed")
-                         {
-                             sSqlstmt = sSqlstmt + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss") + "' ";
-                         }
-                         sSqlstmt = sSqlstmt + "); ";
-                     }
+                        sSqlstmt = sSqlstmt + "insert into t_external_audit_trans (ExternalAuditID, DeptId, NCNo, AuditFindingDesc, FindingCategory, CorrectionTaken, CorrectionDate, "
+                                           + " ProposedcorrectiveAction, CorrectiveActionDate, Action_taken_by, nc_status, reviewed_by,team";
+                        if (objExternalAuditModelsList.ExternalAuditList[i].nc_status.ToLower() == "closed")
+                        {
+                            sSqlstmt = sSqlstmt + ", ClosedDate";
+                            //sDynamicColumnVal = sDynamicColumnVal + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss") + "' ";
+                        }
+                        sSqlstmt = sSqlstmt + ") values('" + ExternalAuditID + "', '" + objExternalAuditModelsList.ExternalAuditList[i].DeptId
+                           + "','" + objExternalAuditModelsList.ExternalAuditList[i].NCNo
+                           + "', '" + objExternalAuditModelsList.ExternalAuditList[i].AuditFindingDesc + "', '" + objExternalAuditModelsList.ExternalAuditList[i].FindingCategory
+                           + "', '" + objExternalAuditModelsList.ExternalAuditList[i].CorrectionTaken + "', '" + sCorrectionDate
+                           + "', '" + objExternalAuditModelsList.ExternalAuditList[i].ProposedcorrectiveAction
+                           + "', '" + sCorrectiveActionDate + "', '" + objExternalAuditModelsList.ExternalAuditList[i].Action_taken_by + "', '"
+                           + objExternalAuditModelsList.ExternalAuditList[i].nc_status + "','" + objExternalAuditModelsList.ExternalAuditList[i].reviewed_by + "','" + objExternalAuditModelsList.ExternalAuditList[i].team + "'";
 
-                 }
+                        if (objExternalAuditModelsList.ExternalAuditList[i].nc_status.ToLower() == "closed")
+                        {
+                            sSqlstmt = sSqlstmt + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss") + "' ";
+                        }
+                        sSqlstmt = sSqlstmt + "); ";
+                    }
 
-                 if (sSqlstmt != "")
-                 {
-                     return objGlobalData.ExecuteQuery(sSqlstmt);
-                 }
-             }
-             catch (Exception ex)
-             {
-                 objGlobalData.AddFunctionalLog("Exception in FunAddExternalAuditFindings: " + ex.ToString());
-             }
+                }
 
-             return false;
-         }
+                if (sSqlstmt != "")
+                {
+                    return objGlobalData.ExecuteQuery(sSqlstmt);
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddExternalAuditFindings: " + ex.ToString());
+            }
+
+            return false;
+        }
 
         internal bool FunUpdateExternalAudit(ExternalAuditModels objExternalAuditModels)
         {
@@ -770,7 +785,7 @@ namespace ISOStd.Models
                     + "', MajorFindingsNo='" + objExternalAuditModels.MajorFindingsNo + "', MinorFindingNo='" + objExternalAuditModels.MinorFindingNo
                     + "', ObservationNo='" + objExternalAuditModels.ObservationNo + "', AuditNum='" + objExternalAuditModels.AuditNum
                     + "', Auditor_name='" + objExternalAuditModels.auditor_name + "', AuditLocation='" + objExternalAuditModels.AuditLocation
-                    + "', upload='" + objExternalAuditModels.upload+ "' where AuditID='" + objExternalAuditModels.AuditID + "'";
+                    + "', upload='" + objExternalAuditModels.upload + "' where AuditID='" + objExternalAuditModels.AuditID + "'";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
@@ -827,7 +842,7 @@ namespace ISOStd.Models
                 {
                     lstAuditorList = dsData.Tables[0].AsEnumerable().Select(r => r[0].ToString()).ToList();
                 }
-                
+
             }
             catch (Exception ex)
             {

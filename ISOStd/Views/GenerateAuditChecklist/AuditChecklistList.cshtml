@@ -35,27 +35,10 @@
                     <span class="breadcrumb-item active"> Audit Checklists</span>
                 </div>
 
-                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+               
             </div>
 
-            <div class="header-elements d-none">
-                <div class="breadcrumb justify-content-center">
-
-
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right">
-
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+           
         </div>
     </div>
 }
@@ -95,7 +78,7 @@
                 if (ViewBag.Branch != null)
                 {
                     <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
-                        <option value='' hidden>Division</option>
+                        @*<option value='' hidden>Division</option>*@
                         @if (ViewBag.Branch != null)
                         {
                             foreach (var item in ViewBag.Branch)
@@ -127,11 +110,14 @@
                         @Html.DisplayNameFor(model => model.First().created_on)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().directorate)
+                        @Html.DisplayNameFor(model => model.First().branch)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().grp)
-                    </th>                   
+                        @Html.DisplayNameFor(model => model.First().dept_name)
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.First().team)
+                    </th>*@
                     <th>
                         @Html.DisplayNameFor(model => model.First().notified_to)
                     </th>
@@ -148,7 +134,7 @@
                         i = i + 1;
                 <tr>
                     <td>
-                        @Html.ActionLink(i.ToString(), "AuditChecklistDetails", new { id_AuditChecklist = item.id_AuditChecklist }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_AuditChecklist, onclick = "HyperLinkProgressIconFunction()" })
+                       @i
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ChecklistRef)
@@ -162,19 +148,35 @@
                         }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.directorate)
-                    </td>
-                    <td>
-                        @if (item.grp_common == "common")
+                        @if (item.branch_common == "common")
                         {
-                            @Html.DisplayFor(modelItem => item.grp_common)
+                            @Html.DisplayFor(modelItem => item.branch_common)
                         }
                         else
                         {
-                            @Html.DisplayFor(modelItem => item.grp)
+                            @Html.DisplayFor(modelItem => item.branch)
                         }
-                    </td>                
-                    
+                    </td>
+                    <td>
+                        @if (item.dept_name_common == "common")
+                        {
+                            @Html.DisplayFor(modelItem => item.dept_name_common)
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.dept_name)
+                        }
+                    </td>
+                    @*<td>
+                        @if (item.team_common == "common")
+                        {
+                            @Html.DisplayFor(modelItem => item.team_common)
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.team)
+                        }
+                    </td>*@
                     <td>
                         @Html.DisplayFor(modelItem => item.notified_to)
                     </td>
@@ -186,6 +188,9 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href='@Url.Action("AuditChecklistDetails", "GenerateAuditChecklist", new { id_AuditChecklist = item.id_AuditChecklist })' title="" onclick="HyperLinkProgressIconFunction()">
+                                        <i class="icon-pencil7"></i>View
+                                    </a>
                                     @if (ShowEdit)
                                     {
                                         <a class="dropdown-item" href='@Url.Action("AuditChecklistEdit", "GenerateAuditChecklist", new { id_AuditChecklist = item.id_AuditChecklist })' title="Edit Audit Checklist" onclick="HyperLinkProgressIconFunction()">
@@ -308,7 +313,7 @@
                             orderable: false,
                             //width: 100,
                             targets: 'not-export-column'
-                 
+
                         }],
                         responsivePriority: 2, targets: -1,
                         colReorder: false,
@@ -337,10 +342,10 @@
                             });
                             var dropdownMenu;
 
-                            // and when you show it, move it to the body                                     
+                            // and when you show it, move it to the body
                             $('.datatable-responsive').on('show.bs.dropdown', function (e) {
-                        
-                                // grab the menu        
+
+                                // grab the menu
                                 dropdownMenu = $(e.target).find('.dropdown-menu');
 
                                 // detach it and append it to the body
@@ -356,8 +361,8 @@
                                     'left': eOffset.left
                                 });
                             });
-                                
-                            // and when you hide it, reattach the drop down, and hide it normally                                                   
+
+                            // and when you hide it, reattach the drop down, and hide it normally
                             $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
                                 $(e.target).append(dropdownMenu.detach());
                                 dropdownMenu.hide();
@@ -527,7 +532,7 @@
                                 View: 1
                             };
                             //// Add new params to the querystring dictionary
-                            
+
                             window.location.href =
                                 window.location.protocol + "//" +
                                 window.location.host +
@@ -545,16 +550,9 @@
             });
         }
 
-            function getDetails() {
+         function getDetails() {
                 var branch_name = document.getElementById("branch_name").value;
-
-                   jQuery.ajax({
-                                url: '@Url.Action("AuditChecklistListSearch", "GenerateAuditChecklist")',
-                        type: 'POST',
-                        dataType: "json",
-                        data: { 'branch_name': branch_name },
-                        success: function (result) {
-                            var params = {
+                     var params = {
                                 branch_name: branch_name
                             };
                             queryString = $.param(params);
@@ -564,9 +562,6 @@
                                 window.location.host +
                                 window.location.pathname +
                                '?' + queryString;
-
-                        }
-                    });
             }
     </script>
 

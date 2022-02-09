@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
 
 namespace ISOStd.Models
 {
     public class AuditLogModels
     {
-        private clsGlobal objGlobaldata = new clsGlobal();
-
+        clsGlobal objGlobaldata = new clsGlobal();
         [Display(Name = "Audit Criteria")]
         public string Audit_criteria { get; set; }
 
@@ -16,12 +17,10 @@ namespace ISOStd.Models
 
         [Display(Name = "Planned By")]
         public string PlannedBy { get; set; }
-
         public string PlannedById { get; set; }
 
         [Display(Name = "Check List")]
         public string checklist { get; set; }
-
         //public string checklistId { get; set; }
 
         [Display(Name = "Audit No")]
@@ -35,18 +34,19 @@ namespace ISOStd.Models
 
         [Display(Name = "Department")]
         public string dept { get; set; }
-
         public string deptId { get; set; }
 
         [Display(Name = "Location")]
         public string location { get; set; }
-
         public string locationId { get; set; }
 
         [Display(Name = "Division")]
         public string division { get; set; }
-
         public string divisionId { get; set; }
+
+        [Display(Name = "Team")]
+        public string team { get; set; }
+        public string teamId { get; set; }
 
         [Display(Name = "From Timing")]
         public string FromPlanTimeInHour { get; set; }
@@ -56,7 +56,6 @@ namespace ISOStd.Models
 
         [Display(Name = "Internal Audit Team")]
         public string internal_audit_team { get; set; }
-
         public string internal_audit_teamId { get; set; }
 
         [Display(Name = "Notified To")]
@@ -81,6 +80,7 @@ namespace ISOStd.Models
         public DateTime audit_team_status_date { get; set; }
         public string audit_status_date { get; set; }
 
+
         public string id_audit_process_perform { get; set; }
         public string Details { get; set; }
         public string Evidence { get; set; }
@@ -96,6 +96,7 @@ namespace ISOStd.Models
         public string nc_reject_reason { get; set; }
         public string nc_reject_upload { get; set; }
         public string nc_reject_response { get; set; }
+
 
         //Disposition
         [Display(Name = "Are actions taken solved NC")]
@@ -260,7 +261,7 @@ namespace ISOStd.Models
         public string branch { get; set; }
 
         [Display(Name = "Department")]
-        public string group_name { get; set; }
+        public string dept_name { get; set; }
 
         [Display(Name = "Finding Category")]
         public string finding_category { get; set; }
@@ -360,6 +361,7 @@ namespace ISOStd.Models
         [Display(Name = "External Entity Name")]
         public string entity_name { get; set; }
 
+
         [Display(Name = "Remarks")]
         public string remarks { get; set; }
 
@@ -370,6 +372,7 @@ namespace ISOStd.Models
         {
             try
             {
+
                 string sSqlstmt = "update t_audit_process_nc set  disp_action_taken='" + objModels.disp_action_taken + "', "
                     + "disp_explain='" + objModels.disp_explain + "', disp_notifiedto='" + objModels.disp_notifiedto + "', risk_nc='" + objModels.risk_nc + "',risk_level='" + objModels.risk_level + "',disp_upload='" + objModels.disp_upload + "'";
 
@@ -449,6 +452,7 @@ namespace ISOStd.Models
         {
             try
             {
+
                 string sSqlstmt = "update t_audit_process_nc set  nc_team='" + objModels.nc_team + "', "
                     + "team_approvedby='" + objModels.team_approvedby + "', team_notifiedto='" + objModels.team_notifiedto + "'";
 
@@ -474,6 +478,7 @@ namespace ISOStd.Models
         {
             try
             {
+
                 string sSqlstmt = "update t_audit_process_nc set  rca_technique='" + objModels.rca_technique + "', "
                     + "rca_details  ='" + objModels.rca_details + "', rca_upload='" + objModels.rca_upload + "', rca_action='" + objModels.rca_action
                     + "', rca_justify='" + objModels.rca_justify + "', rca_reportedby='" + objModels.rca_reportedby + "', rca_notifiedto='" + objModels.rca_notifiedto + "'";
@@ -504,6 +509,7 @@ namespace ISOStd.Models
         {
             try
             {
+
                 string sSqlstmt = "update t_audit_process_nc set  ca_proposed_by='" + objModels.ca_proposed_by + "', "
                     + "ca_notifiedto='" + objModels.ca_notifiedto + "'";
 
@@ -594,6 +600,7 @@ namespace ISOStd.Models
         {
             try
             {
+
                 string sSqlstmt = "update t_audit_process_nc set  v_implement='" + objModels.v_implement + "', v_implement_explain='" + objModels.v_implement_explain
                     + "', v_rca='" + objModels.v_rca + "', v_rca_explain='" + objModels.v_rca_explain + "', v_discrepancies='" + objModels.v_discrepancies + "', v_discrep_explain='" + objModels.v_discrep_explain
                     + "', v_upload='" + objModels.v_upload + "', v_status='" + objModels.v_status + "', v_verifiedto='" + objModels.v_verifiedto + "', v_notifiedto='" + objModels.v_notifiedto + "'"
@@ -676,11 +683,13 @@ namespace ISOStd.Models
 
         //----------------------------------------------------------------------------------
 
+
         //--------------------------------------------------------------------------------------------
         internal bool FunExtAuditUpdateDisposition(AuditLogModels objModels, AuditLogModelsList objDispList)
         {
             try
             {
+
                 string sSqlstmt = "update t_external_audit_nc set  disp_action_taken='" + objModels.disp_action_taken + "', "
                     + "disp_explain='" + objModels.disp_explain + "', disp_notifiedto='" + objModels.disp_notifiedto + "', risk_nc='" + objModels.risk_nc + "',risk_level='" + objModels.risk_level + "',disp_upload='" + objModels.disp_upload + "'";
 
@@ -709,7 +718,6 @@ namespace ISOStd.Models
             }
             return false;
         }
-
         internal bool FunExtAuditAddDispList(AuditLogModelsList objDispList)
         {
             try
@@ -739,7 +747,6 @@ namespace ISOStd.Models
             }
             return false;
         }
-
         internal bool FunExtAuditUpdateDispList(string id_nc)
         {
             try
@@ -753,12 +760,12 @@ namespace ISOStd.Models
             }
             return false;
         }
-
         //RCA
         internal bool FunExtAuditUpdateRCA(AuditLogModels objModels, AuditLogModelsList objList)
         {
             try
             {
+
                 string sSqlstmt = "update t_external_audit_nc set  rca_technique='" + objModels.rca_technique + "', "
                     + "rca_details  ='" + objModels.rca_details + "', rca_upload='" + objModels.rca_upload + "', rca_action='" + objModels.rca_action
                     + "', rca_justify='" + objModels.rca_justify + "', rca_reportedby='" + objModels.rca_reportedby + "', rca_notifiedto='" + objModels.rca_notifiedto + "'";
@@ -783,12 +790,12 @@ namespace ISOStd.Models
             }
             return false;
         }
-
         //CA
         internal bool FunExtAuditUpdateCA(AuditLogModels objModels, AuditLogModelsList objList)
         {
             try
             {
+
                 string sSqlstmt = "update t_external_audit_nc set  ca_proposed_by='" + objModels.ca_proposed_by + "', "
                     + "ca_notifiedto='" + objModels.ca_notifiedto + "'";
 
@@ -879,6 +886,7 @@ namespace ISOStd.Models
         {
             try
             {
+
                 string sSqlstmt = "update t_external_audit_nc set  nc_team='" + objModels.nc_team + "', "
                     + "team_approvedby='" + objModels.team_approvedby + "', team_notifiedto='" + objModels.team_notifiedto + "'";
 
@@ -904,6 +912,7 @@ namespace ISOStd.Models
         {
             try
             {
+                string stime = DateTime.Now.ToString("HH':'mm':'ss");
                 string sSqlstmt = "update t_external_audit_nc set  v_implement='" + objModels.v_implement + "', v_implement_explain='" + objModels.v_implement_explain
                     + "', v_rca='" + objModels.v_rca + "', v_rca_explain='" + objModels.v_rca_explain + "', v_discrepancies='" + objModels.v_discrepancies + "', v_discrep_explain='" + objModels.v_discrep_explain
                     + "', v_upload='" + objModels.v_upload + "', v_status='" + objModels.v_status + "', v_verifiedto='" + objModels.v_verifiedto + "', v_notifiedto='" + objModels.v_notifiedto + "'"
@@ -919,7 +928,7 @@ namespace ISOStd.Models
                 }
                 if (objModels.v_verified_date != null && objModels.v_verified_date > Convert.ToDateTime("01/01/0001"))
                 {
-                    sSqlstmt = sSqlstmt + ", v_verified_date ='" + objModels.v_verified_date.ToString("yyyy/MM/dd") + "'";
+                    sSqlstmt = sSqlstmt + ", v_verified_date ='" + objModels.v_verified_date.ToString("yyyy/MM/dd ") + stime + "'";
                 }
 
                 sSqlstmt = sSqlstmt + " where id_nc='" + objModels.id_nc + "'";

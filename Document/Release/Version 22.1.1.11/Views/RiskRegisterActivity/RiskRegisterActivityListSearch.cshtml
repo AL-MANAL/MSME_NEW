@@ -1,0 +1,270 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.RiskRegisterActivityModels>
+
+    @{
+        ViewBag.Title = "RiskList";
+    }
+    <link href='@Url.Content("~/Content/popover/popover.css")' rel="stylesheet">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Risk Register Activity List </span>
+    </div>
+    @* <div class = "ActionLink">@Html.ActionLink("Add New", "AddRiskRegisterActivity", null, null, new { @class = "ActionLink" })
+        </div>*@
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+    <br />
+
+    @using (Html.BeginForm("RiskRegisterActivityListSearch", "RiskRegisterActivity", FormMethod.Get))
+    {
+
+
+        <span style="margin-left:35px">  @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Risk Activity", style = "width: 20%" }) </span>
+        <button type="submit" class="btn btn-info" style="margin-left:15px;">
+            <span class="glyphicon glyphicon-search"></span> Search
+        </button>
+
+        @Html.ActionLink("Add New", "AddRiskRegisterActivity", null, null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <span style="margin-left: 20px"> <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer; " id="downloadLink" />Download</span>
+
+
+    }
+    @Html.PagedListPager(Model, page => Url.Action("RiskRegisterActivityList",
+     new
+     {
+         page,
+         SearchText = Request.QueryString["SearchText"]
+     }),
+     new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+    <div id="content">
+        <table id="table1">
+            <tr>
+                <th style="width:40px;min-width:40px; max-width:100px;">
+                    Sl No
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Activity)
+                </th>
+                @*  <th>
+                        @Html.DisplayNameFor(model => model.First().Activity_No)
+                    </th>*@
+                <th>
+                    @Html.DisplayNameFor(model => model.First().DeptId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Activity_Category)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Risk_Type)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Activity_Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().LoggedBy)
+                </th>
+                <th>Activity Evaluation</th>
+                <th>Edit</th>
+                @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                }
+            </tr>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+                    <tr>
+                        <td style="width:40px;min-width:40px; max-width:100px;">
+                            @i
+                        </td>
+                        <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                            @Html.ActionLink(item.Activity, "RiskRegisterActivityDetails", new { Risk_Reg_Activity_Id = item.Risk_Reg_Activity_Id.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.Risk_Reg_Activity_Id, onclick = "HyperLinkProgressIconFunction()" })
+                        </td>
+                        @* <td style="width:150px;min-width:150px; max-width:250px;word-wrap:break-word">
+                                @Html.DisplayFor(modelItem => item.Activity_No)
+                            </td>*@
+                        <td style="width:250px;min-width:250px; max-width:250px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.DeptId)
+                        </td>
+                        <td style="width:250px;min-width:250px; max-width:250px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.Activity_Category)
+                        </td>
+                        <td style="width:150px;min-width:150px; max-width:250px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.Risk_Type)
+                        </td>
+                        <td style="width:150px;min-width:150px; max-width:250px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.Activity_Status)
+                        </td>
+                        <td style="width:150px;min-width:150px; max-width:250px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.LoggedBy)
+                        </td>
+                        @if (item.Risk_Type == "Environmental")
+                        {
+                            <td>
+                                <a href='@Url.Action("AddRiskRegisterActivityEvaluation", null, new { Risk_Reg_Activity_Id = item.Risk_Reg_Activity_Id })' title="Add Evaluation">
+                                    <img src="@Url.Content("~/Images/icon_add.png")" title="Add Evaluation" />
+                                </a>
+                                <a href='@Url.Action("RiskRegisterActivityEvaluationList", null, new { Risk_Reg_Activity_Id = item.Risk_Reg_Activity_Id })' title="View Evaluation List">
+                                    <img src="@Url.Content("~/Images/icon_list.png")" title="View Evaluation list" />
+                                </a>
+                            </td>
+                        }
+                        @if (item.Risk_Type == "OH & S")
+                        {
+                            <td>
+                                <a href='@Url.Action("AddHRRActivityEvaluation", null, new { Risk_Reg_Activity_Id = item.Risk_Reg_Activity_Id })' title="Add Evaluation">
+                                    <img src="@Url.Content("~/Images/icon_add.png")" title="Add Evaluation" />
+                                </a>
+                                <a href='@Url.Action("RiskRegisterHRREvaluationList", null, new { Risk_Reg_Activity_Id = item.Risk_Reg_Activity_Id })' title="View Evaluation List">
+                                    <img src="@Url.Content("~/Images/icon_list.png")" title="View Evaluation list" />
+                                </a>
+                            </td>
+                        }
+                        <td>
+                            <a href='@Url.Action("RiskRegisterActivityEdit", "RiskRegisterActivity", new { Risk_Reg_Activity_Id = item.Risk_Reg_Activity_Id })' title="Edit Risk Register Activity details">
+                                <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span>
+                            </a>
+                        </td>
+                        @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                        {
+                            <td style="width: 60px; min-width: 60px; max-width: 60px;">
+
+                                @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+                                <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.Risk_Reg_Activity_Id)" style="cursor:pointer;" />
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+
+        </table>
+    </div>
+
+    @section scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('[data-toggle="popover"]').popover({
+
+                title: setData,
+                html: true,
+                placement: 'right',
+                container: 'body'
+            });
+
+            function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("RiskRegisterActivityInfo", "RiskRegisterActivity")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+        });
+        function DeleteItems(Risk_Reg_Activity_Id) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("RiskRegisterActivityDocDelete", "RiskRegisterActivity")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'Risk_Reg_Activity_Id': Risk_Reg_Activity_Id },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'RiskRegisterActivityList.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+        </script>
+
+    }
+
+

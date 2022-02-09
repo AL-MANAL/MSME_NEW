@@ -15,6 +15,7 @@
         AuditTransList = ViewBag.AuditTransList;
     }
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    string user = Obj.GetCurrentUserSession().empid;
 }
 
 @section featured {
@@ -37,7 +38,7 @@
                     </a>
                     <span class="breadcrumb-item active"> Audit Checklist Details</span>
                 </div>
-                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+              
             </div>
 
             <div class="header-elements d-none">
@@ -53,16 +54,7 @@
                         </div>
                     }
 
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
-                        </div>
-                    </div>
+                 
                 </div>
             </div>
         </div>
@@ -109,12 +101,12 @@
                             </td>
                             <td class="col-xs-3 col-md-2">
                                 <p class="bg-brown py-1 px-2 rounded ">
-                                    @Html.DisplayNameFor(model => model.directorate)
+                                    @Html.DisplayNameFor(model => model.branch)
                                 </p>
                             </td>
                             <td class="col">
                                 <p class="bg-dark py-1 px-2 rounded">
-                                    @Html.DisplayFor(model => model.directorate)
+                                    @Html.DisplayFor(model => model.branch)
                                 </p>
                             </td>
                         </tr>
@@ -122,18 +114,18 @@
 
                             <td class="col-xs-3 col-md-2">
                                 <p class="bg-brown py-1 px-2 rounded ">
-                                    @Html.DisplayNameFor(model => model.grp)
+                                    @Html.DisplayNameFor(model => model.dept_name)
                                 </p>
                             </td>
                             <td class="col">
                                 <p class="bg-dark py-1 px-2 rounded">
-                                    @if (Model.grp_common == "common")
+                                    @if (Model.dept_name_common == "common")
                                     {
-                                        @Html.DisplayFor(model => model.grp_common)
+                                        @Html.DisplayFor(model => model.dept_name_common)
                                     }
                                     else
                                     {
-                                        @Html.DisplayFor(model => model.grp)
+                                        @Html.DisplayFor(model => model.dept_name)
                                     }
                                 </p>
                             </td>
@@ -217,6 +209,112 @@
                                 </p>
                             </td>
                         </tr>
+                        @if (Model.apprv_status_id == "0")
+                        {
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.approved_by)
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Obj.GetHrEmponlyNameById(Model.approved_by)
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.apprv_status)
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Html.DisplayFor(model => model.apprv_status)
+                                    </p>
+                                </td>
+
+                            </tr>
+                        }
+                        else if ((Model.apprv_status_id == "1" || Model.apprv_status_id == "2") && Model.approved_by != "")
+                        {
+                            <tr class="row">
+                                <td class="col-md-12">Approver Details</td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        Approved By
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Obj.GetHrEmponlyNameById(Model.approved_by)
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.apprv_status)
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Html.DisplayFor(model => model.apprv_status)
+                                    </p>
+                                </td>
+
+
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.approved_date)
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @if (Model.approved_date != null && Model.approved_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Model.approved_date.ToString("dd/MM/yyyy hh:mm:ss"))
+                                        }
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.apprv_comments)
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Html.DisplayFor(model => model.apprv_comments)
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.approver_upload)
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    @if (Model.approver_upload != null && Model.approver_upload != "" && Model.approver_upload.Length > 0)
+                                    {
+                                        foreach (var docs in Model.approver_upload.Trim(',').Split(','))
+                                        {
+                                            <p style="margin: 0px;">
+
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                    Preview
+                                                </a>
+                                            </p>
+                                            <br />
+                                        }
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+                        
                 </table>
                 <br />
                 <br />
@@ -324,6 +422,63 @@
         </table>*@
 
             </div>
+            <br />
+            @if (Model.apprv_status_id == "0" && Model.approved_by.Split(',').Contains(user))
+            {
+                using (Html.BeginForm("AuditChecklistApprove", "GenerateAuditChecklist", FormMethod.Post,
+                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="id_AuditChecklist" name="id_AuditChecklist" value="@Model.id_AuditChecklist" />
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Approve/Reject <text style="color:red;">*</text>
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (ViewBag.ApproveStatus != null)
+                                    {
+                                        foreach (var item in ViewBag.ApproveStatus)
+                                        {
+                                            <input type="radio" name="apprv_status" id="apprv_status" data-name='@item.Value' value='@item.Key' required />@item.Value
+                                        }
+                                    }
+                                </p>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Comments
+                                </p>
+                            </td>
+                            <td class="col">
+                                <div class="bg-dark py-1 px-2 rounded">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="apprv_comments" name="apprv_comments"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.approver_upload)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="file" name="approver_upload" id="approver_upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                }
+            }
         </div>     
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">          
             @Html.ActionLink("Back to List", "AuditChecklistList", null, new { id_AuditChecklist = Model.id_AuditChecklist }, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })

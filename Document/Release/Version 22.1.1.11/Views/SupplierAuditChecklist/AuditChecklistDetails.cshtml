@@ -1,0 +1,232 @@
+﻿@model ISOStd.Models.SupplierAuditChecklistModels
+
+@{
+    ViewBag.Title = "AuditChecklistDetails";
+   System.Data.DataSet dsrating=new System.Data.DataSet();
+
+   if (ViewBag.AuditRating != null)
+   {
+       dsrating = ViewBag.AuditRating;
+   }
+
+   ISOStd.Models.SupplierAuditPerformanceModelsList objChecklist = new ISOStd.Models.SupplierAuditPerformanceModelsList();
+
+   if (ViewBag.AuditElement != null)
+   {
+       objChecklist = ViewBag.AuditElement;
+   }
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Audit Checklist Details</span>
+</div>
+
+@using (Html.BeginForm("AuditChecklistReport", "SupplierAuditChecklist", FormMethod.Post, new {  id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" id="idt_checklist" name="idt_checklist" value="@Model.idt_checklist" />
+    <div style="float: right;padding-right: 50px;">
+        <button type="submit" class="btn btn-success btn-lg" style="width: 85px; height: 33px;background-color: #449d44 !important; padding: 0px;">
+            <span class="glyphicon glyphicon-print"></span>Report
+        </button>       
+    </div>
+}
+<div class = "ActionLink">
+       
+        @Html.ActionLink("Back to List", "AuditList", null,new {id_AuditChecklist=Model.id_AuditChecklist}, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+</div>
+
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    <fieldset>
+        <legend>AuditchecklistModels</legend>
+
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.Itemno)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">                      
+                        @Html.DisplayFor(model => model.Itemno)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.Business)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">                      
+                        @Html.DisplayFor(model => model.Business)
+                    </div>
+                </td>
+                  
+            </tr>
+            <tr>
+                 <td>
+                  <div class="display-label">
+                        @Html.LabelFor(model => model.Department)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                           @Html.DisplayFor(model => model.Department)
+                    </div>
+                </td>
+                <td>
+
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.Supplier)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                           @Html.DisplayFor(model => model.Department)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.AuditCriteria)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                         @Html.DisplayFor(model => model.AuditCriteria)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.AuditNo)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                         @Html.DisplayFor(model => model.AuditNo)
+                    </div>
+                </td>
+               
+            </tr>
+             <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.AuditDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.AuditDate != null && Model.AuditDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Model.AuditDate.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.Auditors)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Auditors)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.Auditee)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Auditee)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.Notes)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Notes)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.LabelFor(model => model.Remarks)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Remarks)
+                    </div>
+                </td>
+            </tr>
+           
+            </table>
+        <table style="width: 90%;">
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff;">Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">Questions
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">Rating
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">Finding Category
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">Comments
+                </th>
+                 <th style="background-color: #e5eafe; color: #0099ff;">Evidence Document
+                </th>
+            </tr>
+            @if (ViewBag.AuditElement != null)
+            {
+                int iSrno = 0;
+                foreach (var item in objChecklist.lstAudit)
+                {
+                    iSrno = iSrno + 1;
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td style="width: 500px; min-width: 500px; max-width: 500px;">
+                            @item.id_element
+                        </td>
+                        <td>
+                            @item.id_auditratings
+                        </td>
+                        <td>
+                            @item.finding_cat
+                        </td>
+                         <td>
+                            @item.comment
+                        </td>
+                         <td>
+                           @if (item.evidence_upload != "")
+                         {
+                              <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.evidence_upload })' target="_blank">Preview</a>                            
+                         }
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+        </fieldset>

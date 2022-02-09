@@ -1,0 +1,127 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string sReportType,sYear = "";
+
+    if (ViewBag.Report_Type != null && ViewBag.Report_Type != null)
+    {
+        sReportType = ViewBag.Report_Type;
+        HttpContext context = HttpContext.Current;
+        context.Session.Add("ReportType", sReportType);
+    }
+    
+    if (ViewBag.Year != null && ViewBag.Year != null)
+    {
+        sYear = ViewBag.Year;
+        HttpContext context = HttpContext.Current;
+        context.Session.Add("Years", sYear);
+    }
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">MIS Reports</span>
+</div>
+
+<br />
+
+@using (Html.BeginForm("DashboardReports", "Reports", FormMethod.Post))
+{
+        <div class="editor-field" @*style="margin-left: 50px;"*@>
+             
+           <b>Report Type</b>
+            <select id="ReportType" name="ReportType" required style="width: 180px">
+                <option value='Select'>Select</option>
+                @if (ViewBag.ReportType != null)
+                {
+                    foreach (var item in ViewBag.ReportType)
+                    {
+                        if (item.Text == ViewBag.Report_Type)
+                        {
+                            <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+            </select>
+
+           
+            
+            <select id="Years" name="Years" required style="width: 180px">
+                <option value='Select'>Select Years</option>
+                @if (ViewBag.Years != null)
+                {
+                    foreach (var item in ViewBag.Years)
+                    {
+                        if (item.Text == ViewBag.Year)
+                        {
+                          <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+            </select>        
+            <button type="submit" id="btn" class="btn btn-info" onclick="Reset()">
+                <span class="glyphicon glyphicon-search"></span>Go
+            </button>
+        </div>
+}
+<br />
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+
+<body>
+    @if (ViewBag.IframeObjectiveDisplay == true)
+   {
+   
+    <iframe id="ifrmReportViewer4" src="~/Reports/DashboardObjective.aspx" style="height:505px;width:3100px;" frameborder="1" scrolling="yes"></iframe>
+   }
+     @if (ViewBag.IframeKPIDisplay == true)
+   {
+   
+    <iframe id="ifrmReportViewer" src="~/Reports/DashboardKPI.aspx" style="height:505px;width:3000px;" frameborder="1" scrolling="yes"></iframe>
+   }
+       @if (ViewBag.IframeTrainingDisplay == true)
+   {
+    <iframe id="ifrmReportViewer3" src="~/Reports/DashboardTraining.aspx" style="height:505px;width:3500px;" scrolling="yes"></iframe>
+   }
+          @if (ViewBag.IframeMeetingDisplay == true)
+   {
+    <iframe id="ifrmReportViewer9" src="~/Reports/DashboardMeeting.aspx" style="height:505px;width:2300px;" frameborder="1" scrolling="yes"></iframe>
+   }
+     @if (ViewBag.IframeAuditDisplay == true)
+   {
+    <iframe id="ifrmReportViewer2" src="~/Reports/DashboardAudit.aspx" style="height:505px;width:2300px;" frameborder="1" scrolling="yes"></iframe>
+   }
+      @if (ViewBag.IframeRISKDisplay == true)
+   {
+   
+    <iframe id="ifrmReportViewer1" src="~/Reports/DashboardRisk.aspx" style="height:505px;width:2300px;" frameborder="1" scrolling="yes"></iframe>
+   }
+
+   @if (ViewBag.IframeCalibrationDisplay == true)
+   {
+    <iframe id="ifrmReportViewer8" src="~/Reports/DashboardCalibration.aspx" style="height:505px;width:2300px;" frameborder="1" scrolling="yes"></iframe>
+   }
+</body>
+</html>
+@section Scripts {
+     <script>
+         $(function () {
+             $("#ReportType").chosen();
+             $("#Years").chosen();
+         });
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

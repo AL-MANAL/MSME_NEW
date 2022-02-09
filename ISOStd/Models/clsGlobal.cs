@@ -25,6 +25,25 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        public DataSet getListPendingForAuditChecklistApproval(string sempid)
+        {
+            try
+            {
+                string sSqlstmt = "select id_AuditChecklist,ChecklistRef,prepared_by from t_auditchecklist where active=1 and " +
+                    "(apprv_status = '0' and find_in_set('" + sempid + "',approved_by)) ";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForAuditChecklistApproval: " + ex.ToString());
+            }
+            return null;
+        }
 
         //Employee perf notification for HR and top mgmt
         public DataSet getListPendingForCustSatisfaction(string sempid)
@@ -432,7 +451,7 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname,"
-                + " emp_no as Empid  from t_hr_employee t,t_screen_notification tt where screen_name = 'Customer Complaints' and field_name = 'Forward complaint to' and FIND_IN_SET(t.emp_no,tt.emp_id)";
+                + " emp_no as Empid  from t_hr_employee t,t_screen_notification tt where screen_name = '"+ screen_name + "' and field_name = '"+ field_name + "' and FIND_IN_SET(t.emp_no,tt.emp_id)";
                 DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                 {
@@ -2569,7 +2588,7 @@ namespace ISOStd.Models
                 string sSsqlstmt = "";
                 if (branch != "" && branch != null)
                 {
-                    sSsqlstmt = "select id_AuditChecklist as Id, ChecklistRef as Name from t_auditchecklist where Active=1 and  directorate='" + branch + "' order by id_AuditChecklist asc";
+                    sSsqlstmt = "select id_AuditChecklist as Id, ChecklistRef as Name from t_auditchecklist where Active=1 and  directorate='" + branch + "' or directorate=''  order by id_AuditChecklist asc";
                 }
                 else
                 {
@@ -2596,6 +2615,7 @@ namespace ISOStd.Models
             }
             return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
         }
+
 
 
         //public MultiSelectList GetAuditStatusList()
@@ -3341,15 +3361,15 @@ namespace ISOStd.Models
             }
             return "";
         }
-         
+
         public MultiSelectList GetAuditListforAuditLog()
         {
             DropdownList objReportList = new DropdownList();
             objReportList.lstDropdown = new List<DropdownItems>();
             try
             {
-                string sSsqlstmt = "select a.Audit_Id as Id,Audit_no as Name from t_audit_process a,t_audit_process_perform b" +
-                    " where a.Audit_Id=b.Audit_Id and followup_date != '' and nc_status='Close' and a.active = 1 order by a.Audit_Id desc";
+                string sSsqlstmt = "select distinct Audit_no as Name,T1.Audit_Id as Id"
+                + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1";
 
                 DataSet dsReportType = Getdetails(sSsqlstmt);
                 if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
@@ -3372,6 +3392,7 @@ namespace ISOStd.Models
             }
             return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
         }
+
 
         public string GetDeptHeadbyDept(string dept_id="")
         {
@@ -6474,7 +6495,7 @@ namespace ISOStd.Models
         //==========================AUDIT PLAN FOR AUDITEE======================================
         public DataSet GetListPendingForApprovalAuditPlanForAuditee(string sempid)
         {
-            string sSqlstmt = "select distinct Audit_no,Audit_criteria,logged_by,t.Audit_Id"
+            string sSqlstmt = "select distinct Audit_no,PlannedBy,Audit_criteria,logged_by,t.Audit_Id"
             + " from t_audit_process t, t_audit_process_plan tt, t_auditee_approval t1 where active = 1 and t.Audit_Id = tt.Audit_Id and tt.Audit_Id = t1.Audit_Id"
             + " and tt.Plan_Id = t1.Plan_Id and Approved_Status = 2 and(t1.auditee = '" + sempid + "' and t1.apprv_status = 0) order by Audit_Id desc";
 
@@ -6488,7 +6509,7 @@ namespace ISOStd.Models
         //==========================AUDIT PROCESS FOR APPROVEL======================================
         public DataSet getListPendingForApprovalAuditProcess(string sempid)
         {
-            string sSqlstmt = "select t.Audit_Id,Audit_criteria,Audit_no from t_audit_process t,t_audit_process_approval tt"
+            string sSqlstmt = "select t.Audit_Id,PlannedBy,Audit_no from t_audit_process t,t_audit_process_approval tt"
             + " where active = 1 and t.Audit_Id = tt.Audit_Id and Approved_Status = 0  and(find_in_set('" + sempid + "', ApprovedBy)) and approver = '" + sempid + "' and apprv_status = 0 order by t.Audit_Id desc";
 
             DataSet dsApprovalList = Getdetails(sSqlstmt);
@@ -12452,6 +12473,7 @@ namespace ISOStd.Models
             
             switch(sType)
             {
+                case "AuditProcess": return new string[] { "Cycle1", "Cycle2", "Cycle3", "Cycle4", "Cycle5" };
                 case "NCImpact": return new string[] { "Low", "Moderate", "High", "Extreme" };
                 case "Issue Frequency Evaluation": return new string[] { "Quarterly", "Semi Annually", "Yearly" };
                 case "IssueImpact": return new string[] { "Low", "Moderate", "High","Extreme" };
@@ -12565,6 +12587,11 @@ namespace ISOStd.Models
 
             switch (sType)
             {
+                case "AuditChecklist":
+
+                    dicKeyValue.Add("2", "Approved");
+                    dicKeyValue.Add("1", "Rejected");
+                    return dicKeyValue;
                 case "ExtProviderPerf":
 
                     dicKeyValue.Add("2", "Reviewed");

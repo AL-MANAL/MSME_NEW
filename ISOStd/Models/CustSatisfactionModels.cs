@@ -156,7 +156,11 @@ namespace ISOStd.Models
 
         public string review_status_id { get; set; }
 
+        [Display(Name = "Reference No")]
+        public string ref_no { get; set; }
 
+        [Display(Name = "Action Initiated By")]
+        public string action_initiated_by { get; set; }
 
 
         internal bool FunAddCustomerSatisfaction(CustSatisfactionModels objModel, CustSatisfactionModelsList objQList, CustSatisfactionModelsList objDList, CustSatisfactionModelsList objCList)
@@ -216,6 +220,15 @@ namespace ISOStd.Models
 
                             FunAddComplaintList(objCList);
                         }
+                        string sName = objGlobalData.GetBranchShortNameByID(branch);
+                        DataSet dsData = objGlobalData.GetReportNo("CustSatisfaction", "", sName);
+
+                        if (dsData != null && dsData.Tables.Count > 0)
+                        {
+                            ref_no = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
+                        }
+                        objGlobalData.ExecuteQuery("Update t_cust_satisfaction set ref_no = '" + ref_no + "' where id_cust_satisfaction= '" + id_cust_satisfaction + "'");
+
                         return true;
                     }
                 }
@@ -340,6 +353,32 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+        internal bool FunUpdateActionInitiated(CustSatisfactionModels objModel, CustSatisfactionModelsList objQList)
+        {
+            try
+            {
+                string sSqlstmt = "update t_cust_satisfaction set action_initiated_by='" + action_initiated_by + "'";
+                sSqlstmt = sSqlstmt + " where id_cust_satisfaction='" + objModel.id_cust_satisfaction + "'";
+
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    if (Convert.ToInt32(objQList.CSList.Count) > 0)
+                    {
+
+                        FunAddActionList(objQList);
+                    }
+                    
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunEditCustomerSatisfaction: " + ex.ToString());
+            }
+            return false;
+        }
+
 
         internal bool FunAddActionList(CustSatisfactionModelsList objQList)
         {

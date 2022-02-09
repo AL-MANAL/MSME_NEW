@@ -1,0 +1,392 @@
+﻿@model ISOStd.Models.QualitySurveyModels
+@using System.Data;
+@{
+    ViewBag.Title = "QualitySurveyEdit";
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+           </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("QualitySurveyList", "QualitySurvey", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Quality Survey List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Air/Water/Noise Quality Test Survey Update</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("QualitySurveyEdit", "QualitySurvey", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="id_qualitysurvey" name="id_qualitysurvey" value='@Model.id_qualitysurvey' />
+    
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Air/Water/Noise Quality Test Survey</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Survey_date)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="Survey_date" name="Survey_date" value="@Model.Survey_date.ToString("yyyy-MM-dd")" required />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Survey_for)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" id="Survey_for" name="Survey_for" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Survey != null)
+                                    {
+                                        foreach (var item in ViewBag.Survey)
+                                        {
+                                            if (item.Text == Model.Survey_for)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.ThirdParty)
+                            </td>
+                            <td class="col">
+                                @*<input class="form-control" type="text" id="ThirdParty" name="ThirdParty" value="@Model.ThirdParty" />*@
+                                <select id="ThirdParty" name="ThirdParty" class="form-control select-fixed-multiple" data-fouc multiple="multiple">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Supplier != null)
+                                    {
+                                        foreach (var item in ViewBag.Supplier)
+                                        {
+                                            if (Array.IndexOf(Model.ThirdParty.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.ConductedBy)
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="ConductedBy" name="ConductedBy" value="@Model.ConductedBy" />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Criteria)
+                            </td>
+                            <td class="col">
+                                @*<select id="Criteria" name="Criteria" class="form-control select-fixed-multiple" multiple="multiple" data-fouc>
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.SurveyCriteria != null)
+                    {
+                        foreach (var item in ViewBag.SurveyCriteria)
+                        {
+                            if (Model.Criteria.Contains(item.Text))
+                            {
+                                <option value='@item.Value' selected>@item.Text</option>
+                            }
+                            else
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+
+                        }
+                    }
+                </select>*@
+                                <input class="form-control" type="text" id="Criteria" name="Criteria" value="@Model.Criteria" />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.VerifiedBy)
+                            </td>
+                            <td class="col">
+                                <select id="VerifiedBy" name="VerifiedBy" class="form-control select-fixed-multiple" data-fouc>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (Array.IndexOf(Model.VerifiedBy.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Report)
+                            </td>
+                            <td class="col">
+                                <input type="file" name="Report" id="Report" title="Lab Reports" onchange="FileFormatValidation(this)"
+                                       multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                <br />
+                                @if (Model.Report != null && Model.Report != "" && Model.Report.Length > 0)
+                                {
+                                    <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                    <span class="form-text text-muted">
+                                        <code>
+                                            (Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+                                    foreach (var docs in Model.Report.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    @System.IO.Path.GetFileName(docs)
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+
+
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.ExpDate)
+
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="ExpDate" name="ExpDate" value="@Model.ExpDate.ToString("yyyy-MM-dd")" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.ReviewDate)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="ReviewDate" name="ReviewDate" value="@Model.ReviewDate.ToString("yyyy-MM-dd")" />
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Location)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Location" name="Location" value="@Model.Location" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.IsLimit)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" id="IsLimit" name="IsLimit" onchange="GetRemark()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Limit != null)
+                                    {
+                                        foreach (var item in ViewBag.Limit)
+                                        {
+                                            if (item == Model.IsLimit)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+
+                        
+                        <tr class="row" id="remarkid">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Remarks)
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.Remarks, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                        </tr>
+                       
+                        </table>      
+
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                    @Html.ActionLink("Back to List", "QualitySurveyList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                    <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Update" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+
+
+        // Default initialization
+        $('.form-check-input-styled').uniform();
+
+
+                   //----zzz
+
+ $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+        {
+
+            @: new Noty({
+            @:     text: '@TempData["alertdata"]',
+            @:     type: 'error'
+            @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+            @:    new Noty({
+            @:       text: '@TempData["Successdata"]',
+            @:       type: 'success'
+            @:   }).show();
+        }
+     GetRemark();
+        });
+
+    //zzz----
+        // Default initialization
+        $('.form-check-input-styled').uniform();
+
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, xlsx, xls, docx format'
+                });
+            }
+        }
+
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+
+        function GetRemark() {
+            var criteriaType = document.getElementById("IsLimit").value;
+            if (criteriaType.toLowerCase() == "no") {
+                document.getElementById("remarkid").style.display = "";
+            }
+            else {
+                document.getElementById("remarkid").style.display = "none";
+            }
+
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

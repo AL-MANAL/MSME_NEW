@@ -1,0 +1,410 @@
+﻿@model ISOStd.Models.TUVPerformAuditModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddAuditElement";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Audit Questions</span>
+</div>
+
+<br />
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("GenerateAuditQuestion", "TUV", FormMethod.Post, new { style = "float: left;width: 20%;", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>MeetingType</legend>
+
+        <div>            
+            <table id="tabcontent" style="width: 20%; padding-left: 30px; float:left;">
+                <tr>
+                    <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Audit Questions Add / Remove</td>
+                </tr>
+                <tr>
+                                    
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                          @Html.LabelFor(model => model.CustID)
+                        </div>
+                    </td>
+                    <td>
+                         <div class="editor-field">
+                            <select class="chosen-select" id="CustID" name="CustID" onchange="SetProject()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CustomerList != null && ViewBag.CustomerListVal != null)
+                                {
+                                    foreach (var item in ViewBag.CustomerList)
+                                    {
+                                        if (item.Value == ViewBag.CustomerListVal)
+                                        {
+                                             <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                             <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+
+                                else if (ViewBag.CustomerList != null)
+                                {
+                                    foreach (var item in ViewBag.CustomerList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                             </div>
+                    </td>
+                    </tr>
+
+
+                    <tr>
+                         <td>
+                        <div class="editor-label">
+                          @Html.LabelFor(model => model.Project_no)
+                        </div>
+                    </td>
+                    <td>
+                         <div class="editor-field">
+                            <select class="chosen-select" id="Project_no" name="Project_no" onchange="SetSupplier()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.ProjectList != null && ViewBag.ProjectListVal !=null)
+                                {
+                                    foreach (var item in ViewBag.ProjectList)
+                                    {
+                                        if (item.Value == ViewBag.ProjectListVal)
+                                        {
+                                             <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                             <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                             </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                          @Html.LabelFor(model => model.SupplierID)
+                        </div>
+                    </td>
+                    <td>
+                         <div class="editor-field">
+                            <select class="chosen-select" id="SupplierID" name="SupplierID" onchange="GetQuestions()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.SupplierList != null && ViewBag.SupplierListVal != null)
+                                {
+                                    foreach (var item in ViewBag.SupplierList)
+                                    {
+                                        if (item.Value == ViewBag.SupplierListVal)
+                                        {
+                                             <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                             <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                             </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Questions)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Questions" name="Questions" required></textarea>
+                          
+                        </div>
+                    </td>                   
+                </tr>
+               @* <tr>
+                    <td colspan="2">
+                        <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')"/>
+
+                    </td>
+                </tr>*@
+            </table>
+             
+            </div>
+        <div>
+             <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')"/>
+        </div>
+        </fieldset>
+
+}
+@using (Html.BeginForm("", "TUV", FormMethod.Post, new { style = "float: left;width: 70%;", id = "form2", name = "form2" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Survey Rating</legend>
+
+        <div>
+            
+                 <table id="tblMeetingList" style="width: 70%; padding-left: 30px; float:left;">
+                     <tr>
+                         <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;">Audit Questions</td>
+                     </tr>
+                     <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold; font-size: 14px; height: 30px;">
+                         <th>Audit Questions</th>
+                         <th>Action</th>
+                     </tr>
+                    @if (ViewBag.AuditElements != null)
+                    {
+
+                        int index = 2;
+                        foreach (var item in ViewBag.AuditElements)
+                        {
+                         <tr>
+                             <td>
+                                 <textarea id="Questions @item.Value" name="Questions @item.Value" style="width:400px"> @item.Text</textarea>                                 
+                             </td>
+                             <td>
+                                
+                                 <img src="@Url.Content("~/Images/updateIcon_small.png")" title="Update Audit Question"
+                                      onclick="UpdateQuestion(@item.Value)" style="cursor:pointer;" />
+
+                                 <img src="@Url.Content("~/Images/delete.png")" title="Delete Audt Question" 
+                                onclick="DeleteQuestion(@item.Value)" style="cursor:pointer;"/> 
+                                   
+                             </td>
+
+                         </tr>
+                            index++;
+                        }
+                    }
+                 </table>
+
+        </div>
+    </fieldset>
+}
+
+
+@section Scripts {
+     <script type="text/javascript">
+         $(function () {
+             $("#CustID").chosen();
+             $("#Project_no").chosen();
+             $("#SupplierID").chosen();
+             $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+         });
+         function SetProject() {
+             var CustID = $('#CustID').chosen().val();
+             $('#Project_no').find('option').not(':first').remove();
+             $('#SupplierID').find('option').not(':first').remove();
+             $("#Project_no").trigger("chosen:updated");
+             $("#SupplierID").trigger("chosen:updated");
+             jQuery.ajax({
+                 url: '@Url.Action("FunGetProjectList", "TUV")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'CustID': CustID },
+                success: function (result) {
+                    if (result != null && result.length > 0) {
+
+                        $.each(result, function (index, item) {
+                            $("#Project_no").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Project_no").trigger("chosen:updated");
+                        });
+                    }
+                    else {
+                        jAlert("No Project exists.");
+                    }
+                }
+             });
+             GetQuestions();
+        }
+        function SetSupplier() {
+            var Project_no = $('#Project_no').chosen().val();
+            $('#SupplierID').find('option').not(':first').remove();
+            $("#SupplierID").trigger("chosen:updated");
+            jQuery.ajax({
+                url: '@Url.Action("FunGetSupplierList", "TUV")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'Project_no': Project_no },
+                success: function (result) {
+                    if (result != null && result.length > 0) {
+
+                        $.each(result, function (index, item) {
+                            $("#SupplierID").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#SupplierID").trigger("chosen:updated");
+                        });
+                    }
+                    else {
+                        jAlert("No Supplier exists.");
+                    }
+                }
+            });
+            GetQuestions();
+        }
+
+         function DeleteQuestion(id_element) {
+             var CustID = $('#CustID').val();
+             var Project_no = $('#Project_no').val();
+             var SupplierID = $('#SupplierID').val();
+             jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                 if (r == true) {
+                     jQuery.ajax({
+                         url: '@Url.Action("QuestionDelete", "TUV")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'id_element': id_element},
+                         success: function (data) {
+                             var params = {
+                                 CustID: CustID, Project_no: Project_no, SupplierID: SupplierID
+                             };
+
+                             //// Add new params to the querystring dictionary
+                             queryString = $.param(params);
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                                '?' + queryString;
+                         }
+                     });
+                     return true;
+                 }
+                 else if (r == false) {
+                     return false;
+                 }
+             });
+         }
+        
+
+         function UpdateQuestion(id_element) {
+           
+             var Element = document.getElementById("Questions " + id_element).value;
+             jQuery.ajax({
+                 url: '@Url.Action("QuestionUpdate", "TUV")',
+                 type: 'GET',
+                 dataType: "json",
+                 data: { 'id_element': id_element, 'Questions': Element },
+                 success: function (result) {
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname +
+                         createQueryString(queryString);    
+                 }
+             });
+         }
+
+
+         function GetQuestions() {
+             var CustID = $('#CustID').val();
+             var Project_no = $('#Project_no').val();
+             var SupplierID = $('#SupplierID').val();
+             if (CustID != "" && Project_no != "" && SupplierID != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("GetQuestions", "TUV")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'CustID': CustID, 'Project_no': Project_no, 'SupplierID': SupplierID },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             var thTitleRow = table.insertRow();
+                             thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;";
+                             var cellTitle0 = thTitleRow.insertCell(0);
+
+                             cellTitle0.innerHTML = "Questions";
+                             table.rows[0].cells[0].colSpan = 2;
+                             table.rows[0].cells[0].style = "color:#fff";
+
+
+                             var theaderRow = table.insertRow();
+
+                             theaderRow.style = "background-color: #e5eafe; font-weight: bold; font-size: 14px;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                             //var cellth2 = theaderRow.insertCell(2);
+
+
+
+                             cellth0.innerHTML = "<th>Questions</th>";
+                             cellth1.innerHTML = "<th>Action</th>";
+                             //cellth2.innerHTML = "<th>Action</th>";
+
+                             table.rows[1].cells[0].style = "color:#0099ff";
+                             table.rows[1].cells[1].style = "color:#0099ff";
+                             //table.rows[1].cells[2].style = "color:#0099ff";
+
+                             var list = result;
+                             for (var i = 0; i < result.length; i++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+
+                                 var Id = result[i].Value;
+
+                                 cell0.innerHTML = " <textarea id='Questions " + Id + "' name='Questions " + Id + "'>" + result[i].Text + "</textarea>";
+                                 cell1.innerHTML = "<img src='@Url.Content("~/Images/updateIcon_small.png")') style='cursor: pointer;' title='Update Question' onclick='UpdateQuestion(" + Id + ")'/>"
+                                  + "<a href='/TUV/QuestionDelete1?id_element=" + Id + "&CustID=" + CustID + "&Project_no=" + Project_no + "&SupplierID=" + SupplierID
+                                 + "' title='Delete Question'> <img src='@Url.Content("~/Images/delete.png")') title='Delete Question'/></a>";
+                             }
+                         }
+                         else {
+                             document.getElementById("tblMeetingList").style.display = "none";
+                             jAlert("No Questions exists, please add and then try again");
+                         }
+
+                     }
+                 });
+             }
+             else {
+                 document.getElementById("tblMeetingList").style.display = "none";
+             }
+            
+         }
+
+     
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

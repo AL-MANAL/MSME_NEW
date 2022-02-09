@@ -1,0 +1,259 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+
+@{
+    ViewBag.Title = "LegalRegisterEvaluationEdit";
+ 
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Legal Register Evaluation Edit</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("LegalRegisterEvaluationEdit", "LegalRegister", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>LegalRegisterModel</legend>
+        <input type="hidden" id="id_requirements" name="id_requirements" value="@ViewBag.id_requirements" />
+        <input type="hidden" id="legalregister_evaluation_Id" name="legalregister_evaluation_Id" value="@ViewBag.legalregister_evaluation_Id" />
+        @* <input type="hidden" id="LegalRegister_Eval_On" name="Obj_Estld_On" value="@Model.LegalRegister_Eval_On" />
+        <input type="hidden" id="Duedate" name="Duedate" value="@Model.Duedate" />*@
+
+
+        <table id="tabcontent">
+            <tr>
+                         
+                <td>
+
+
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.LegalRegister_Eval_On)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                       <input type="text" id="LegalRegister_Eval_On" name="LegalRegister_Eval_On" value="@Model.LegalRegister_Eval_On.ToString("dd/MM/yyyy")" required readonly />
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Duedate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Duedate" name="Duedate" value="@Model.Duedate.ToString("dd/MM/yyyy")"   />
+                    </div>
+                </td>
+                </tr>
+
+            <tr>
+                 
+                          
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.comply)
+                    </div>
+                </td>
+
+                @*<td>
+                    <div class="editor-field">
+                        <input type="text" id="comply" name="comply" value="@Model.comply" required />
+                    </div>
+                </td>*@
+
+                <td>
+                    <div class="editor-field">
+                        <select id="comply" name="comply" required="" onclick="cal()">
+                            <option value="@Model.comply" hidden>Select</option>
+                            @if (ViewBag.comply != null)
+                            {
+                                foreach (var item in ViewBag.comply)
+                                {
+                                    <option value='@item' selected>@item</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                </td>
+                @*<td>
+                    <div class="editor-field">
+                        <select id="comply" name="comply" required onclick="cal()">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.comply != null)
+                            {
+                                foreach (var data in ViewBag.comply)
+                                {
+                                    if (data.Text == Model.comply)
+                                    {
+                                        <option value='@data.Value' selected>@data.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>*@
+
+                   <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.yes_comply_reason)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="yes_comply_reason" name="yes_comply_reason" value="@Model.yes_comply_reason"  aria-multiline="true" readonly  />
+                    </div>
+                </td>
+                </tr>
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.no_comply_reason)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="no_comply_reason" name="no_comply_reason" value="@Model.no_comply_reason" aria-multiline="true" readonly />
+                    </div>
+                </td>           
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Comply_action)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Comply_action" name="Comply_action" value="@Model.Comply_action" required />
+                    </div>
+                    </td>
+            </tr>
+            <tr>
+                    <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.personel_responsible)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="personel_responsible" name="personel_responsible" value="@Model.personel_responsible" required />
+                    </div>
+                    </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Evidence)
+                    </div>
+                </td>
+                <td>
+                    <input type="file" name="Evidence" id="Evidence" title="Objective Evidence" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx,image/*"
+                        style="height: 38px;"/>
+                     @if (Model.Evidence != "")
+                        {
+                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Evidence })' target="_blank">Preview</a> 
+                        }
+                </td>
+            </tr>
+            
+        </table>
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back","LegalRegisterEvaluationEdit", new {   id_requirements = Model.id_requirements , LegalRequirement_Id= Model.LegalRequirement_Id},
+            new { onclick="HyperLinkProgressIconFunction()"})
+            <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')"/>
+        </div>
+    </fieldset>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(function () {
+            var Obj_Estld_On = $('#LegalRegister_Eval_On').val();
+            var Todate = $('#Duedate').val();
+
+         
+                $('#LegalRegister_Eval_On').datepicker({
+                    dateFormat: "dd-mm-yy",
+                    buttonImageOnly: true,
+                    buttonImage: '../Images/Calender.png',
+                    showOn: 'both',
+                    changeMonth: true,
+                    changeYear: true,
+                    gotoCurrent: true
+                });
+
+            $('#Duedate').datepicker({
+                dateFormat: "dd-mm-yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+
+
+        });
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only pdf, jpg, jpeg, gif, png format");
+            }
+        }
+
+        function cal() {
+            var x = document.getElementById("comply").value;
+
+
+            if (x == "Yes") {
+                document.getElementById("yes_comply_reason").readOnly = false
+                //    document.getElementById("yes_comply_reason").style.color = "white";
+                document.getElementById("no_comply_reason").value = "";
+                document.getElementById("yes_comply_reason").style.background = "white";
+
+            }
+            else {
+                document.getElementById("yes_comply_reason").readOnly = true
+                document.getElementById("yes_comply_reason").style.background = "#efefe6";
+
+            }
+
+            if (x == "No")
+            {
+                document.getElementById("no_comply_reason").readOnly = false
+                document.getElementById("yes_comply_reason").value = "";
+                document.getElementById("no_comply_reason").style.background = "white";
+            }
+            else {
+                document.getElementById("no_comply_reason").readOnly = true
+                document.getElementById("no_comply_reason").style.background = "#efefe6";
+
+            }
+
+        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

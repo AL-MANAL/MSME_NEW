@@ -799,7 +799,7 @@ namespace ISOStd.Controllers
         {
             ObjectivesModels objObjectivesModels = new ObjectivesModels();
 
-            ViewBag.View = Request.QueryString["View"];
+            ViewBag.View = form["View"];
             try
             {
                 UserCredentials objUser = new UserCredentials();
@@ -1041,11 +1041,11 @@ namespace ISOStd.Controllers
 
                     ViewBag.ObjectivesDetails = objObjectivesModels;
 
-                    CompanyModels objCompany = new CompanyModels();
-                    dsObjectivesModelsList = objCompany.GetCompanyDetailsForReport(dsObjectivesModelsList);
-                    dsObjectivesModelsList = objGlobaldata.GetReportDetails(dsObjectivesModelsList, objObjectivesModels.Obj_Ref, objGlobaldata.GetCurrentUserSession().empid, "OBJECTIVE REPORT");
+                    //CompanyModels objCompany = new CompanyModels();
+                    //dsObjectivesModelsList = objCompany.GetCompanyDetailsForReport(dsObjectivesModelsList);
+                    //dsObjectivesModelsList = objGlobaldata.GetReportDetails(dsObjectivesModelsList, objObjectivesModels.Obj_Ref, objGlobaldata.GetCurrentUserSession().empid, "OBJECTIVE REPORT");
 
-                    ViewBag.CompanyInfo = dsObjectivesModelsList;
+                    //ViewBag.CompanyInfo = dsObjectivesModelsList;
                 }
                 else
                 {
@@ -1059,20 +1059,20 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in ObjectivesPDF: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
+           
             Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
 
             foreach (var key in Request.Cookies.AllKeys)
             {
                 cookieCollection.Add(key, Request.Cookies.Get(key).Value);
             }
-            string footer1 = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\" <br/> --footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
+            string footer = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
 
             return new ViewAsPdf("ObjectivesPDF")
             {
-                //FileName = "Objectives.pdf",
+                //FileName = "NCPDF.pdf",
                 Cookies = cookieCollection,
-                CustomSwitches = footer1 ,
-              
+                CustomSwitches = footer
             };
         }
 

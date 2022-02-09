@@ -1,0 +1,118 @@
+﻿@model ISOStd.Models.EquipmentDetailModels
+
+@{
+    ViewBag.Title = "PassEdit";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Vehicle Pass details Edit</span>
+</div>
+
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("VehiclePassEdit", "EquipmentCategory", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="id_pass" name="id_pass" value="@Model.id_pass"/>
+    
+    <fieldset>
+        <legend>IssueEdit</legend>
+        <table id="tabcontent">
+            <tr>                
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PassType)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="PassType" name="PassType" required>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.PassType != null)
+                            {
+                                foreach (var item in ViewBag.PassType)
+                                {
+                                    if (item.Text == Model.PassType)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>        
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Upload)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                       <input type="file" name="Upload" id="Upload" value="" onchange="FileFormatValidation(this)" accept=".pdf" style="height: 38px;"/>
+                         @if (Model.Upload != "")
+                         {
+                              <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Upload })' target="_blank">Preview</a>                            
+                         }
+                    </div>
+                </td>
+            </tr>
+           <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ExpDate)
+                    </div>
+                </td>
+               <td>
+                   <input type="text" id="ExpDate" name="ExpDate" value="@Model.ExpDate.ToString("dd/MM/yyyy")" style="width:150px" />
+               </td>
+           </tr>
+               
+        </table>
+    </fieldset>
+    
+    <div style="width: 100%; text-align: center;">
+        @Html.ActionLink("Back to List", "VehiclePassList", null, new {id_equipment=Model.id_equipment.ToString()},new {Class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
+        <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')"/>
+    </div>
+}
+
+@section Scripts {
+     <script>
+        
+         function FileFormatValidation(file) {
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["pdf"]) == -1) {
+                 file.value = "";
+                 jAlert("Invalid file format, please upload only pdf format");
+             }
+         }
+         $(function () {
+             $('#ExpDate').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true
+             });
+         });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

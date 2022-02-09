@@ -1,6 +1,7 @@
 ﻿using ISOStd.Models;
 using Rotativa;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -14,13 +15,12 @@ namespace ISOStd.Controllers
     {
         // GET: AuditProcess
 
-        private clsGlobal objGlobaldata = new clsGlobal();
-
+        clsGlobal objGlobaldata = new clsGlobal();
         public AuditProcessController()
         {
             ViewBag.Menutype = "Audit";
-        }
 
+        }
         public ActionResult AuditPlan()
         {
             AuditProcessModels objModel = new AuditProcessModels();
@@ -34,11 +34,16 @@ namespace ISOStd.Controllers
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objModel.branch);
                 ViewBag.AuditCriteria = objGlobaldata.GetIsoStdListbox();
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.CheckList = objGlobaldata.GetChecklistTypeByChecklistRef(objModel.branch);
+                // ViewBag.CheckList = objGlobaldata.GetChecklistTypeByChecklistRef(objModel.branch);
                 objModel.PlannedBy = objGlobaldata.GetCurrentUserSession().empid;
                 ViewBag.Process = objGlobaldata.GetAuidtCycleList();
                 ViewBag.ApprovedBy = objGlobaldata.GetHrEmpListByDivision(objModel.branch);
                 ViewBag.Audit = objGlobaldata.GetAuidtTypeList();
+
+                ViewBag.AuditMethodology = objGlobaldata.GetDropdownList("Audit Methodology");
+                ViewBag.AuditMethod = objGlobaldata.GetDropdownList("Audit Method");
+                ViewBag.AuditLang = objGlobaldata.GetDropdownList("Audit Language");
+                ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
             }
             catch (Exception ex)
             {
@@ -68,21 +73,24 @@ namespace ISOStd.Controllers
                 AuditProcessModelsList objAudit = new AuditProcessModelsList();
                 objAudit.Obj = new List<AuditProcessModels>();
 
+
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     AuditProcessModels obj = new AuditProcessModels();
 
                     if (form["branch" + i] != "" && form["branch" + i] != null)
                     {
+
                         obj.branch = form["branch" + i];
-                        obj.group_name = form["group_name" + i];
+                        obj.dept_name = form["dept_name" + i];
+                        obj.team = form["team" + i];
                         obj.location = form["location" + i];
                         obj.fromtime = form["fromtime" + i];
                         obj.totime = form["totime" + i];
                         obj.checklist = form["checklist" + i];
                         obj.auditors = form["auditors" + i];
                         obj.auditee_team = form["auditee_team" + i];
-
+                        obj.doc_req = form["doc_req" + i];
                         if (DateTime.TryParse(form["AuditDate" + i], out dateValue) == true)
                         {
                             obj.AuditDate = dateValue;
@@ -107,6 +115,7 @@ namespace ISOStd.Controllers
             return RedirectToAction("AuditProcessList");
         }
 
+
         [AllowAnonymous]
         public ActionResult AuditProcessEdit()
         {
@@ -114,16 +123,18 @@ namespace ISOStd.Controllers
 
             try
             {
+
                 if (Request.QueryString["Audit_Id"] != null && Request.QueryString["Audit_Id"] != "")
                 {
                     string Audit_Id = Request.QueryString["Audit_Id"];
 
-                    string sSqlstmt = "select Audit_Id,Audit_criteria,PlannedBy,Audit_no,AuditPlanDate,ApprovedBy,audit_type,audit_code  from t_audit_process where Audit_Id=" + Audit_Id;
+                    string sSqlstmt = "select Audit_Id,Audit_criteria,PlannedBy,Audit_no,AuditPlanDate,ApprovedBy,audit_type,audit_code,audit_scope,audit_method,audit_objective,audit_lang,audit_methodology  from t_audit_process where Audit_Id=" + Audit_Id;
 
                     DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
+
                         objModel = new AuditProcessModels
                         {
                             Audit_Id = (dsModelsList.Tables[0].Rows[0]["Audit_Id"].ToString()),
@@ -133,6 +144,12 @@ namespace ISOStd.Controllers
                             ApprovedBy = (dsModelsList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
                             audit_type = (dsModelsList.Tables[0].Rows[0]["audit_type"].ToString()),
                             audit_code = (dsModelsList.Tables[0].Rows[0]["audit_code"].ToString()),
+
+                            audit_scope = (dsModelsList.Tables[0].Rows[0]["audit_scope"].ToString()),
+                            audit_method = (dsModelsList.Tables[0].Rows[0]["audit_method"].ToString()),
+                            audit_objective = (dsModelsList.Tables[0].Rows[0]["audit_objective"].ToString()),
+                            audit_lang = (dsModelsList.Tables[0].Rows[0]["audit_lang"].ToString()),
+                            audit_methodology = (dsModelsList.Tables[0].Rows[0]["audit_methodology"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["AuditPlanDate"].ToString(), out dtValue))
@@ -140,13 +157,18 @@ namespace ISOStd.Controllers
                             objModel.AuditPlanDate = dtValue;
                         }
 
+                        ViewBag.AuditMethodology = objGlobaldata.GetDropdownList("Audit Methodology");
+                        ViewBag.AuditMethod = objGlobaldata.GetDropdownList("Audit Method");
+                        ViewBag.AuditLang = objGlobaldata.GetDropdownList("Audit Language");
+
                         objModel.branch = objGlobaldata.GetCurrentUserSession().division;
 
                         ViewBag.ApprovedBy = objGlobaldata.GetHrEmpListByDivision(objModel.branch);
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Department = objGlobaldata.GetDepartmentListbox();
+                        //ViewBag.Team = objGlobaldata.GetMultiTeambyMultiGroup();
                         ViewBag.Location = objGlobaldata.GetDivisionLocationList(objModel.branch);
-
+                        ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                         ViewBag.AuditCriteria = objGlobaldata.GetIsoStdListbox();
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         ViewBag.CheckList = objGlobaldata.GetChecklistTypeByChecklistRef();
@@ -155,7 +177,7 @@ namespace ISOStd.Controllers
                         AuditProcessModelsList objAudit = new AuditProcessModelsList();
                         objAudit.Obj = new List<AuditProcessModels>();
 
-                        sSqlstmt = "select Plan_Id,Audit_Id,branch,group_name,location,AuditDate,fromtime,totime,checklist,auditors,auditee_team from t_audit_process_plan where Audit_Id='" + objModel.Audit_Id + "'";
+                        sSqlstmt = "select Plan_Id,Audit_Id,branch,dept_name,team,location,AuditDate,fromtime,totime,checklist,auditors,auditee_team,doc_req from t_audit_process_plan where Audit_Id='" + objModel.Audit_Id + "'";
                         DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
                         if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                         {
@@ -168,13 +190,15 @@ namespace ISOStd.Controllers
                                         Plan_Id = dsList.Tables[0].Rows[i]["Plan_Id"].ToString(),
                                         Audit_Id = dsList.Tables[0].Rows[i]["Audit_Id"].ToString(),
                                         branch = dsList.Tables[0].Rows[i]["branch"].ToString(),
-                                        group_name = dsList.Tables[0].Rows[i]["group_name"].ToString(),
+                                        dept_name = dsList.Tables[0].Rows[i]["dept_name"].ToString(),
+                                        team = dsList.Tables[0].Rows[i]["team"].ToString(),
                                         location = dsList.Tables[0].Rows[i]["location"].ToString(),
                                         fromtime = dsList.Tables[0].Rows[i]["fromtime"].ToString(),
                                         totime = dsList.Tables[0].Rows[i]["totime"].ToString(),
                                         checklist = dsList.Tables[0].Rows[i]["checklist"].ToString(),
                                         auditors = dsList.Tables[0].Rows[i]["auditors"].ToString(),
                                         auditee_team = dsList.Tables[0].Rows[i]["auditee_team"].ToString(),
+                                        doc_req = dsList.Tables[0].Rows[i]["doc_req"].ToString(),
                                     };
                                     if (DateTime.TryParse(dsList.Tables[0].Rows[0]["AuditDate"].ToString(), out dtValue))
                                     {
@@ -191,8 +215,13 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.objList = objAudit;
                         }
+
+
                     }
+
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -221,6 +250,7 @@ namespace ISOStd.Controllers
                 AuditProcessModelsList objAudit = new AuditProcessModelsList();
                 objAudit.Obj = new List<AuditProcessModels>();
 
+
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     AuditProcessModels objModel = new AuditProcessModels();
@@ -229,14 +259,15 @@ namespace ISOStd.Controllers
                     {
                         objModel.Plan_Id = form["Plan_Id" + i];
                         objModel.branch = form["branch" + i];
-                        objModel.group_name = form["group_name" + i];
+                        objModel.dept_name = form["dept_name" + i];
+                        objModel.team = form["team" + i];
                         objModel.location = form["location" + i];
                         objModel.fromtime = form["fromtime" + i];
                         objModel.totime = form["totime" + i];
                         objModel.checklist = form["checklist" + i];
                         objModel.auditors = form["auditors" + i];
                         objModel.auditee_team = form["auditee_team" + i];
-
+                        objModel.doc_req = form["doc_req" + i];
                         if (DateTime.TryParse(form["AuditDate" + i], out dateValue) == true)
                         {
                             objModel.AuditDate = dateValue;
@@ -273,9 +304,9 @@ namespace ISOStd.Controllers
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
 
-                string sSqlstmt = "select Plan_Id,t.Audit_Id, Audit_no,branch,group_name,location,AuditDate,fromtime,totime," +
+                string sSqlstmt = "select Plan_Id,t.Audit_Id, Audit_no,branch,dept_name,team,location,AuditDate,fromtime,totime," +
                  "(CASE WHEN Approved_Status = '0' THEN 'Pending for Approval' WHEN Approved_Status = '1' THEN 'Rejected' ELSE 'Approved' END) as  Approved_Status," +
                     "checklist,auditors,auditee_team,Audit_Status from t_audit_process t, t_audit_process_plan tt where t.Audit_Id = tt.Audit_Id and active = 1";
 
@@ -287,6 +318,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     sSqlstmt = sSqlstmt + " and find_in_set('" + sBranch_name + "', branch)";
+                    ViewBag.Branch_name = sBranch_name;
                 }
 
                 sSqlstmt = sSqlstmt + " order by t.Audit_Id desc";
@@ -304,7 +336,8 @@ namespace ISOStd.Controllers
                                 Plan_Id = dsList.Tables[0].Rows[i]["Plan_Id"].ToString(),
                                 Audit_no = dsList.Tables[0].Rows[i]["Audit_no"].ToString(),
                                 branch = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[i]["branch"].ToString()),
-                                group_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["group_name"].ToString()),
+                                dept_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["dept_name"].ToString()),
+                                //team = objGlobaldata.GetTeamNameByID(dsList.Tables[0].Rows[i]["team"].ToString()),
 
                                 fromtime = dsList.Tables[0].Rows[i]["fromtime"].ToString(),
                                 totime = dsList.Tables[0].Rows[i]["totime"].ToString(),
@@ -378,6 +411,7 @@ namespace ISOStd.Controllers
             AuditProcessModels objModel = new AuditProcessModels();
             try
             {
+
                 if (Request.QueryString["Audit_Id"] != null && Request.QueryString["Audit_Id"] != "")
                 {
                     ViewBag.status = Request.QueryString["status"];
@@ -385,7 +419,7 @@ namespace ISOStd.Controllers
                     ViewBag.AuditorStatus = objGlobaldata.GetConstantValueKeyValuePair("AuditorStatus");
                     string sAudit_Id = Request.QueryString["Audit_Id"];
                     string sSqlstmt = "select Audit_Id,Audit_criteria,PlannedBy,Audit_no,AuditPlanDate,ApprovedBy,logged_by,logged_date,audit_type,audit_code,"
-                     + "(CASE WHEN Approved_Status = '0' THEN 'Pending for Approval' WHEN Approved_Status = '1' THEN 'Rejected' ELSE 'Approved' END) as  Approved_Status"
+                     + "(CASE WHEN Approved_Status = '0' THEN 'Pending for Approval' WHEN Approved_Status = '1' THEN 'Rejected' ELSE 'Approved' END) as  Approved_Status,audit_scope,audit_method,audit_objective,audit_lang,audit_methodology"
                         + " from t_audit_process where Audit_Id = '" + sAudit_Id + "'";
 
                     DataSet dsModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -407,6 +441,7 @@ namespace ISOStd.Controllers
                             //location = objGlobaldata.GetDivisionLocationById(dsModels.Tables[0].Rows[0]["location"].ToString()),
                             //dept = objGlobaldata.GetMultiDeptNameById(dsModels.Tables[0].Rows[0]["dept"].ToString()),
                             //division = objGlobaldata.GetMultiCompanyBranchNameById(dsModels.Tables[0].Rows[0]["division"].ToString()),
+                            //team = objGlobaldata.GetTeamNameByID(dsModels.Tables[0].Rows[0]["team"].ToString()),
                             //Audit_Status = dsModels.Tables[0].Rows[0]["Audit_Status"].ToString(),
                             //Notified_To = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["Notified_To"].ToString()),
                             //checklist = objGlobaldata.GetChecklistBychecklistId(dsModels.Tables[0].Rows[0]["checklist"].ToString()),
@@ -416,6 +451,11 @@ namespace ISOStd.Controllers
 
                             //auditee_team = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["auditee_team"].ToString()),
                             //internal_audit_team = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["internal_audit_team"].ToString()),
+                            audit_scope = dsModels.Tables[0].Rows[0]["audit_scope"].ToString(),
+                            audit_method = objGlobaldata.GetDropdownitemById(dsModels.Tables[0].Rows[0]["audit_method"].ToString()),
+                            audit_objective = dsModels.Tables[0].Rows[0]["audit_objective"].ToString(),
+                            audit_lang = objGlobaldata.GetDropdownitemById(dsModels.Tables[0].Rows[0]["audit_lang"].ToString()),
+                            audit_methodology = objGlobaldata.GetDropdownitemById(dsModels.Tables[0].Rows[0]["audit_methodology"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsModels.Tables[0].Rows[0]["AuditPlanDate"].ToString() != ""
@@ -468,13 +508,14 @@ namespace ISOStd.Controllers
             AuditProcessModels objModel = new AuditProcessModels();
             try
             {
+
                 if (Request.QueryString["Audit_Id"] != null && Request.QueryString["Audit_Id"] != "")
                 {
                     ViewBag.status = Request.QueryString["status"];
                     ViewBag.ApprStatus = objGlobaldata.GetConstantValueKeyValuePair("AuditStatus");
                     string sAudit_Id = Request.QueryString["Audit_Id"];
                     string sSqlstmt = "select Audit_Id,Audit_criteria,PlannedBy,Audit_no,AuditPlanDate,ApprovedBy,logged_by,logged_date,audit_type,audit_code,"
-                     + "(CASE WHEN Approved_Status = '0' THEN 'Pending for Approval' WHEN Approved_Status = '1' THEN 'Rejected' ELSE 'Approved' END) as  Approved_Status"
+                     + "(CASE WHEN Approved_Status = '0' THEN 'Pending for Approval' WHEN Approved_Status = '1' THEN 'Rejected' ELSE 'Approved' END) as  Approved_Status,audit_scope,audit_method,audit_objective,audit_lang,audit_methodology"
                         + " from t_audit_process where Audit_Id = '" + sAudit_Id + "'";
 
                     DataSet dsModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -496,6 +537,7 @@ namespace ISOStd.Controllers
                             //location = objGlobaldata.GetDivisionLocationById(dsModels.Tables[0].Rows[0]["location"].ToString()),
                             //dept = objGlobaldata.GetMultiDeptNameById(dsModels.Tables[0].Rows[0]["dept"].ToString()),
                             //division = objGlobaldata.GetMultiCompanyBranchNameById(dsModels.Tables[0].Rows[0]["division"].ToString()),
+                            //team = objGlobaldata.GetTeamNameByID(dsModels.Tables[0].Rows[0]["team"].ToString()),
                             //Audit_Status = dsModels.Tables[0].Rows[0]["Audit_Status"].ToString(),
                             //Notified_To = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["Notified_To"].ToString()),
                             //checklist = objGlobaldata.GetChecklistBychecklistId(dsModels.Tables[0].Rows[0]["checklist"].ToString()),
@@ -505,6 +547,12 @@ namespace ISOStd.Controllers
 
                             //auditee_team = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["auditee_team"].ToString()),
                             //internal_audit_team = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["internal_audit_team"].ToString()),
+
+                            audit_scope = dsModels.Tables[0].Rows[0]["audit_scope"].ToString(),
+                            audit_method = objGlobaldata.GetDropdownitemById(dsModels.Tables[0].Rows[0]["audit_method"].ToString()),
+                            audit_objective = dsModels.Tables[0].Rows[0]["audit_objective"].ToString(),
+                            audit_lang = objGlobaldata.GetDropdownitemById(dsModels.Tables[0].Rows[0]["audit_lang"].ToString()),
+                            audit_methodology = objGlobaldata.GetDropdownitemById(dsModels.Tables[0].Rows[0]["audit_methodology"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsModels.Tables[0].Rows[0]["AuditPlanDate"].ToString() != ""
@@ -531,6 +579,8 @@ namespace ISOStd.Controllers
                     string sSqlstmt2 = "select * from t_audit_process_plan where Audit_Id = '" + sAudit_Id + "'";
                     DataSet dsPlan = objGlobaldata.Getdetails(sSqlstmt2);
                     ViewBag.objPlan = dsPlan;
+
+
                 }
             }
             catch (Exception ex)
@@ -546,6 +596,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 if (objAuditModel.FunAuditProcessApprove(objAuditModel))
                 {
                     TempData["Successdata"] = "Approved Successfully";
@@ -563,13 +614,16 @@ namespace ISOStd.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
         //AuditeeApproval
         public ActionResult AuditeeApproval(AuditProcessModels objAuditModel, FormCollection form)
         {
             try
             {
+
                 AuditProcessModelsList objAudit = new AuditProcessModelsList();
                 objAudit.Obj = new List<AuditProcessModels>();
+
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
@@ -602,8 +656,10 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 AuditProcessModelsList objAudit = new AuditProcessModelsList();
                 objAudit.Obj = new List<AuditProcessModels>();
+
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
@@ -631,10 +687,12 @@ namespace ISOStd.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
         //Auditee List
         [AllowAnonymous]
         public ActionResult AuditeeListInfo(int id)
         {
+
             try
             {
                 if (id > 0)
@@ -656,6 +714,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult AuditorListInfo(int id)
         {
+
             try
             {
                 if (id > 0)
@@ -677,6 +736,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult ApproverListInfo(int id)
         {
+
             try
             {
                 if (id > 0)
@@ -711,6 +771,7 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
+
 
         //Audit plan report
         [AllowAnonymous]
@@ -749,6 +810,7 @@ namespace ISOStd.Controllers
                     DataSet dsPlan = objGlobaldata.Getdetails(sSqlstmt2);
                     ViewBag.objPlan = dsPlan;
                 }
+
             }
             catch (Exception ex)
             {
@@ -779,7 +841,7 @@ namespace ISOStd.Controllers
             };
         }
 
-        //Audit Status
+        //Audit Status    
         [AllowAnonymous]
         public ActionResult AuditStatusUpdate()
         {
@@ -787,22 +849,25 @@ namespace ISOStd.Controllers
 
             try
             {
+
                 if (Request.QueryString["Plan_Id"] != null && Request.QueryString["Plan_Id"] != "")
                 {
                     string Plan_Id = Request.QueryString["Plan_Id"];
 
-                    string sSqlstmt = "select Plan_Id,Audit_Id,branch,group_name,location,AuditDate,fromtime,totime,checklist,auditors,auditee_team,Audit_Status,audit_status_date,remarks from t_audit_process_plan where Plan_Id='" + Plan_Id + "'";
+                    string sSqlstmt = "select Plan_Id,Audit_Id,branch,dept_name,team,location,AuditDate,fromtime,totime,checklist,auditors,auditee_team,Audit_Status,audit_status_date,remarks from t_audit_process_plan where Plan_Id='" + Plan_Id + "'";
 
                     DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
+
                         objModel = new AuditProcessModels
                         {
                             Plan_Id = dsModelsList.Tables[0].Rows[0]["Plan_Id"].ToString(),
                             Audit_Id = dsModelsList.Tables[0].Rows[0]["Audit_Id"].ToString(),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsModelsList.Tables[0].Rows[0]["branch"].ToString()),
-                            group_name = objGlobaldata.GetMultiDeptNameById(dsModelsList.Tables[0].Rows[0]["group_name"].ToString()),
+                            dept_name = objGlobaldata.GetMultiDeptNameById(dsModelsList.Tables[0].Rows[0]["dept_name"].ToString()),
+                            //team = objGlobaldata.GetTeamNameByID(dsModelsList.Tables[0].Rows[0]["team"].ToString()),
                             location = objGlobaldata.GetDivisionLocationById(dsModelsList.Tables[0].Rows[0]["location"].ToString()),
                             fromtime = dsModelsList.Tables[0].Rows[0]["fromtime"].ToString(),
                             totime = dsModelsList.Tables[0].Rows[0]["totime"].ToString(),
@@ -876,9 +941,9 @@ namespace ISOStd.Controllers
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
 
-                string sSqlstmt = "select Plan_Id,t.Audit_Id,Audit_no,branch,group_name,audit_status_date,total_nc,auditors,auditee_team from t_audit_process_plan t,t_audit_process tt,"
+                string sSqlstmt = "select Plan_Id,t.Audit_Id,Audit_no,branch,dept_name,team,audit_status_date,total_nc,auditors,auditee_team from t_audit_process_plan t,t_audit_process tt,"
                 + "dropdownitems d where t.Audit_Id = tt.Audit_Id and t.Audit_Status = d.item_id and item_desc = 'Completed' and active=1";
                 if (branch_name != null && branch_name != "")
                 {
@@ -888,6 +953,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     sSqlstmt = sSqlstmt + " and find_in_set('" + sBranch_name + "', branch)";
+                    ViewBag.Branch_name = sBranch_name;
                 }
                 sSqlstmt = sSqlstmt + " order by Plan_Id desc";
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -903,11 +969,13 @@ namespace ISOStd.Controllers
                                 Plan_Id = dsList.Tables[0].Rows[i]["Plan_Id"].ToString(),
                                 Audit_no = dsList.Tables[0].Rows[i]["Audit_no"].ToString(),
                                 branch = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[i]["branch"].ToString()),
-                                group_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["group_name"].ToString()),
+                                dept_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["dept_name"].ToString()),
+                                //team = objGlobaldata.GetTeamNameByID(dsList.Tables[0].Rows[i]["team"].ToString()),
                                 auditors = dsList.Tables[0].Rows[i]["auditors"].ToString(),
                                 auditee_team = dsList.Tables[0].Rows[i]["auditee_team"].ToString(),
                                 auditors_name = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[i]["auditors"].ToString()),
                                 auditee_team_name = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[i]["auditee_team"].ToString()),
+
                             };
                             if (dsList.Tables[0].Rows[i]["total_nc"].ToString() != "" && dsList.Tables[0].Rows[i]["total_nc"].ToString() != null)
                             {
@@ -937,7 +1005,7 @@ namespace ISOStd.Controllers
             return View(objAttList.Obj.ToList());
         }
 
-        //Raise NC
+        //Raise NC    
         [AllowAnonymous]
         public ActionResult RaiseNonconformity()
         {
@@ -949,7 +1017,7 @@ namespace ISOStd.Controllers
                     string Plan_Id = Request.QueryString["Plan_Id"];
                     string Audit_Id = Request.QueryString["Audit_Id"];
 
-                    string sSqlstmt = "select Plan_Id,t.Audit_Id,Audit_no,AuditDate,auditee_team,branch,group_name"
+                    string sSqlstmt = "select Plan_Id,t.Audit_Id,Audit_no,AuditDate,auditee_team,branch,dept_name,team"
                     + " from t_audit_process_plan t,t_audit_process tt where t.Audit_Id = tt.Audit_Id and t.Audit_Id = '" + Audit_Id + "' and Plan_Id = '" + Plan_Id + "'";
 
                     DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -962,7 +1030,8 @@ namespace ISOStd.Controllers
                             Audit_Id = dsModelsList.Tables[0].Rows[0]["Audit_Id"].ToString(),
                             Audit_no = dsModelsList.Tables[0].Rows[0]["Audit_no"].ToString(),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsModelsList.Tables[0].Rows[0]["branch"].ToString()),
-                            group_name = objGlobaldata.GetMultiDeptNameById(dsModelsList.Tables[0].Rows[0]["group_name"].ToString()),
+                            dept_name = objGlobaldata.GetMultiDeptNameById(dsModelsList.Tables[0].Rows[0]["dept_name"].ToString()),
+                            //team = objGlobaldata.GetTeamNameByID(dsModelsList.Tables[0].Rows[0]["team"].ToString()),
                             auditee_team = objGlobaldata.GetMultiHrEmpNameById(dsModelsList.Tables[0].Rows[0]["auditee_team"].ToString()),
                         };
                         DateTime dtValue;
@@ -983,7 +1052,7 @@ namespace ISOStd.Controllers
             return View(objModel);
         }
 
-        //Raise NC
+        //Raise NC 
         [HttpPost]
         [AllowAnonymous]
         public ActionResult RaiseNonconformity(AuditProcessModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -1147,6 +1216,7 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Id Cannot be null";
                     return RedirectToAction("RaiseNCList");
                 }
+
             }
             catch (Exception ex)
             {
@@ -1214,6 +1284,7 @@ namespace ISOStd.Controllers
                     objModel.nc_date = dateValue;
                 }
 
+
                 if (objModel.FunUpdateNonconformity(objModel))
                 {
                     TempData["Successdata"] = "Nonconformity updated successfully";
@@ -1231,6 +1302,7 @@ namespace ISOStd.Controllers
             return RedirectToAction("NonconformityList", new { Plan_Id = objModel.Plan_Id });
         }
 
+
         //Nonconformity approval detail
         [AllowAnonymous]
         public ActionResult NonconformityApprovalDetails()
@@ -1239,6 +1311,7 @@ namespace ISOStd.Controllers
             MgmtDocumentsModels objMgmt = new MgmtDocumentsModels();
             try
             {
+
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     ViewBag.status = Request.QueryString["status"];
@@ -1359,6 +1432,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 if (objAuditModel.FunNonconformityAuditorUpdate(objAuditModel))
                 {
                     TempData["Successdata"] = "Followup Date Saved Successfully";
@@ -1384,6 +1458,7 @@ namespace ISOStd.Controllers
             MgmtDocumentsModels objMgmt = new MgmtDocumentsModels();
             try
             {
+
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
@@ -1452,6 +1527,7 @@ namespace ISOStd.Controllers
             return View(objModel);
         }
 
+
         //Add Auditor
         public ActionResult AddAuditorDetails()
         {
@@ -1475,6 +1551,7 @@ namespace ISOStd.Controllers
         [HttpPost]
         public ActionResult AddAuditorDetails(AuditProcessModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> upload_cetificate)
         {
+
             try
             {
                 HttpPostedFileBase files = Request.Files[0];
@@ -1493,6 +1570,7 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in AddAuditorDetails-upload: " + ex.ToString());
+
                         }
                     }
                     objModel.upload_cetificate = objModel.upload_cetificate.Trim(',');
@@ -1562,7 +1640,8 @@ namespace ISOStd.Controllers
                                 id_auditor = dsList.Tables[0].Rows[i]["id_auditor"].ToString(),
                                 auditor_name = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[i]["auditor_name"].ToString()),
                                 branch = objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(dsList.Tables[0].Rows[i]["auditor_name"].ToString())),
-                                group_name = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsList.Tables[0].Rows[i]["auditor_name"].ToString())),
+                                dept_name = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsList.Tables[0].Rows[i]["auditor_name"].ToString())),
+                                //team = objGlobaldata.GetTeamNameByID(objGlobaldata.GetTeamIdByHrEmpId(dsList.Tables[0].Rows[i]["auditor_name"].ToString())),
                                 auditor_no = dsList.Tables[0].Rows[i]["auditor_no"].ToString(),
                             };
                             objAttList.Obj.Add(objScheduleMdl);
@@ -1625,6 +1704,7 @@ namespace ISOStd.Controllers
 
             try
             {
+
                 if (Request.QueryString["id_auditor"] != null && Request.QueryString["id_auditor"] != "")
                 {
                     string id_auditor = Request.QueryString["id_auditor"];
@@ -1635,6 +1715,7 @@ namespace ISOStd.Controllers
 
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
+
                         objModel = new AuditProcessModels
                         {
                             id_auditor = (dsModelsList.Tables[0].Rows[0]["id_auditor"].ToString()),
@@ -1701,6 +1782,7 @@ namespace ISOStd.Controllers
         [HttpPost]
         public ActionResult AuditorDetailsEdit(AuditProcessModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> upload_cetificate, IEnumerable<HttpPostedFileBase> supload0, IEnumerable<HttpPostedFileBase> supload1, IEnumerable<HttpPostedFileBase> supload2, IEnumerable<HttpPostedFileBase> supload3, IEnumerable<HttpPostedFileBase> supload4, IEnumerable<HttpPostedFileBase> supload5, IEnumerable<HttpPostedFileBase> supload6, IEnumerable<HttpPostedFileBase> supload7, IEnumerable<HttpPostedFileBase> supload8, IEnumerable<HttpPostedFileBase> supload9, IEnumerable<HttpPostedFileBase> supload10, IEnumerable<HttpPostedFileBase> supload_test)
         {
+
             try
             {
                 IList<HttpPostedFileBase> upload_cetificateList = (IList<HttpPostedFileBase>)upload_cetificate;
@@ -1743,6 +1825,7 @@ namespace ISOStd.Controllers
                     objModel.upload_cetificate = null;
                 }
 
+
                 AuditProcessModelsList objModelsList = new AuditProcessModelsList();
                 objModelsList.Obj = new List<AuditProcessModels>();
 
@@ -1760,6 +1843,7 @@ namespace ISOStd.Controllers
                         {
                             objcert.completed_on = dateValue;
                         }
+
 
                         //certificate upload
                         IList<HttpPostedFileBase> upload = (IList<HttpPostedFileBase>)supload_test;
@@ -1881,6 +1965,7 @@ namespace ISOStd.Controllers
             AuditProcessModels objModel = new AuditProcessModels();
             try
             {
+
                 if (Request.QueryString["id_auditor"] != null && Request.QueryString["id_auditor"] != "")
                 {
                     string id_auditor = Request.QueryString["id_auditor"];
@@ -1891,12 +1976,15 @@ namespace ISOStd.Controllers
 
                     if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
                     {
+
                         objModel = new AuditProcessModels
                         {
                             id_auditor = dsAuditList.Tables[0].Rows[0]["id_auditor"].ToString(),
                             auditor_name = objGlobaldata.GetEmpHrNameById(dsAuditList.Tables[0].Rows[0]["auditor_name"].ToString()),
                             branch = objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(dsAuditList.Tables[0].Rows[0]["auditor_name"].ToString())),
-                            group_name = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsAuditList.Tables[0].Rows[0]["auditor_name"].ToString())),
+                            dept_name = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsAuditList.Tables[0].Rows[0]["auditor_name"].ToString())),
+                            //team = objGlobaldata.GetTeamNameByID(objGlobaldata.GetTeamIdByHrEmpId(dsAuditList.Tables[0].Rows[0]["auditor_name"].ToString())),
+
                         };
                         AuditProcessModelsList objModelsList = new AuditProcessModelsList();
                         objModelsList.Obj = new List<AuditProcessModels>();
@@ -1935,8 +2023,12 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.objList = objModelsList;
                         }
+
                     }
+
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -1954,6 +2046,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 AuditProcessModelsList objModelsList = new AuditProcessModelsList();
                 objModelsList.Obj = new List<AuditProcessModels>();
 
@@ -1984,6 +2077,7 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
+
             }
             catch (Exception ex)
             {
@@ -2001,6 +2095,7 @@ namespace ISOStd.Controllers
 
             try
             {
+
                 if (Request.QueryString["id_auditor"] != null && Request.QueryString["id_auditor"] != "")
                 {
                     string id_auditor = Request.QueryString["id_auditor"];
@@ -2011,13 +2106,15 @@ namespace ISOStd.Controllers
 
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
+
                         objModel = new AuditProcessModels
                         {
                             id_auditor = (dsModelsList.Tables[0].Rows[0]["id_auditor"].ToString()),
                             auditor_name = objGlobaldata.GetEmpHrNameById(dsModelsList.Tables[0].Rows[0]["auditor_name"].ToString()),
 
                             branch = objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(dsModelsList.Tables[0].Rows[0]["auditor_name"].ToString())),
-                            group_name = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsModelsList.Tables[0].Rows[0]["auditor_name"].ToString())),
+                            dept_name = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsModelsList.Tables[0].Rows[0]["auditor_name"].ToString())),
+                            //team = objGlobaldata.GetTeamNameByID(objGlobaldata.GetTeamIdByHrEmpId(dsModelsList.Tables[0].Rows[0]["auditor_name"].ToString())),
 
                             auditor_no = (dsModelsList.Tables[0].Rows[0]["auditor_no"].ToString()),
                             qualification = (dsModelsList.Tables[0].Rows[0]["qualification"].ToString()),
@@ -2039,6 +2136,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt2 = "select * from t_auditor_availability where id_auditor = '" + id_auditor + "'";
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt2);
                     ViewBag.dsAudit = dsAudit;
+
                 }
             }
             catch (Exception ex)
@@ -2065,6 +2163,7 @@ namespace ISOStd.Controllers
             }
             sUpload = sUpload.Trim(',');
             return Json(sUpload);
+
         }
 
         [AllowAnonymous]
@@ -2090,6 +2189,7 @@ namespace ISOStd.Controllers
                                 audit_type = objGlobaldata.GetAuidtTypeById(dsList.Tables[0].Rows[i]["audit_type"].ToString()),
                                 audit_code = (dsList.Tables[0].Rows[i]["audit_code"].ToString()),
                                 audit_desc = (dsList.Tables[0].Rows[i]["audit_desc"].ToString()),
+
                             };
                             objModelsList.Obj.Add(objModel);
                         }
@@ -2139,6 +2239,7 @@ namespace ISOStd.Controllers
             AuditProcessModels objModel = new AuditProcessModels();
             try
             {
+
                 if (Request.QueryString["id_audit_type"] != null && Request.QueryString["id_audit_type"] != "")
                 {
                     string id_audit_type = Request.QueryString["id_audit_type"];
@@ -2157,6 +2258,7 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
+
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AuditType");
                     }
@@ -2182,6 +2284,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 if (objModel.FunUpdateAuditType(objModel))
                 {
                     TempData["Successdata"] = "Updated successfully";
@@ -2190,6 +2293,7 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
+
             }
             catch (Exception ex)
             {
@@ -2242,7 +2346,6 @@ namespace ISOStd.Controllers
             var user = objModel.FunCheckAuditCodeExsists(audit_code);
             return Json(user);
         }
-
         //public JsonResult AuditProcessApproveNoty(string Audit_Id, string iStatus, string PendingFlg)
         //{
         //    try
@@ -2297,6 +2400,7 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
+
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AuditProcessApproveDeptHead: " + ex.ToString());
@@ -2350,7 +2454,9 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
                 }
+
             }
+
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AuditProcessApprove: " + ex.ToString());
@@ -2365,6 +2471,7 @@ namespace ISOStd.Controllers
                 return RedirectToAction("AuditProcessList");
             }
         }
+
 
         public JsonResult AuditProcessApproveNotyDeptHead(string Audit_Id, string iStatus, string PendingFlg)
         {
@@ -2383,6 +2490,7 @@ namespace ISOStd.Controllers
 
                 return Json("Success");
             }
+
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AuditProcessApproveNotyDeptHead: " + ex.ToString());
@@ -2431,6 +2539,7 @@ namespace ISOStd.Controllers
                 }
                 return Json("Success");
             }
+
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AccessPermitApproveReject: " + ex.ToString());
@@ -2477,13 +2586,14 @@ namespace ISOStd.Controllers
         //[AllowAnonymous]
         //public ActionResult AuditDetails()
         //{
-        //    AuditProcessModels objModel = new AuditProcessModels();
+        //    AuditProcessModels objModel = new AuditProcessModels();                   
         //    try
-        //    {
+        //    {            
+
         //        if (Request.QueryString["Audit_Id"] != null && Request.QueryString["Audit_Id"] != "")
         //        {
         //            string sAudit_Id = Request.QueryString["Audit_Id"];
-        //            string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,"
+        //            string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,team,"
         //            + "internal_audit_team, Reasons_Reschedule, Notified_To,Audit_Status, fromtime,  totime,dept_head,auditee_team from t_audit_process where Audit_Id ='" + sAudit_Id + "'";
 
         //            DataSet dsModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -2498,6 +2608,7 @@ namespace ISOStd.Controllers
         //                    location = objGlobaldata.GetDivisionLocationById(dsModels.Tables[0].Rows[0]["location"].ToString()),
         //                    dept = objGlobaldata.GetMultiDeptNameById(dsModels.Tables[0].Rows[0]["dept"].ToString()),
         //                    division = objGlobaldata.GetMultiCompanyBranchNameById(dsModels.Tables[0].Rows[0]["division"].ToString()),
+        //                    team = objGlobaldata.GetTeamNameByID(dsModels.Tables[0].Rows[0]["team"].ToString()),
         //                    Audit_Status = dsModels.Tables[0].Rows[0]["Audit_Status"].ToString(),
         //                    Notified_To = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["Notified_To"].ToString()),
         //                    checklist = objGlobaldata.GetChecklistBychecklistId(dsModels.Tables[0].Rows[0]["checklist"].ToString()),
@@ -2547,7 +2658,7 @@ namespace ISOStd.Controllers
                 if (form["Audit_Id"] != null && form["Audit_Id"] != "")
                 {
                     string sAudit_Id = form["Audit_Id"];
-                    string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,"
+                    string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,team,"
                     + "internal_audit_team, Reasons_Reschedule, Notified_To,Audit_Status, fromtime,  totime,auditee_team from t_audit_process where Audit_Id ='" + sAudit_Id + "'";
 
                     DataSet dsModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -2562,6 +2673,7 @@ namespace ISOStd.Controllers
                             location = objGlobaldata.GetDivisionLocationById(dsModels.Tables[0].Rows[0]["location"].ToString()),
                             dept = objGlobaldata.GetMultiDeptNameById(dsModels.Tables[0].Rows[0]["dept"].ToString()),
                             division = objGlobaldata.GetMultiCompanyBranchNameById(dsModels.Tables[0].Rows[0]["division"].ToString()),
+                            //team = objGlobaldata.GetTeamNameByID(dsModels.Tables[0].Rows[0]["team"].ToString()),
                             Audit_Status = dsModels.Tables[0].Rows[0]["Audit_Status"].ToString(),
                             Notified_To = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["Notified_To"].ToString()),
                             checklist = objGlobaldata.GetChecklistBychecklistId(dsModels.Tables[0].Rows[0]["checklist"].ToString()),
@@ -2689,10 +2801,11 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["Audit_Id"] != null && Request.QueryString["Audit_Id"] != "")
                 {
                     string sAudit_Id = Request.QueryString["Audit_Id"];
-                    string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,"
+                    string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,team,"
                     + "internal_audit_team, Reasons_Reschedule, Notified_To,Audit_Status, fromtime, totime,auditee_team,dept_head from t_audit_process where Audit_Id ='" + sAudit_Id + "'";
 
                     DataSet dsModels = objGlobaldata.Getdetails(sSqlstmt);
+
 
                     if (dsModels.Tables.Count > 0 && dsModels.Tables[0].Rows.Count > 0)
                     {
@@ -2704,6 +2817,7 @@ namespace ISOStd.Controllers
                             location = objGlobaldata.GetDivisionLocationById(dsModels.Tables[0].Rows[0]["location"].ToString()),
                             dept = objGlobaldata.GetMultiDeptNameById(dsModels.Tables[0].Rows[0]["dept"].ToString()),
                             division = objGlobaldata.GetMultiCompanyBranchNameById(dsModels.Tables[0].Rows[0]["division"].ToString()),
+                            //team = objGlobaldata.GetTeamNameByID(dsModels.Tables[0].Rows[0]["team"].ToString()),
 
                             Notified_To = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["Notified_To"].ToString()),
                             checklist = objGlobaldata.GetChecklistBychecklistId(dsModels.Tables[0].Rows[0]["checklist"].ToString()),
@@ -2723,6 +2837,7 @@ namespace ISOStd.Controllers
                             objModel.AuditPlanDate = dtDocDate;
                         }
 
+
                         if (dsModels.Tables[0].Rows[0]["AuditDate"].ToString() != ""
                      && DateTime.TryParse(dsModels.Tables[0].Rows[0]["AuditDate"].ToString(), out dtDocDate))
                         {
@@ -2732,6 +2847,7 @@ namespace ISOStd.Controllers
                         // string sSqlstmt2 = "select b.Questions from t_auditchecklist a, t_auditchecklist_trans b where a.id_AuditChecklist = b.id_AuditChecklist and a.id_AuditChecklist='" + dsModels.Tables[0].Rows[0]["checklist"].ToString() + "' ";
                         //string sSqlstmt2 = "select Questions from t_auditchecklist where id_AuditChecklist='" + dsModels.Tables[0].Rows[0]["checklist"].ToString() + "'";
                         //DataSet dsQuestion = objGlobaldata.Getdetails(sSqlstmt2);
+
 
                         //if (dsQuestion.Tables.Count > 0 && dsQuestion.Tables[0].Rows.Count > 0)
                         //{
@@ -2766,6 +2882,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 string AuditId = form["Audit_Id"];
                 string status = form["Audit_Status"];
                 string checklistId = form["checklistId"];
@@ -2774,10 +2891,12 @@ namespace ISOStd.Controllers
                 string sSqlstmt2 = "update t_audit_process set Audit_Status='" + status + "',auditee_team = '" + sauditee_team + "' where Audit_Id='" + AuditId + "'";
                 objGlobaldata.Getdetails(sSqlstmt2);
 
+
                 AuditProcessPerformModelsList objAudit = new AuditProcessPerformModelsList();
                 objAudit.lstAudit = new List<AuditProcessPerformModels>();
 
                 AuditElementsModels obj = new AuditElementsModels();
+
 
                 // string sSqlstmt = "select dept"+ " from t_audit_process where Audit_Id ='" + AuditId + "'";
 
@@ -2813,6 +2932,7 @@ namespace ISOStd.Controllers
                     i++;
                 }
 
+
                 if (objAudtChecklist.FunAddAuditPerformance(objAudit))
                 {
                     TempData["Successdata"] = "Audit Performance details added successfully";
@@ -2838,13 +2958,15 @@ namespace ISOStd.Controllers
 
             try
             {
+
                 if (Request.QueryString["Audit_Id"] != null && Request.QueryString["Audit_Id"] != "")
                 {
                     string sAudit_Id = Request.QueryString["Audit_Id"];
-                    string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,"
+                    string sSqlstmt = "select Audit_Id, Audit_criteria, PlannedBy, checklist, Audit_no, AuditPlanDate, AuditDate, dept,  location, division,team,"
                     + "internal_audit_team, Reasons_Reschedule, Notified_To,Audit_Status, fromtime,  totime,auditee_team,dept_head from t_audit_process where Audit_Id ='" + sAudit_Id + "'";
 
                     DataSet dsModels = objGlobaldata.Getdetails(sSqlstmt);
+
 
                     if (dsModels.Tables.Count > 0 && dsModels.Tables[0].Rows.Count > 0)
                     {
@@ -2856,6 +2978,7 @@ namespace ISOStd.Controllers
                             location = objGlobaldata.GetDivisionLocationById(dsModels.Tables[0].Rows[0]["location"].ToString()),
                             dept = objGlobaldata.GetMultiDeptNameById(dsModels.Tables[0].Rows[0]["dept"].ToString()),
                             division = objGlobaldata.GetMultiCompanyBranchNameById(dsModels.Tables[0].Rows[0]["division"].ToString()),
+                            //team = objGlobaldata.GetTeamNameByID(dsModels.Tables[0].Rows[0]["team"].ToString()),
 
                             Notified_To = objGlobaldata.GetMultiHrEmpNameById(dsModels.Tables[0].Rows[0]["Notified_To"].ToString()),
                             checklistId = (dsModels.Tables[0].Rows[0]["checklist"].ToString()),
@@ -2875,6 +2998,7 @@ namespace ISOStd.Controllers
                             objModel.AuditPlanDate = dtDocDate;
                         }
 
+
                         if (dsModels.Tables[0].Rows[0]["AuditDate"].ToString() != ""
                      && DateTime.TryParse(dsModels.Tables[0].Rows[0]["AuditDate"].ToString(), out dtDocDate))
                         {
@@ -2883,6 +3007,7 @@ namespace ISOStd.Controllers
                         AuditElementsModels obj = new AuditElementsModels();
                         //string sSqlstmt2 = "select Questions from t_auditchecklist where id_AuditChecklist='" + dsModels.Tables[0].Rows[0]["checklist"].ToString() + "'";
                         //DataSet dsQuestion = objGlobaldata.Getdetails(sSqlstmt2);
+
 
                         //if (dsQuestion.Tables.Count > 0 && dsQuestion.Tables[0].Rows.Count > 0)
                         //{
@@ -2901,14 +3026,18 @@ namespace ISOStd.Controllers
                         findingCategory.Add("Note-worthy finding", "Note-worthy finding");
                         ViewBag.FindingCategory = findingCategory;
 
+
+
                         string sSqlstmt3 = "select * from t_audit_process_perform where Audit_Id='" + sAudit_Id + "'";
 
                         DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt3);
                         //AuditProcessPerformModelsList objAudit = new AuditProcessPerformModelsList();
                         //objAudit.lstAudit = new List<AuditProcessPerformModels>();
 
+
                         //if (dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
                         //{
+
                         //    for (int i = 0; dsAudit.Tables.Count > 0 && i < dsAudit.Tables[0].Rows.Count; i++)
                         //    {
                         //        AuditProcessPerformModels objElements = new AuditProcessPerformModels();
@@ -2933,8 +3062,11 @@ namespace ISOStd.Controllers
                         //}
 
                         ViewBag.objAudit = dsAudit;
+
                     }
+
                 }
+
             }
             catch (Exception ex)
             {
@@ -2950,6 +3082,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 string AuditId = form["Audit_Id"];
                 string status = form["Audit_Status"];
                 string checklistId = form["checklistId"];
@@ -2962,6 +3095,7 @@ namespace ISOStd.Controllers
                 objAudit.lstAudit = new List<AuditProcessPerformModels>();
 
                 AuditElementsModels obj = new AuditElementsModels();
+
 
                 //                string sSqlstmt = "select dept"
                 //+ " from t_audit_process where Audit_Id ='" + AuditId + "'";
@@ -2992,6 +3126,7 @@ namespace ISOStd.Controllers
                         if (upload != null)
                         {
                             objElements.evidence_upload = form["evidence_upload" + i];
+
                         }
 
                         //objElements.evidence_upload = form["evidence_upload" + i];
@@ -3006,6 +3141,7 @@ namespace ISOStd.Controllers
                     }
                     i++;
                 }
+
 
                 if (objAudtChecklist.FunUpdateAuditPerformance(objAudit))
                 {
@@ -3035,7 +3171,7 @@ namespace ISOStd.Controllers
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
 
                 string sSqlstmt = "select Audit_Id, Audit_no, AuditDate, dept, location, division, Audit_Status"
          + " from t_audit_process where active=1";
@@ -3067,6 +3203,7 @@ namespace ISOStd.Controllers
                                 dept = objGlobaldata.GetMultiDeptNameById(dsList.Tables[0].Rows[i]["dept"].ToString()),
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsList.Tables[0].Rows[i]["division"].ToString()),
                                 Audit_Status = dsList.Tables[0].Rows[i]["Audit_Status"].ToString(),
+
                             };
 
                             DateTime dtDocDate;
@@ -3085,6 +3222,7 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -3105,7 +3243,7 @@ namespace ISOStd.Controllers
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
 
                 string sSqlstmt = "select Audit_Id, Audit_no, AuditDate, dept, location, division, Audit_Status"
          + " from t_audit_process where active=1";
@@ -3137,6 +3275,7 @@ namespace ISOStd.Controllers
                                 dept = objGlobaldata.GetMultiDeptNameById(dsList.Tables[0].Rows[i]["dept"].ToString()),
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsList.Tables[0].Rows[i]["division"].ToString()),
                                 Audit_Status = dsList.Tables[0].Rows[i]["Audit_Status"].ToString(),
+
                             };
 
                             DateTime dtDocDate;
@@ -3155,6 +3294,7 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -3186,12 +3326,15 @@ namespace ISOStd.Controllers
                 ViewBag.EmpList = objGlobaldata.GetHrEmpListByDept(objModel.dept);
 
                 ViewBag.Auditor = objGlobaldata.GetAuditor();
+
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddAuditSchedule: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
+
+
 
             return View(objModel);
         }
@@ -3217,12 +3360,15 @@ namespace ISOStd.Controllers
                 ViewBag.EmpList = objGlobaldata.GetHrEmpListByDept(objModel.dept);
 
                 ViewBag.Auditor = objGlobaldata.GetAuditor();
+
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddAuditSchedule: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
+
+
 
             return View(objModel);
         }
@@ -3310,7 +3456,7 @@ namespace ISOStd.Controllers
                         {
                             objModel.followup_date = dtDocDate;
                         }
-                        //AuditElementsModels obj = new AuditElementsModels();
+                        //AuditElementsModels obj = new AuditElementsModels();                        
                         //ViewBag.Question = obj.GetQuestionsListbox(dsModels.Tables[0].Rows[0]["checklist"].ToString());
 
                         //IDictionary<string, string> findingCategory = new Dictionary<string, string>();
@@ -3321,8 +3467,9 @@ namespace ISOStd.Controllers
                         //findingCategory.Add("Note-worthy finding", "Note-worthy finding");
                         //ViewBag.FindingCategory = findingCategory;
 
+
                         //string sSqlstmt3 = "select * from t_audit_process_perform where Audit_Id='" + sAudit_Id + "'";
-                        //DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt3);
+                        //DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt3);                       
                         //ViewBag.objAudit = dsAudit;
                     }
                 }
@@ -3340,6 +3487,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 objModel.why_nc = form["why_nc"];
 
                 if (objModel.FunUpdateNC(objModel))
@@ -3350,6 +3498,7 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
+
             }
             catch (Exception ex)
             {
@@ -3364,6 +3513,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 objModel.auditee_acceptance = form["auditee_acceptance"];
 
                 DateTime dateValue;
@@ -3387,6 +3537,7 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in AuditNonConfirmity1-upload: " + ex.ToString());
+
                         }
                     }
                     objModel.nc_reject_upload = objModel.nc_reject_upload.Trim(',');
@@ -3404,6 +3555,7 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
+
             }
             catch (Exception ex)
             {
@@ -3418,6 +3570,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+
                 DateTime dateValue;
                 if (DateTime.TryParse(form["followup_date"], out dateValue) == true)
                 {
@@ -3432,6 +3585,7 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
+
             }
             catch (Exception ex)
             {
@@ -3549,14 +3703,32 @@ namespace ISOStd.Controllers
             };
         }
 
-        public ActionResult FunGetAuditeesList(string branch, string group_name)
+        public ActionResult FunGetAuditeesList(string branch, string dept_name)
         {
             EmployeeList emplist = new EmployeeList();
             emplist.EmpList = new List<Employee>();
             MultiSelectList lstEmp = new MultiSelectList(emplist.EmpList, "Value", "Text");
             try
             {
-                lstEmp = objGlobaldata.GetAuditeesList(branch, group_name);
+                lstEmp = objGlobaldata.GetAuditeesList(branch, dept_name);
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in FunGetAuditeesList: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return Json(lstEmp);
+        }
+        public ActionResult FunGetAuditorsList(string branch, string shedule_date)
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+            MultiSelectList lstEmp = new MultiSelectList(emplist.EmpList, "Value", "Text");
+            try
+            {
+
+                lstEmp = objGlobaldata.GetAuditorsList(branch, shedule_date);
             }
             catch (Exception ex)
             {
@@ -3565,24 +3737,6 @@ namespace ISOStd.Controllers
             }
             return Json(lstEmp);
         }
-
-        public ActionResult FunGetAuditorsList(string branch, string shedule_date)
-        {
-            EmployeeList emplist = new EmployeeList();
-            emplist.EmpList = new List<Employee>();
-            MultiSelectList lstEmp = new MultiSelectList(emplist.EmpList, "Value", "Text");
-            try
-            {
-                lstEmp = objGlobaldata.GetAuditorsList(branch, shedule_date);
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in FunGetAuditorsList: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return Json(lstEmp);
-        }
-
         public ActionResult FunGetChecklist(string branch)
         {
             EmployeeList emplist = new EmployeeList();
@@ -3590,6 +3744,7 @@ namespace ISOStd.Controllers
             MultiSelectList lstEmp = new MultiSelectList(emplist.EmpList, "Value", "Text");
             try
             {
+
                 lstEmp = objGlobaldata.GetChecklistTypeByChecklistRef(branch);
             }
             catch (Exception ex)
@@ -3600,7 +3755,6 @@ namespace ISOStd.Controllers
 
             return Json(lstEmp);
         }
-
         //to get the product or process codes
         public ActionResult FunGetAuditProductList(string audit_type)
         {
@@ -3618,5 +3772,6 @@ namespace ISOStd.Controllers
             }
             return Json(lstEmp);
         }
+
     }
 }

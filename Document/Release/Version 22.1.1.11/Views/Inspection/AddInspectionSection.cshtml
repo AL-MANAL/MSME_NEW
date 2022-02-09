@@ -1,0 +1,468 @@
+﻿@model ISOStd.Models.InspctionQuestionModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddInspectionSection";
+
+    DataSet dsItems = new DataSet();
+    if (ViewBag.dsItems != null)
+    {
+        dsItems = ViewBag.dsItems;
+    }
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                   
+                    <span class="breadcrumb-item active"> Add Inspection Section</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Add Inspection Section</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                @using (Html.BeginForm("AddInspectionSection", "Inspection", FormMethod.Post, new { id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <input type="hidden" name="Department_Id" id="Department_Id" value="@ViewBag.Dept_Id" />
+
+                    <div class="container-fluid">
+                        <table class="table table-lg">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @Html.LabelFor(m => m.dept)
+                                    </td>
+                                    <td>
+
+                                        <select class="select-fixed-single" data-fouc id="dept" name="dept" required onchange="GetSection()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Department != null && ViewBag.Dept_Id != null)
+                                            {
+                                                foreach (var item in ViewBag.Department)
+                                                {
+                                                    if (item.Value == ViewBag.Dept_Id)
+                                                    {
+                                                        <option value="@item.Value" selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                }
+                                            }
+
+                                            else if (ViewBag.Department != null)
+                                            {
+                                                foreach (var item in ViewBag.Department)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @Html.LabelFor(model => model.Section)
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" id="Section" name="Section" required />
+                                        @*<textarea class="form-control elastic maxlength-badge-position" maxlength="25" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" id="Section" name="Section" required></textarea>*@
+                                        @Html.ValidationMessageFor(model => model.Section)
+                                    </td>
+                                </tr>
+                           
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="submit" class="btn bg-indigo-400">Submit<i class="icon-paperplane ml-2"></i></button>
+                      
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+
+    <div class="col-md-9">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Inspection Section</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+
+                <div class="container-fluid">
+                        <table id="tblMeetingList" class="table table-lg">
+                            @if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                            {
+
+                                <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                    <th>Department</th>
+                                    <th>Section</th>
+                                    <th>Action</th>
+                                </tr>
+                                for (int item = 0; item < dsItems.Tables[0].Rows.Count; item++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select class="form-control select-fixed-multiple" data-fouc id="dept @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" name="dept @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" required>
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.Department != null)
+                                                {
+                                                    foreach (var data in ViewBag.Department)
+                                                    {
+                                                        if (Array.IndexOf(dsItems.Tables[0].Rows[item]["dept"].ToString().Split(','), data.Value) >= 0)
+                                                        {
+                                                            <option value="@data.Value" selected>@data.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@data.Value">@data.Text</option>
+                                                        }
+                                                    }
+                                                }
+
+                                                else if (ViewBag.Department != null)
+                                                {
+                                                    foreach (var data in ViewBag.Department)
+                                                    {
+                                                        <option value='@data.Value'>@data.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="Section @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" name="Section @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" value="@dsItems.Tables[0].Rows[item]["Section"].ToString()" />
+                                        </td>                                     
+                                        <td>
+                                            <span title="Update Inspection Rating"
+                                                  onclick="UpdateSection(@dsItems.Tables[0].Rows[item]["id_inspection"].ToString())" style="cursor:pointer;" class="badge badge-info">Edit</span>
+
+                                            <span class="badge badge-danger" title="Delete Inspection Rating"
+                                                  onclick="DeleteSection(@dsItems.Tables[0].Rows[item]["id_inspection"].ToString())" style="cursor:pointer;">Delete</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            </table>
+                                  
+                </div>
+
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+<script type="text/javascript">
+
+
+
+         //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        //GetSection();
+    });
+    //zzz----
+
+    
+
+         function DeleteSection(id_Section) {
+             var Department = document.getElementById("Department_Id").value;
+
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Record?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                         jQuery.ajax({
+
+                         url: '@Url.Action("InspectionSectionDelete1", "Inspection")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'id_inspection': id_Section},
+                         success: function (data) {
+                           
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                                '?sDepartment=' + Department;
+                             }
+                         });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+         }
+
+
+         function UpdateSection(id_Section) {
+           
+             var Section = document.getElementById("Section " + id_Section).value;
+             //var Resp_person = document.getElementById("Resp_person " + id_Section).value;
+             var dept = $("#dept" + id_Section).val();
+
+             jQuery.ajax({
+                 url: '@Url.Action("InspectionSectionUpdate", "Inspection")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_inspection': id_Section, 'Section': Section, 'dept': dept },
+                 success: function (result) {
+                    
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname
+                         +
+                         '?sDepartment=' + dept;
+
+                     //window.location.href =
+                     //    window.location.protocol + "//" +
+                     //    window.location.host +
+                     //    window.location.pathname +
+                     //    createQueryString(queryString);
+
+                 }
+             });
+    } 
+  
+    
+    function UpdateSection1(id_Section) {
+
+        var selected = [];
+        for (var option of document.getElementById('Resp_person ' + id_Section).options) {
+            if (option.selected) {
+                selected.push(option.value);
+            }
+        }     
+
+        var Resp_person = selected;
+        //var select = document.getElementById('Resp_person 7');
+        //var selected = [...select.options]
+        //    .filter(option => option.selected)
+        //    .map(option => option.value);
+        //alert(selected);
+
+
+
+        //var select = document.getElementById('Resp_person 7');
+        //var selected = [...select.selectedOptions]
+        //    .map(option => option.value);
+        //alert(selected);
+
+         var Section = document.getElementById("Section " + id_Section).value;
+         jQuery.ajax({
+                 url: '@Url.Action("InspectionSectionUpdate", "Inspection")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_inspection': id_Section, 'Section': Section, 'Resp_person': Resp_person },
+                 success: function (result) {
+                     var Department = document.getElementById("Department").value;
+
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname
+                         +
+                         '?sDepartment=' + Department;
+
+                     //window.location.href =
+                     //    window.location.protocol + "//" +
+                     //    window.location.host +
+                     //    window.location.pathname +
+                     //    createQueryString(queryString);
+
+                 }
+             });
+         }
+
+         function GetSection() {
+             var Department = $('#dept').val();
+
+       
+             if (Department != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("FunGetSectionRespPerson", "Inspection")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'dept': Department },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             var thTitleRow = table.insertRow();
+
+
+                             var theaderRow = table.insertRow();
+
+                             theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                             var cellth2 = theaderRow.insertCell(2);
+
+
+
+                             cellth0.innerHTML = "<th>Department</th>";
+                             cellth1.innerHTML = "<th>Section</th>";
+                             cellth2.innerHTML = "<th>Action</th>";
+
+                             table.rows[1].cells[0].style = "color:#0099ff";
+                             table.rows[1].cells[1].style = "color:#0099ff";
+                             table.rows[1].cells[2].style = "color:#0099ff";
+
+                             var list = result;
+                             for (var i = 0; i < result.length; i++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+                                 var cell2 = row.insertCell(2);
+
+                                 //var AgendaName = result[i].Text;
+                                 var Id = result[i].Value;
+
+                                 var data = result[i].Text;
+                                 var dataarray = new Array();
+                                 dataarray = data.split("_");
+
+                                 cell0.innerHTML = "<select class='form-control select-fixed-multiple' id='dept" + Id + "' name='dept" + Id + "'  required> <option value = '" + dataarray[1] + "' selected> " + dataarray[2] + "</option>@if (ViewBag.Department != null)
+                                 {  
+                                     foreach (var item in ViewBag.Department)
+                                     { <option value='@item.Value'>@item.Text</option> }
+                                     }</select>";
+                                 cell1.innerHTML = "<input type='textbox' class='form-control' id='Section " + Id + "' name='Section " + Id + "' value='" + dataarray[0] +"'/>";
+                                 cell2.innerHTML = "<span class='badge badge-info' style='cursor: pointer;' title='Update Section' onclick='UpdateSection(" + Id + ")'>Edit</span>"
+                                     + " <span class='badge badge-danger' onclick='DeleteSection(" + Id + ")' style='cursor:pointer;' title='Delete Section'/>Delete</span>";
+
+
+                                 autosize($('.elastic'));
+                                 $('.maxlength-badge-position').maxlength({
+                                     alwaysShow: true,
+                                     placement: 'top'
+                                 });
+                             }
+                         }
+                         //else {
+                         //    document.getElementById("tblMeetingList").style.display = "none";
+                         //    bootbox.dialog({
+                         //        title: 'No Data Exist',
+                         //        message: 'No Item exists, please add Items and then try again',                                                                  
+                         //    });
+
+                         //    window.setTimeout(function () {
+                         //        bootbox.hideAll();
+                         //    }, 2000);
+                         //    //bootbox.alert({
+                         //    //    title: 'No Data Exist',
+                         //    //    message: 'No Item exists, please add Items and then try again'
+                         //    //});
+                         //}
+
+                     }
+                 });
+             }
+         }
+
+
+</script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

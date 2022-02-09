@@ -1,0 +1,611 @@
+﻿@model ISOStd.Models.TUVAuditModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AuditEdit";
+    DataSet dsAudit = ViewBag.Audit;
+    string sid_audit_trans = "", sid_audit = "", sSupplierName = "", sfromAuditTime = "", sfromAuditTimeHr = "", sfromAuditTimeMin = "",
+        stoAuditTimeHr = "", stoAuditTimeMin = "", sAudit_team = "", sAuditee = "", sAudit_status = "", SubmitFinding = "SubmitFinding", Save = "Save";
+    DateTime dtScheduled_date = new DateTime();
+    ISOStd.Models.TUVSupplierModels objSup = new ISOStd.Models.TUVSupplierModels();
+    if (dsAudit != null && dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
+    {
+        sid_audit_trans = dsAudit.Tables[0].Rows[0]["id_audit_trans"].ToString();
+        sid_audit = dsAudit.Tables[0].Rows[0]["id_audit"].ToString();
+        sSupplierName = dsAudit.Tables[0].Rows[0]["SupplierName"].ToString();
+        sfromAuditTimeHr = dsAudit.Tables[0].Rows[0]["fromAuditTime"].ToString().Split(':')[0].ToString();
+        sfromAuditTimeMin = dsAudit.Tables[0].Rows[0]["fromAuditTime"].ToString().Split(':')[1].ToString();
+        stoAuditTimeHr = dsAudit.Tables[0].Rows[0]["toAuditTime"].ToString().Split(':')[0].ToString();
+        stoAuditTimeMin = dsAudit.Tables[0].Rows[0]["toAuditTime"].ToString().Split(':')[1].ToString();
+        sAudit_team = dsAudit.Tables[0].Rows[0]["Audit_team"].ToString();
+        sAuditee = dsAudit.Tables[0].Rows[0]["Auditee"].ToString();
+        sAudit_status = dsAudit.Tables[0].Rows[0]["Audit_status"].ToString();
+
+        if (dsAudit.Tables[0].Rows[0]["Scheduled_date"].ToString() != null && dsAudit.Tables[0].Rows[0]["Scheduled_date"].ToString() != "")
+        {
+            dtScheduled_date = Convert.ToDateTime(dsAudit.Tables[0].Rows[0]["Scheduled_date"].ToString());
+        }
+    }
+}
+
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Edit Audit</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("AuditEdit", "TUV", FormMethod.Post,
+                         new { enctype = "multipart/form-data", style = "float: left;width:50%;", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>CustomerModel</legend>
+        <input type="hidden" id="id_audit" name="id_audit" value="@Model.id_audit" />
+
+        <div style="max-width: 90%;">
+            <table id="tabcontent" style="float: left;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Audit</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CustID)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.CustID)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Project_no)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.Project_no)
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_cycle)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Audit_cycle" name="Audit_cycle" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditCycle != null)
+                                {
+                                    foreach (var item in ViewBag.AuditCycle)
+                                    {
+                                        if (item == Model.Audit_cycle)
+                                        {
+                                    <option value='@item' selected>@item</option>
+                                        }
+                                        else
+                                        {
+                                    <option value='@item'>@item</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Audit_date" name="Audit_date" value="@Model.Audit_date.ToString("dd/MM/yyyy")" style="width: 150px" readonly />
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_criteria)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Audit_criteria" name="Audit_criteria" readonly required>@Model.Audit_criteria</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Location" name="Location" value="@Model.Location"/>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        <p style="font-size: 11px;">(Add atleast a Audit plan to Create Customer)</p>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align: center;">
+                @Html.ActionLink("Back to List", "AuditList", "TUV", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+                <input type="submit" id="SubmitAudit" name="button" value="Update" onclick="ProgressIconFunction('#form1')" />
+            </div>
+        </div>
+
+    </fieldset>
+   
+}
+@using (Html.BeginForm("AuditTransEdit", "TUV", FormMethod.Post, new
+{
+    enctype = "multipart/form-data",
+    style = "float: left;width:50%;",
+    id = "form2",
+    name = "form2"
+}))
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+    <div>
+        <input type="hidden" id="id_audit_trans" name="id_audit_trans" value="@sid_audit_trans"/>
+        <input type="hidden" id="id_audit" name="id_audit" value="@Model.id_audit" />
+        <table style="margin-top: 18px; margin-bottom: 20px;">
+            <tr>
+                <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Audit Plan detail</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.SupplierName)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="SupplierName" name="SupplierName">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.SupplierList != null)
+                            {
+                                foreach (var item in ViewBag.SupplierList)
+                                {
+                                    if (item.Value == sSupplierName)
+                                    {
+                                <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <span class="field-validation-error"><span id="SupplierName-message" style="display: none;">Supplier field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.SupplierName)
+                    </div>
+                </td>
+
+                <td>
+                    <div class="editor-label">
+                        Audit Date Time<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <label>From Hr: </label>
+                        <select name="AuditFromTimeInHour" id="AuditFromTimeInHour" style="width: 43px;">
+                            @if (ViewBag.AuditTimeInHour != null)
+                            {
+                                foreach (var data in ViewBag.AuditTimeInHour)
+                                {
+                                    if (sfromAuditTimeHr == data)
+                                    {
+                                <option value='@data' selected>@data</option>
+                                    }
+                                    else
+                                    {
+                                <option value='@data'>@data</option>
+                                    }
+                                }
+                            }
+                        </select>
+
+                        Min:
+                            <select name="AuditFromTimeInMin" id="AuditFromTimeInMin" style="width: 43px;">
+                                @if (ViewBag.AuditTimeInMin != null)
+                                {
+                                    foreach (var data in ViewBag.AuditTimeInMin)
+                                    {
+                                        if (sfromAuditTimeMin == data)
+                                        {
+                                    <option value='@data' selected>@data</option>
+                                        }
+                                        else
+                                        {
+                                    <option value='@data'>@data</option>
+                                        }
+                                    }
+                                }
+                            </select><br>
+                        <label style="width: 48px;">To   Hr: </label>
+                        <select name="AuditToTimeInHour" id="AuditToTimeInHour" style="width: 43px; margin-top: 5px;">
+                            @if (ViewBag.AuditTimeInHour != null)
+                            {
+                                foreach (var data in ViewBag.AuditTimeInHour)
+                                {
+                                    if (stoAuditTimeHr == data)
+                                    {
+                                <option value='@data' selected>@data</option>
+                                    }
+                                    else
+                                    {
+                                <option value='@data'>@data</option>
+                                    }
+                                }
+                            }
+                        </select>
+
+                        Min:
+                            <select name="AuditToTimeInMin" id="AuditToTimeInMin" style="width: 43px;">
+                                @if (ViewBag.AuditTimeInMin != null)
+                                {
+                                    foreach (var data in ViewBag.AuditTimeInMin)
+                                    {
+                                        if (stoAuditTimeMin == data)
+                                        {
+                                    <option value='@data' selected>@data</option>
+                                        }
+                                        else
+                                        {
+                                    <option value='@data'>@data</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Audit_team)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Audit_team" name="Audit_team" value="@sAudit_team" />
+                        <span class="field-validation-error"><span id="Audit_team-message" style="display: none;">Audit Team field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.Audit_team)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Auditee)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Auditee" name="Auditee" value="@sAuditee" />
+                        <span class="field-validation-error"><span id="Auditee-message" style="display: none;">Audtee field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.Auditee)
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Scheduled_date)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Scheduled_date" name="Scheduled_date" value="@dtScheduled_date.ToString("dd/MM/yyyy")" style="width: 150px" readonly />
+                        <span class="field-validation-error"><span id="Scheduled_date-message" style="display: none;">Scheduled date field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.Scheduled_date)
+                    </div>
+                </td>
+
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Audit_status)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="Audit_status" name="Audit_status">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Status != null)
+                            {
+                                foreach (var item in ViewBag.Status)
+                                {
+                                    if (item == sAudit_status)
+                                    { 
+                                <option value='@item' selected>@item</option>
+                                    }
+                                    else
+                                    { 
+                                <option value='@item'>@item</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <span class="field-validation-error"><span id="Audit_status-message" style="display: none;">Audit Status field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.Audit_status)
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div style="padding-right: 200px; text-align: center;">
+
+            @if (dsAudit != null && dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
+            {
+                <input type="submit" id="@SubmitFinding" name="button" value="Update" onclick="return Validation()" />
+                <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()" style="display: none;" />
+            }
+            else
+            {   
+                <input type="submit" id="@SubmitFinding" name="button" value="Update" onclick="return Validation()" style="display: none;" />
+                <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()"  />
+            }
+
+            <input type="button" value="Add New" onclick="AddNewItem()" />
+        </div>
+    </div>
+}
+<br />
+@if (dsAudit != null && dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
+{
+    <div id="dvItems">
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label">
+            <label for="Audit Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Audit Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>Supplier</th>
+                <th>From time</th>
+                <th>To time</th>
+                <th>Audit Team</th>
+                <th>Auditee</th>
+                <th>Scheduled Date</th>
+                <th>Status</th>
+
+            </tr>
+            @for (int i = 0; i < dsAudit.Tables[0].Rows.Count; i++)
+            {
+                <tr id="@i">
+                    <td>
+                        <a onclick="EditItem(@dsAudit.Tables[0].Rows[i]["id_audit_trans"].ToString(), @i)" title="Edit Audit details">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                    </td>
+                    <td>
+                        <img src="@Url.Content("~/Images/delete.png")" title="Delete Project" onclick="DeleteItems(@dsAudit.Tables[0].Rows[i]["id_audit_trans"].ToString(),@dsAudit.Tables[0].Rows[i]["id_audit"].ToString())" style="cursor:pointer;" />
+                    </td>
+                    <td>
+                        @objSup.GetSupplierByID(dsAudit.Tables[0].Rows[i]["SupplierName"].ToString())
+                    </td>
+                    <td>
+                        @dsAudit.Tables[0].Rows[i]["fromAuditTime"].ToString()
+                    </td>
+                    <td>
+                        @dsAudit.Tables[0].Rows[i]["toAuditTime"].ToString()
+                    </td>
+                    <td>
+                        @dsAudit.Tables[0].Rows[i]["Audit_team"].ToString()
+                    </td>
+                    <td>
+                        @dsAudit.Tables[0].Rows[i]["Auditee"].ToString()
+                    </td>
+                    <td>
+                        @if (dsAudit.Tables[0].Rows[i]["Scheduled_date"].ToString() != null && dsAudit.Tables[0].Rows[i]["Scheduled_date"].ToString() != "")
+                        {
+                            @Convert.ToDateTime(dsAudit.Tables[0].Rows[i]["Scheduled_date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                    </td>
+                    <td>
+                        @dsAudit.Tables[0].Rows[i]["Audit_status"].ToString()
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+
+        function AddNewItem() {
+            document.getElementById("SubmitFinding").style.display = "None";
+            document.getElementById("Save").style.display = "";
+            ResetControl();
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("SupplierName").value == "") {
+                ssnMessage = $('#SupplierName-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#SupplierName-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Audit_team").value == "") {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Auditee").value == "") {
+                ssnMessage = $('#Auditee-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Auditee-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Scheduled_date").value == "") {
+                ssnMessage = $('#Scheduled_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Scheduled_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Audit_status").value == "") {
+                ssnMessage = $('#Audit_status-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_status-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function ResetControl() {
+            $("#SupplierName").val('').trigger("chosen:updated");
+            document.getElementById("AuditFromTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditFromTimeInMin").selectedIndex = "0";
+            document.getElementById("AuditToTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditToTimeInMin").selectedIndex = "0";
+            document.getElementById("Audit_team").value = "";
+            document.getElementById("Auditee").value = "";
+            document.getElementById("Scheduled_date").value = "";
+            document.getElementById("Audit_status").value = "";
+
+            var ssnMessage = $('#SupplierName-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_team-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Auditee-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Scheduled_date-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_status-message');
+            ssnMessage.hide();
+        }
+
+
+        function EditItem(id_audit_trans, Id) {
+            ResetControl();
+            Id++;
+            var table = document.getElementById("team-list");
+
+            document.getElementById("id_audit_trans").value = id_audit_trans;
+            var SupplierNameval = (table.rows[Id].cells[2].innerText).split(',');
+            $('#SupplierName').val('').trigger("chosen:updated");
+            $('#SupplierName option').filter(function () {
+                return SupplierNameval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger("chosen:updated"); //Set selected
+
+            document.getElementById("AuditFromTimeInHour").value = table.rows[Id].cells[3].innerText.split(':')[0];
+            document.getElementById("AuditFromTimeInMin").value = table.rows[Id].cells[3].innerText.split(':')[1];
+            document.getElementById("AuditToTimeInHour").value = table.rows[Id].cells[4].innerText.split(':')[0];
+            document.getElementById("AuditToTimeInMin").value = table.rows[Id].cells[4].innerText.split(':')[1];
+
+            document.getElementById("Audit_team").value = table.rows[Id].cells[5].innerText;
+            document.getElementById("Auditee").value = table.rows[Id].cells[6].innerText;
+            document.getElementById("Scheduled_date").value = table.rows[Id].cells[7].innerText;
+            document.getElementById("Audit_status").value = table.rows[Id].cells[8].innerText;
+
+            document.getElementById("SubmitFinding").style.display = "";
+            document.getElementById("Save").style.display = "none";
+
+        }
+
+        $(function () {
+            $("#SupplierName").chosen();
+
+            $('#Audit_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+            $('#Scheduled_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+
+        });
+
+        function DeleteItems(id_audit_trans, id_audit) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("AuditTransDelete", "TUV")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_audit_trans': id_audit_trans },
+                        success: function (result) {
+                            var params = {
+                                id_audit: id_audit
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -168,16 +168,16 @@
                     <table class="table table-lg">
                         <tr class="row">
                             <td class="col-xs-3 col-md-2">
-                                @Html.DisplayNameFor(model => model.directorate)<text style="color: red;">*</text>
+                                @Html.DisplayNameFor(model => model.branch)<text style="color: red;">*</text>
                             </td>
                             <td class="col">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="directorate" name="directorate" onchange="GetDeptList()">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch" name="branch" onchange="GetDeptList()">
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.Branch != null)
                                     {
                                         foreach (var data in ViewBag.Branch)
                                         {
-                                            if (Array.IndexOf(Model.directorate.ToString().Split(','), data.Value) >= 0)
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
                                             {
                                                 <option value='@data.Value' selected>@data.Text</option>
                                             }
@@ -188,18 +188,18 @@
                                         }
                                     }
                                 </select>
-                                <span class="field-validation-error"><span id="directorate-message" style="display: none;">Please select</span></span>
+                                <span class="field-validation-error"><span id="branch-message" style="display: none;">Please select</span></span>
                             </td>
                             <td class="col-xs-3 col-md-2">
-                                @Html.DisplayNameFor(model => model.group_name)<text style="color: red;">*</text>
+                                @Html.DisplayNameFor(model => model.dept_name)<text style="color: red;">*</text>
                             </td>
                             <td class="col">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="group_name" name="group_name">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="dept_name" name="dept_name" >
                                     @if (ViewBag.Department != null)
                                     {
                                         foreach (var item in ViewBag.Department)
                                         {
-                                            if (Array.IndexOf(Model.group_name.ToString().Split(','), item.Value) >= 0)
+                                            if (Array.IndexOf(Model.dept_name.ToString().Split(','), item.Value) >= 0)
                                             {
                                                 <option value='@item.Value' selected>@item.Text</option>
                                             }
@@ -210,11 +210,33 @@
                                         }
                                     }
                                 </select>
-                                <span class="field-validation-error"><span id="group_name-message" style="display: none;">Please select</span></span>
+                                <span class="field-validation-error"><span id="dept_name-message" style="display: none;">Please select</span></span>
                             </td>
 
                         </tr>
-                        <tr class="row">                        
+                        <tr class="row">
+                            @*<td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.team)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="team" name="team">
+                                    @if (ViewBag.Team != null)
+                                    {
+                                        foreach (var item in ViewBag.Team)
+                                        {
+                                            if (Array.IndexOf(Model.team.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="team-message" style="display: none;">Please select</span></span>
+                            </td>*@
                             <td class="col-xs-3 col-md-2">
                                 @Html.DisplayNameFor(model => model.location)<text style="color: red;">*</text>
                             </td>
@@ -265,7 +287,8 @@
                                 <tr class="bg-blue">
                                     <th>Action</th>
                                     <th>Division</th>
-                                    <th>Department</th>                                   
+                                    <th>Department</th>
+                                    @*<th>Team</th>*@
                                     <th>Location</th>
                                 </tr>
                                 @if (objAuditeeList.ExternalAuditList != null && objAuditeeList.ExternalAuditList.Count > 0)
@@ -279,13 +302,13 @@
                                                 <input type='hidden' id='id_external_auditee@(index)' name="id_external_auditee@(index)" value='@objAuditeeList.ExternalAuditList[index].id_external_auditee' />
                                             </td>
                                             <td>
-                                                <select class="form-control select-search select2-hidden-accessible" id="directorate@(index)" name="directorate@(index)">
+                                                <select class="form-control select-search select2-hidden-accessible" id="branch@(index)" name="branch@(index)">
                                                     <option value='' hidden>Select</option>
                                                     @if (ViewBag.Branch != null)
                                                     {
                                                         foreach (var item in ViewBag.Branch)
                                                         {
-                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].directorate)
+                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].branch)
                                                             {
                                                                 <option value='@item.Value' selected>@item.Text</option>
                                                             }
@@ -299,12 +322,12 @@
 
                                             </td>
                                             <td>
-                                                <select class="form-control select-search select2-hidden-accessible" id="group_name@(index)" name="group_name@(index)">
+                                                <select class="form-control select-search select2-hidden-accessible" id="dept_name@(index)" name="dept_name@(index)">
                                                     @if (ViewBag.Department != null)
                                                     {
                                                         foreach (var item in ViewBag.Department)
                                                         {
-                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].group_name)
+                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].dept_name)
                                                             {
                                                                 <option value='@item.Value' selected>@item.Text</option>
                                                             }
@@ -313,7 +336,21 @@
                                                     }
                                                 </select>
                                             </td>
-                                   
+                                            @*<td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="team@(index)" name="team@(index)">
+                                                    @if (ViewBag.Team != null)
+                                                    {
+                                                        foreach (var item in ViewBag.Team)
+                                                        {
+                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].team)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>*@
                                             <td>
                                                 <select class="form-control select-search select2-hidden-accessible" id="location@(index)" name="location@(index)">
                                                     <option value='' hidden>Select</option>
@@ -600,7 +637,6 @@
 
             return validflg;
         }
-
         function AddData() {
 
             if (Validation() == true) {
@@ -671,27 +707,36 @@
             var validflg = true;
             var ssnMessage = "";
 
-            if (document.getElementById("directorate").value == "") {
-                ssnMessage = $('#directorate-message');
+            if (document.getElementById("branch").value == "") {
+                ssnMessage = $('#branch-message');
                 ssnMessage.show();
 
                 validflg = false;
             }
             else {
-                ssnMessage = $('#directorate-message');
+                ssnMessage = $('#branch-message');
                 ssnMessage.hide();
             }
-            if (document.getElementById("group_name").value == "") {
-                ssnMessage = $('#group_name-message');
+            if (document.getElementById("dept_name").value == "") {
+                ssnMessage = $('#dept_name-message');
                 ssnMessage.show();
 
                 validflg = false;
             }
             else {
-                ssnMessage = $('#group_name-message');
+                ssnMessage = $('#dept_name-message');
                 ssnMessage.hide();
             }
-           
+            //if (document.getElementById("team").value == "") {
+            //    ssnMessage = $('#team-message');
+            //    ssnMessage.show();
+
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#team-message');
+            //    ssnMessage.hide();
+            //}
             if (document.getElementById("location").value == "") {
                 ssnMessage = $('#location-message');
                 ssnMessage.show();
@@ -725,19 +770,26 @@
                 var cell1 = row.insertCell(1);
                 var cell2 = row.insertCell(2);
                 var cell3 = row.insertCell(3);
-                                       
+               // var cell4 = row.insertCell(4);
+               
 
-                var directorate = $.map($("#directorate option:selected"), function (el, i) {
+              
+
+                var branch = $.map($("#branch option:selected"), function (el, i) {
                     return $(el).text();
                 });
-                var directorateVal = $("#directorate").val();
+                var directorateVal = $("#branch").val();
 
 
-                var group_name = $.map($("#group_name option:selected"), function (el, i) {
+                var dept_name = $.map($("#dept_name option:selected"), function (el, i) {
                     return $(el).text();
                 });
-                var group_nameVal = $("#group_name").val();
-                              
+                var group_nameVal = $("#dept_name").val();
+
+                //var team = $.map($("#team option:selected"), function (el, i) {
+                //    return $(el).text();
+                //});
+                //var teamVal = $("#team").val();
 
                 var location = $.map($("#location option:selected"), function (el, i) {
                     return $(el).text();
@@ -747,14 +799,15 @@
            
                 cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
 
-                cell1.innerHTML = "<select class='select-fixed-single' id='directorate" + cnt + "' name='directorate" + cnt + "' onchange='sGetDeptList(" + cnt + ")'><option value='" + directorateVal + "' selected>" + directorate + "</option>@if (ViewBag.Branch != null)
+                cell1.innerHTML = "<select class='select-fixed-single' id='branch" + cnt + "' name='branch" + cnt + "' onchange='sGetDeptList(" + cnt + ")'><option value='" + directorateVal + "' selected>" + branch + "</option>@if (ViewBag.Branch != null)
                 {
                     foreach (var item in ViewBag.Branch)
                     { <option value='@item.Value'>@item.Text</option> }
                     }</select>";
-                    cell2.innerHTML = "<select class='select-fixed-single' id='group_name" + cnt + "' name='group_name" + cnt + "'><option value='" + group_nameVal + "' selected>" + group_name + "</option></select>";
+                    cell2.innerHTML = "<select class='select-fixed-single' id='dept_name" + cnt + "' name='dept_name" + cnt + "'><option value='" + group_nameVal + "' selected>" + dept_name + "</option></select>";
 
-                   
+                    //cell3.innerHTML = "<select class='select-fixed-single' id='team" + cnt + "' name='team" + cnt + "'><option value='" + teamVal + "' selected>" + team + "</option></select>";
+                    
                     cell3.innerHTML = "<select class='select-fixed-single' id='location" + cnt + "' name='location" + cnt + "'><option value='" + locationVal + "' selected>" + location + "</option>@if (ViewBag.Location != null)
                     {
                         foreach (var item in ViewBag.Location)
@@ -781,8 +834,9 @@
                 }
 
                 function ResetControl () {
-                    $("#directorate").val('').trigger('change');
-                    $("#group_name").val('').trigger('change');                  
+                    $("#branch").val('').trigger('change');
+                    $("#dept_name").val('').trigger('change');
+                    //$("#team").val('').trigger('change');
                     $("#location").val('').trigger('change');     
                 }
                 function GetAuditee(directorateVal) {
@@ -790,7 +844,7 @@
                         url: '@Url.Action("FunGetAuditeesList", "AuditProcess")',
                         type: 'POST',
                         dataType: "json",
-                        data: { 'branch': directorateVal, 'group_name': '' },
+                        data: { 'branch': directorateVal, 'dept_name': '' },
                         success: function (result) {
 
                             if (result != null && result.length > 0) {
@@ -806,12 +860,12 @@
                 }
                 function sGetDeptList(i) {
                     //var selectedValues = [];
-                    $("#group_name" + i).children('option').remove();
-                   
+                    $("#dept_name" + i).children('option').remove();
+                    //$("#team" + i).children('option').remove();
                     //$("#branch :selected").each(function () {
                     // selectedValues.push($(this).val());
                     //});
-                    var selectedValues = $('#directorate' + i).val();
+                    var selectedValues = $('#branch' + i).val();
                     if (selectedValues != '') {
                         jQuery.ajax({
                             url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
@@ -821,11 +875,11 @@
                             success: function (result) {
 
                                 if (result != null && result.length > 0) {
-                                    $("#group_name" + i).append("<option value=''>" + "Select" + "</option>");
+                                    $("#dept_name" + i).append("<option value=''>" + "Select" + "</option>");
                                     $.each(result, function (index, item) {
-                                        $("#group_name" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                        $("#dept_name" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
                                     });
-                                    // $("#group_name"+i).trigger('change');
+                                    // $("#dept_name"+i).trigger('change');
 
                                     return;
                                 }
@@ -834,7 +888,7 @@
                         });
                     }
                 }
-               
+            
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
             if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
@@ -844,11 +898,12 @@
         }
         function GetDeptList() {
             //var selectedValues = [];
-            $("#group_name").children('option').remove();         
+            $("#dept_name").children('option').remove();
+            //$("#team").children('option').remove();
             //$("#branch :selected").each(function () {
             // selectedValues.push($(this).val());
             //});
-            var selectedValues = $('#directorate').val();
+            var selectedValues = $('#branch').val();
             if (selectedValues != '') {
                 jQuery.ajax({
                     url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
@@ -859,11 +914,11 @@
 
 
                         if (result != null && result.length > 0) {
-                            $("#group_name").append("<option value=''>" + "Select" + "</option>");
+                            $("#dept_name").append("<option value=''>" + "Select" + "</option>");
                             $.each(result, function (index, item) {
-                                $("#group_name").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#dept_name").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
                             });
-                            $("#group_name").trigger('change');
+                            $("#dept_name").trigger('change');
 
                             return;
                         }
@@ -872,6 +927,6 @@
                 });
             }
         }
-       
+   
     </script>
 }

@@ -1,0 +1,449 @@
+﻿@model ISOStd.Models.NCRCAPAModels
+
+@{
+    ViewBag.Title = "AddNCRCAPA";
+}
+
+
+
+
+@section featured {
+
+
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("NCRActionList", "NCRCAPA", new { CAR_ID = Model.CAR_ID })" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> NCRCAPA List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Action NCR </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+    <body onload="SetFun()">
+
+        @using (Html.BeginForm("ActionNCRCAPAEdit", "NCRCAPA", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Action NCR</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <input type="hidden" id="id_ncr_action" name="id_ncr_action" value="@Model.id_ncr_action" />
+                    <input type="hidden" id="CAR_ID" name="CAR_ID" value="@Model.CAR_ID" />
+                    <table class="table table-lg">
+                        <tr class="row">
+
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.NC_Num)
+
+                            </td>
+                            <td class="col">
+
+                                <p class="bg-dark py-1 px-2 rounded">   @Html.DisplayFor(model => model.NC_Num, new { htmlAttributes = new { @disabled = "disabled" } })</p>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Discrepancy_Details)
+
+                            </td>
+                            <td class="col">
+
+                                <p class="bg-dark py-1 px-2 rounded">   @Html.DisplayFor(model => model.Discrepancy_Details, new { style = "width:500px !important;", @disabled = "disabled" })</p>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+
+                            <td class="col" style="background-color: #4cc4dd; width: 100%; color: white;" colspan="4">
+                                Correction taken to correct detected non conformance (discrepancy)<text style="color: red;">*</text>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col" colspan="4">
+
+                                @Html.TextAreaFor(model => model.NCR_CORRECTION_DESC, new { @required = "required", @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Correction_taken_by)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Correction_taken_by" name="Correction_taken_by" required="">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpLists != null)
+                                    {
+                                        foreach (var data in ViewBag.EmpLists)
+                                        {
+                                            if (data.Text == Model.Correction_taken_by)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Correction_taken_on)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="Correction_taken_on" name="Correction_taken_on" value="@Model.Correction_taken_on.ToString("yyyy-MM-dd")" required />
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col" style="background-color: #4cc4dd; width: 100%; color: white;" colspan="4">
+                                Results of investigation to determine the root cause(s)<text style="color: red;">*</text>
+
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col" colspan="4">
+
+                                @Html.TextAreaFor(model => model.RootCause_Invtiresult, new { @required = "required", @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.CAPA_Need)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CAPA_Need" name="CAPA_Need" required="" onchange="SetFields()">
+                                    @if (ViewBag.CAPA_Need != null)
+                                    {
+                                        foreach (var data in ViewBag.CAPA_Need)
+                                        {
+                                            if (data == Model.CAPA_Need)
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col" style="background-color: #4cc4dd; width: 100%; color: white;" colspan="4">
+                                Corrective or preventive action
+
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col" colspan="4">
+
+                                @Html.TextAreaFor(model => model.CAPA_DESC, new { @required = "required", @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.CA_Proposed_By)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CA_Proposed_By" name="CA_Proposed_By">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpLists != null)
+                                    {
+                                        foreach (var data in ViewBag.EmpLists)
+                                        {
+                                            if (data.Text == Model.CA_Proposed_By)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.CA_Impl_On)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="CA_Impl_On" name="CA_Impl_On" value="@Model.CA_Impl_On.ToString("yyyy-MM-dd")" />
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.upload)
+
+                            </td>
+                            <td class="col">
+
+
+                                <input class="bootstrap-uploader" type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                       multiple="multiple" accept=".pdf, .doc, .docx,image/*" />
+
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+
+
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+                                    <div class="editor-label">
+                                        <p style="font-weight: bold; margin: 0px;">Document List:</p>
+                                    </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc   />
+                                                <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    @System.IO.Path.GetFileName(docs)
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+
+
+
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+
+
+
+
+                @Html.ActionLink("Back to List", "NCRActionList", "NCRCAPA", new { CAR_ID = Model.CAR_ID }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+            </div>
+
+
+        </div>
+            }
+
+</body>
+
+    @section Scripts {
+    <script>
+
+                 //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+
+            $('.form-check-input-styled').uniform();
+
+
+            function SetFun() {
+
+                var select = document.getElementById("CAPA_Need").value;
+                if (select == "Yes") {
+                    document.getElementById("CAPA_DESC").disabled = false;
+                    document.getElementById("CAPA_DESC").required = true;
+                    document.getElementById("CA_Impl_On").disabled = false;
+                    document.getElementById("CA_Impl_On").required = true;
+                    document.getElementById("Report_Closed_On").disabled = false;
+                    document.getElementById("Report_Closed_On").required = true;
+                    $('#CA_Proposed_By').prop('disabled', false).trigger("change");
+                }
+                else {
+                    document.getElementById("CAPA_DESC").disabled = true;
+                    document.getElementById("CAPA_DESC").required = false;
+                    document.getElementById("CA_Impl_On").disabled = true;
+                    document.getElementById("CA_Impl_On").required = false;
+
+                    document.getElementById("Report_Closed_On").disabled = true;
+                    document.getElementById("Report_Closed_On").required = false;
+                    $('#CA_Proposed_By').prop('disabled', true).trigger("change");
+                    $("#CA_Proposed_By").val('').trigger("change");
+                    document.getElementById("CAPA_DESC").value = "";
+                    document.getElementById("CA_Impl_On").value = "";
+                    document.getElementById("CA_Proposed_By").value = "";
+                }
+            }
+
+
+
+
+
+
+            function SetFields() {
+
+                var select = document.getElementById("CAPA_Need").value;
+                if (select == "Yes") {
+                    document.getElementById("CAPA_DESC").disabled = false;
+                    document.getElementById("CAPA_DESC").required = true;
+                    document.getElementById("CA_Impl_On").disabled = false;
+                    document.getElementById("CA_Impl_On").required = true;
+        
+                    $('#CA_Proposed_By').prop('disabled', false).trigger("change");
+                }
+                else {
+                    document.getElementById("CAPA_DESC").disabled = true;
+                    document.getElementById("CAPA_DESC").required = false;
+                    document.getElementById("CA_Impl_On").disabled = true;
+                    document.getElementById("CA_Impl_On").required = false;
+                   
+                    $('#CA_Proposed_By').prop('disabled', true).trigger("change");
+                    $("#CA_Proposed_By").val('').trigger("change");
+                    document.getElementById("CAPA_DESC").value = "";
+                    document.getElementById("CA_Impl_On").value = "";
+                    document.getElementById("CA_Proposed_By").value = "";
+                }
+
+            }
+            $(function () {
+                $("#QCDocsVal").click(function () {
+                    if ($("#QCDocsVal").prop('checked')) {
+                        {
+                            $(this).prop('checked', true);
+                        }
+                    }
+                    else {
+
+                        $(this).prop('checked', false);
+                        document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                    }
+
+                });
+            });
+
+
+                function FileFormatValidation(file) {
+                    var ext = file.value.split(".").pop().toLowerCase();
+                    if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                        file.value = "";
+                        bootbox.alert({
+                            title: 'File type',
+                            message: 'Invalid file format, please upload only pdf format.'
+                        });
+                    }
+                }
+
+
+
+
+
+
+    </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }

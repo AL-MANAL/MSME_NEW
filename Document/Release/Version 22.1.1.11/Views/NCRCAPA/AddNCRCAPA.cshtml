@@ -1,0 +1,377 @@
+﻿@model ISOStd.Models.NCRCAPAModels
+
+@{
+    ViewBag.Title = "AddNCRCAPA";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("NCRCAPAList", "NCRCAPA", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> NCRCAPA List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Raise NCR </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@*<div>
+    @Html.ActionLink("Back to List", "NCRCAPAList", "NCRCAPA", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+</div>*@
+
+
+
+@using (Html.BeginForm("AddNCRCAPA", "NCRCAPA", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Findings detail</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-lg">
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.AuditNum)
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="AuditNum" name="AuditNum" onchange="GetDivisionDetails()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditNumList != null)
+                                {
+                                    foreach (var item in ViewBag.AuditNumList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                           Division
+                        </td>
+                        <td class="col">                           
+                           <input type="text" id="branch" name="branch" class="form-control" readonly style="background-color:lightgray;" />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.IssuedOn)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+
+                            <input type="date" id="IssuedOn" name="IssuedOn" required class="form-control" />
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.IssuedBy)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" id="IssuedBy" name="IssuedBy" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var item in ViewBag.EmpLists)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.issuedTo)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-fixed-multiple" data-fouc multiple="multiple" id="issuedTo" name="issuedTo" required>
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var item in ViewBag.EmpLists)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col" style="background-color: #4cc4dd; color: #fff; font-weight: bold;" colspan="4">
+
+                           Details of detected discrepancy<text style="color:red;">*</text>
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col" colspan="4">
+
+                            @Html.TextAreaFor(model => model.Discrepancy_Details, new {  @required = "required" , @maxlength = "2000" ,@placeholder = "Textarea" ,@style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;",@rows = "4" ,@cols = "4" ,@class="form-control elastic maxlength-badge-position" })
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col" colspan="4">
+
+                            <b> @Html.LabelFor(model => model.Discrepancy_Related)<text style="color:red;">*</text></b>
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col" colspan="4">
+                            @if (ViewBag.DiscrepancyRelatedList != null)
+                            {
+                                foreach (var item in ViewBag.DiscrepancyRelatedList)
+                                {
+                                    var checkBoxId = "chk" + item;
+                                    <div class="form-check form-check-inline col-xs-3 col-md-2" style="text-align:justify;">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input-styled chkboxclass" id="@checkBoxId" name="@checkBoxId" value="@item" />
+                                            <label  id="@item" for="@checkBoxId" class="CheckBoxLabelClass">@item</label>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row"> 
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.FindingType)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="FindingType" name="FindingType" required>
+                                <option value=''>Select</option>
+                                <option value='Major NonConformity'>Major NonConformity</option>
+                                <option value='Minor NonConformity'>Minor NonConformity</option>
+                                <option value='Observation'>Observation</option>
+                            </select>
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.FindingIdentified)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="FindingIdentified" name="FindingIdentified" required>
+                                <option value=''>Select</option>
+                                <option value='Internal Audit'>Internal Audit</option>
+                                <option value='External Audit'>External Audit</option>
+                                <option value='During Review'>During Review</option>
+                                <option value='Observed'>Observed</option>
+                            </select>
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.upload)
+
+                        </td>
+                        <td class="col">
+
+                            <input class="bootstrap-uploader" type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx,image/*" />
+
+                            <code>(Hold Ctrl Key in case of multiple files)</code>
+
+
+                        </td>
+                    </tr>
+
+
+            </table>
+        </div>
+
+    </div>
+
+
+
+
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+
+
+
+
+        @Html.ActionLink("Back to List", "NCRCAPAList", "NCRCAPA",null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+        <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+ 
+    </div>
+
+
+</div>
+    }
+
+
+    @section Scripts {
+        <script>
+
+
+                 //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+       
+            // Default initialization loop since it's dynamic
+          
+            //var check = document.querySelectorAll('.form-check-input-styled'); 
+
+            //check.forEach(myFunction);
+
+            //function myFunction() {
+                $('.form-check-input-styled').uniform();
+
+            //}
+
+
+
+
+
+//not used
+        function GetEmployeeList() {
+
+            var Dept = $('#dept').val();
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetDeptEmpList", "Trainings")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'DeptId': Dept },
+                 success: function (result) {
+                     if (result != null && result.length > 0) {
+                         var x = document.getElementById("issuedTo");
+
+                         $.each(result, function (index, item) {
+                             var option = document.createElement("option");
+                             option.text = item.Text;
+                             option.value = item.Value;
+                             x.add(option);
+                         });
+                     }
+                     else {
+                         jAlert("No Employee exists.");
+                     }
+                 }
+             });
+         }
+       
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only pdf format.'
+                    });
+                }
+            }
+
+            function GetDivisionDetails() {
+                var AuditNum = $("#AuditNum").val();
+                $.ajax({
+                    url:'@Url.Action("GetDivisionDetailsbyAuditNum","NCRCAPA")',
+                    dataType: "json",
+                    type: 'post',
+                    data: { 'AuditNum': AuditNum},
+                    success: function (result) {
+                        if (result != null && result != "") {
+                            document.getElementById("branch").value = result;
+                        }
+                        else {
+                            document.getElementById("branch").value = "";
+                        }
+                    }
+                })
+
+            }
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }

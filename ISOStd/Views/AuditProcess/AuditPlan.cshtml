@@ -138,6 +138,7 @@
                                 </select>
                             </div>
                         </td>
+                       
                     </tr> 
                     <tr class="row invisible" id="id2" style="display:none">
                         <td class="col-xs-3 col-md-2">
@@ -151,7 +152,72 @@
                             </div>
                         </td>
 
-                    </tr>                                
+                    </tr>  
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_scope) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="audit_scope" name="audit_scope" required/>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_methodology) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_methodology" name="audit_methodology" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditMethodology != null)
+                                {
+                                    foreach (var item in ViewBag.AuditMethodology)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                    </tr> 
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_objective) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="audit_objective" name="audit_objective" required />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_method) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_method" name="audit_method" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditMethod != null)
+                                {
+                                    foreach (var item in ViewBag.AuditMethod)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>  
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_lang) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_lang" name="audit_lang" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditLang != null)
+                                {
+                                    foreach (var item in ViewBag.AuditLang)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                    </tr>                           
                     <tr class="row">
                       
                         <td class="col-xs-3 col-md-2">
@@ -217,17 +283,25 @@
                                             }
                                         }
                                     </select>
-                                    <span class="field-validation-error"><span id="branch-message" style="display: none;">Please select division</span></span>
+                                    <span class="field-validation-error"><span id="branch-message" style="display: none;">Please select Division</span></span>
                                 </td>
                                 <th class="col-xs-3 col-md-2" style="font-weight: bold;">Department to be Audited</th>
                                 <td class="col">
-                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="group_name" name="group_name" onchange="GetTeamDetails()">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="dept_name" name="dept_name" onchange="GetAuditee()">
                                         <option value='' hidden>Select</option>
                                         
                                     </select>
                                 </td>
                             </tr>
-                            <tr class="row">                               
+                            <tr class="row">
+                                @*<th class="col-xs-3 col-md-2" style="font-weight: bold;">Team to be Audited</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="team" name="team" onchange="GetAuditee()">
+                                        <option value='' hidden>Select</option>
+                                        
+                                    </select>
+                                   
+                                </td>*@
                                 <th class="col-xs-3 col-md-2" style="font-weight: bold;">Audit Location</th>
                                 <td class="col">
                                     <select class="form-control select-search select2-hidden-accessible" data-fouc id="location" name="location">
@@ -299,21 +373,37 @@
                                 <td class="col">
                                     <select class="form-control select-search select2-hidden-accessible" data-fouc id="checklist" name="checklist">
                                         <option value='' hidden>Select</option>
-                                        @if (ViewBag.CheckList != null)
+                                        @*@if (ViewBag.CheckList != null)
                                         {
                                             foreach (var item in ViewBag.CheckList)
                                             {
                                                     <option value='@item.Value'>@item.Text</option>
                                             }
-                                        }
+                                        }*@
                                     </select>
                                    
                                 </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Documents required before the audit</th>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="doc_req" name="doc_req">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.YesNo != null)
+                                            {
+                                                foreach (var item in ViewBag.YesNo)
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>        
+                            </tr>
+                            <tr>
                                 <td class="col">
-                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAuditTeamDetails()" />                     
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAuditTeamDetails()" />
                                 </td>
                             </tr>
-
                         </tbody>
                     </table>
                 </fieldset>
@@ -340,13 +430,15 @@
                                     <th>Action</th>                                  
                                     <th>Division</th>                                  
                                     <th>Department</th>
+                                    @*<th>Team</th>*@
                                     <th>Location</th>
                                     <th>Audit Scheduled Date</th>
                                     <th>From_Time</th>
                                     <th>To_Time</th>                               
                                     <th>Auditor(s)</th>
                                     <th>Auditee(s)</th>    
-                                    <th>CheckList</th>     
+                                    <th>CheckList</th>  
+                                    <th>Documents required before the audit</th>    
                                 </tr>
                             </table>
                         </div>
@@ -562,6 +654,16 @@
                 ssnMessage = $('#auditee_team-message');
                 ssnMessage.hide();
             }
+            //if (document.getElementById("doc_req").value == "") {
+            //    ssnMessage = $('#doc_req-message');
+            //    ssnMessage.show();
+
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#doc_req-message');
+            //    ssnMessage.hide();
+            //}
             return validflg;
         }
 
@@ -592,8 +694,8 @@
             var cell7 = row.insertCell(7);
             var cell8 = row.insertCell(8);
             var cell9 = row.insertCell(9);
-            //var cell10 = row.insertCell(10);
-
+            var cell10 = row.insertCell(10);
+            //var cell11 = row.insertCell(11);
 
            
             var AuditDate = $('#AuditDate').val();
@@ -606,11 +708,15 @@
             var branchVal = $("#branch").val();
 
 
-            var group_name = $.map($("#group_name option:selected"), function (el, i) {
+            var dept_name = $.map($("#dept_name option:selected"), function (el, i) {
                 return $(el).text();
             });
-            var group_nameVal = $("#group_name").val();
-                     
+            var group_nameVal = $("#dept_name").val();
+
+            //var team = $.map($("#team option:selected"), function (el, i) {
+            //    return $(el).text();
+            //});
+            //var teamVal = $("#team").val();
 
             var location = $.map($("#location option:selected"), function (el, i) {
                 return $(el).text();
@@ -631,7 +737,7 @@
                 return $(el).text();
             });
             var auditee_teamVal = $("#auditee_team").val();
-
+            var doc_req = $('#doc_req').val();
 
           
             cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
@@ -641,8 +747,9 @@
                 foreach (var item in ViewBag.Branch)
                 { <option value='@item.Value'>@item.Text</option> }
                 }</select>";
-            cell2.innerHTML = "<select class='select-fixed-single' id='group_name" + cnt + "' name='group_name" + cnt + "'><option value='" + group_nameVal + "' selected>" + group_name + "</option></select>";
+            cell2.innerHTML = "<select class='select-fixed-single' id='dept_name" + cnt + "' name='dept_name" + cnt + "' onchange='sGetAuditee(" + cnt + ")'><option value='" + group_nameVal + "' selected>" + dept_name + "</option></select>";
 
+            //cell3.innerHTML = "<select class='select-fixed-single' id='team" + cnt + "' name='team" + cnt + "' onchange='sGetAuditee(" + cnt + ")'><option value='" + teamVal + "' selected>" + team + "</option></select>";
             cell3.innerHTML = "<select class='select-fixed-single' id='location" + cnt + "' name='location" + cnt + "'><option value='" + locationVal + "' selected>" + location + "</option>@if (ViewBag.Location != null)
             {
                 foreach (var item in ViewBag.Location)
@@ -660,7 +767,11 @@
             cell8.innerHTML = "<select class='select-fixed-single' id='auditee_team" + cnt + "' name='auditee_team" + cnt + "' multiple><option value='" + auditee_teamVal + "' selected>" + auditee_team + "</option></select>";
 
             cell9.innerHTML = "<select class='select-fixed-single' id='checklist" + cnt + "' name='checklist" + cnt + "'><option value='" + checklistVal + "' selected>" + checklist + "</option></select>";
-
+            cell10.innerHTML = "<select class='select-fixed-single' id='doc_req" + cnt + "' name='doc_req" + cnt + "'><option value='" + doc_req + "' selected>" + doc_req + "</option>@if (ViewBag.YesNo != null)
+            {
+                foreach (var item in ViewBag.YesNo)
+                { <option value='@item'>@item</option> }
+                }</select>";
             sGetDeptList_drop(cnt);
 
             cnt++;
@@ -684,7 +795,8 @@
 
         function ResetControl () {
             $("#branch").val('').trigger('change');
-            $("#group_name").val('').trigger('change');
+            $("#dept_name").val('').trigger('change');
+            //$("#team").val('').trigger('change');
             $("#location").val('').trigger('change');
             document.getElementById("AuditDate").value = "";
             document.getElementById("fromtime").value = "";
@@ -693,6 +805,7 @@
             $("#auditors").val('').trigger('change');
             $("#auditee_team").val('').trigger('change');
             $("#auditors").val('').trigger('change');
+            $("#doc_req").val('').trigger('change');
         }
 
         function deleteRow(btn) {
@@ -703,7 +816,7 @@
         //--------------------------------------------------
         function sGetDeptList_drop(i) {
             //var selectedValues = [];
-            //$("#group_name" + i).children('option').remove();
+            //$("#dept_name" + i).children('option').remove();
             //$("#team" + i).children('option').remove();
             //$("#branch :selected").each(function () {
             // selectedValues.push($(this).val());
@@ -724,9 +837,9 @@
                         if (result != null && result.length > 0) {
                           
                             $.each(result, function (index, item) {
-                                $("#group_name" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#dept_name" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
                             });
-                           // $("#group_name" + i).trigger('change');
+                           // $("#dept_name" + i).trigger('change');
 
                             return;
                         }
@@ -735,7 +848,7 @@
                 });
             }
         }
-        
+     
         function sGetAuditor_drop(i) {
             var branch = $("#branch" + i).val();
             var date = $("#AuditDate" +i).val();
@@ -762,13 +875,13 @@
         }
         function sGetAuditee_drop(i) {
             var branch = $("#branch" + i).val();
-            var group_name = $("#group_name" + i).val();
-        
+            var dept_name = $("#dept_name" + i).val();
+            //var team = $("#team" + i).val();
             jQuery.ajax({
                 url: '@Url.Action("FunGetAuditeesList", "AuditProcess")',
                 type: 'POST',
                 dataType: "json",
-                data: { 'branch': branch, 'group_name': group_name },
+                data: { 'branch': branch, 'dept_name': dept_name},
                 success: function (result) {
                     //$("#auditee_team" + i).children('option').remove();
 
@@ -811,8 +924,8 @@
         //--------------------------------------------
         function sGetDeptList(i) {
             //var selectedValues = [];
-            $("#group_name"+i).children('option').remove();
-          
+            $("#dept_name"+i).children('option').remove();
+            //$("#team"+i).children('option').remove();
             //$("#branch :selected").each(function () {
             // selectedValues.push($(this).val());
             //});
@@ -829,11 +942,11 @@
                         sGetAuditee(i);
                         sGetCheckList(i);
                         if (result != null && result.length > 0) {
-                            $("#group_name"+i).append("<option value=''>" + "Select" + "</option>");
+                            $("#dept_name"+i).append("<option value=''>" + "Select" + "</option>");
                             $.each(result, function (index, item) {
-                                $("#group_name"+i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#dept_name"+i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
                             });
-                           // $("#group_name"+i).trigger('change');
+                           // $("#dept_name"+i).trigger('change');
 
                             return;
                         }
@@ -895,12 +1008,13 @@
         }
         function sGetAuditee(i) {
             var branch = $("#branch"+i).val();
-            var group_name = $("#group_name"+i).val();            
+            var dept_name = $("#dept_name"+i).val();
+            //var team = $("#team"+i).val();
             jQuery.ajax({
                 url: '@Url.Action("FunGetAuditeesList", "AuditProcess")',
                 type: 'POST',
                 dataType: "json",
-                data: { 'branch': branch, 'group_name': group_name },
+                data: { 'branch': branch, 'dept_name': dept_name},
                 success: function (result) {
                     $("#auditee_team"+i).children('option').remove();
 
@@ -968,12 +1082,13 @@
         }
         function GetAuditee() {
             var branch = $("#branch").val();
-            var group_name = $("#group_name").val();           
+            var dept_name = $("#dept_name").val();
+            //var team = $("#team").val();
             jQuery.ajax({
                 url: '@Url.Action("FunGetAuditeesList", "AuditProcess")',
                 type: 'POST',
                 dataType: "json",
-                data: { 'branch': branch, 'group_name': group_name },
+                data: { 'branch': branch, 'dept_name': dept_name},
                 success: function (result) {
                     $("#auditee_team").children('option').remove();
 
@@ -1015,8 +1130,9 @@
         }
            function GetDeptList() {
                //var selectedValues = [];
-               $("#group_name").children('option').remove();
-                             //$("#branch :selected").each(function () {
+               $("#dept_name").children('option').remove();
+               //$("#team").children('option').remove();
+               //$("#branch :selected").each(function () {
                // selectedValues.push($(this).val());
                //});
                var selectedValues = $('#branch').val();
@@ -1032,11 +1148,11 @@
                            GetAuditee();
                            GetCheckList();
                            if (result != null && result.length > 0) {
-                               $("#group_name").append("<option value=''>" + "Select" + "</option>");
+                               $("#dept_name").append("<option value=''>" + "Select" + "</option>");
                                $.each(result, function (index, item) {
-                                   $("#group_name").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                   $("#dept_name").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
                                });
-                               $("#group_name").trigger('change');
+                               $("#dept_name").trigger('change');
 
                                return;
                            }
@@ -1044,9 +1160,10 @@
                        }
                    });
                }
+             
         }
 
-
+   
         function GetLocList(selectedValues) {
             jQuery.ajax({
                 url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
@@ -1075,34 +1192,7 @@
         }
 
 
-         @*function DoclevelGroupcode() {
-             $("#group").empty();
-             var sStd = $('#directorate').val();
-                jQuery.ajax({
-                    url: '@Url.Action("GetDocLevelGroup", "GenerateAuditChecklist")',
-                    type: 'POST',
-                    dataType: "json",
-                    data: { 'DocLevelId': sStd },
-                    success: function (result) {
-                        $("#group").empty();
-                        if (result != null && result.length > 0) {
-                            $("#group").append("<option value=''>" + "Select" + "</option>");
-                            $.each(result, function (index, item) {
-                                $("#group").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
-                                $("#group").trigger('change');
-                            });
-                            return;
-                        }
-                        else {
-                            bootbox.alert({
-                                title: 'Group Code',
-                                message: 'Please add group code to this directorate selected'
-                            });
-                            return;
-                        }
-                    }
-                });
-        }*@
+
     </script>
     @Scripts.Render("~/bundles/jqueryval")
 }

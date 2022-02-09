@@ -74,22 +74,22 @@
                             </p>
                         </td>
                         <td class="col-xs-3 col-md-2">
-                            @Html.DisplayNameFor(model => model.directorate)
+                            @Html.DisplayNameFor(model => model.branch)
                         </td>
                         <td class="col">
                             <p class="bg-grey-300 py-1 px-2 rounded">
-                                @Html.DisplayFor(model => model.directorate)
+                                @Html.DisplayFor(model => model.branch)
                             </p>
                         </td>
                     </tr>
                     <tr class="row">
 
                         <td class="col-xs-3 col-md-2">
-                            @Html.DisplayNameFor(model => model.group_name)
+                            @Html.DisplayNameFor(model => model.dept_name)
                         </td>
                         <td class="col">
                             <p class="bg-grey-300 py-1 px-2 rounded">
-                                @Html.DisplayFor(model => model.group_name)
+                                @Html.DisplayFor(model => model.dept_name)
                             </p>
                         </td>
                         @*<td class="col-xs-3 col-md-2">
@@ -101,6 +101,71 @@
                             </p>
                         </td>*@
                     </tr>
+                    @if (Model.pend_major > 0)
+                    {
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.major_nc)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.pend_major)
+                            </p>
+                        </td>
+                    </tr>
+                    }
+                    @if (Model.pend_minor > 0)
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.minor_nc)
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <p class="bg-grey-300 py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.pend_minor)
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.pend_potential > 0)
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.no_observation)
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <p class="bg-grey-300 py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.pend_potential)
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.pend_note > 0)
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.no_noteworthy)
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <p class="bg-grey-300 py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.pend_note)
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.pend_ci > 0)
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.no_ci)
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <p class="bg-grey-300 py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.pend_ci)
+                                </p>
+                            </td>
+                        </tr>
+                    }
                 </table>
                 <table class="table table-lg">
                     <tr class="row">
@@ -122,7 +187,15 @@
                                 {
                                     foreach (var item in ViewBag.Category)
                                     {
-                                        <option value='@item.Value'>@item.Text</option>
+                                        if ((item.Text == "Major Nonconformity" && Model.pend_major > 0)
+                                            || (item.Text == "Continual Improvement" && Model.pend_ci > 0)
+                                            || (item.Text == "Minor Nonconformity" && Model.pend_minor > 0)
+                                            || (item.Text == "Note-Worthy" && Model.pend_note > 0)
+                                            || (item.Text == "Potential Nonconformity" && Model.pend_potential > 0))
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+
                                     }
                                 }
                             </select>

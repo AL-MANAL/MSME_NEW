@@ -1,0 +1,331 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.CustEnquiryModels>
+
+    @{
+        ViewBag.Title = "CustEnquiryList";
+    }
+    <link href='@Url.Content("~/Content/popover/popover.css")' rel="stylesheet">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Customer Enquiry List</span>
+    </div>
+   
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+    <br />
+
+    @using (Html.BeginForm("CustEnquiryList", "CustEnquiry", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+    {
+
+        <div class="editor-field">
+            <b style="color:#31b0d5;padding-left:10px;">Company Name </b>
+            <select id="Company" name="Company" style="width:250px;">
+                <option value='Select'>Select</option>
+
+                @if (ViewBag.CompanyName != null && ViewBag.CompanyNameval != null)
+                {
+                    foreach (var item in ViewBag.CompanyName)
+                    {
+                        if (item == ViewBag.CompanyNameval)
+                        {
+                            <option value='@item' selected>@item</option>
+                        }
+                        else
+                        {
+                            <option value='@item'>@item</option>
+                        }
+                    }
+
+
+                }
+                else if (ViewBag.CompanyName != null)
+                {
+                    foreach (var item in ViewBag.CompanyName)
+                    {
+                        <option value='@item'>@item</option>
+                    }
+                }
+            </select>
+            @*     <b style="color:#31b0d5;">Approval Status</b>
+                  <select id="Approvestatus" name="Approvestatus" >
+                      @if (ViewBag.ApprovestatusVal != null && ViewBag.Approvestatus != null)
+                      {
+                          foreach (var item in ViewBag.Approvestatus)
+                          {
+                                  if (item.Key == ViewBag.ApprovestatusVal)
+                                  {
+                                      <option value='@item.Key' selected>@item.Value</option>
+                                  }
+                                  else
+                                  {
+                                      <option value='@item.Key'>@item.Value</option>
+                                  }
+                              }
+
+
+                      }
+                      else if (ViewBag.Approvestatus != null)
+                      {
+                          foreach (var item in ViewBag.Approvestatus)
+                          {
+                          <option value='@item.Key'>@item.Value</option>
+                          }
+                      }
+                  </select>
+                @*  <span id="tab" style="color:#31b0d5;font-weight: bold; padding: 10px;">And/Or</span>*@
+            <span style="margin-left: 20px">@Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Project Name", style = "width: 15%; " })</span>
+
+            <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+                <span class="glyphicon glyphicon-search"></span>Search
+            </button>
+
+            @Html.ActionLink("Add New", "AddCustEnquiry", null, null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <span style="margin-left: 20px"> <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer; " id="downloadLink" />Download</span>
+
+        </div>
+    }
+    <br />
+    @Html.PagedListPager(Model, page => Url.Action("CustEnquiryList",
+        new
+        {
+            page,
+            ChangeIn = Request.QueryString["ChangeIn"],
+            SearchText = Request.QueryString["SearchText"],
+            Approvestatus = Request.QueryString["Approvestatus"]
+
+        }),
+        new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+    <div id="content">
+        <table id="table1">
+            <thead>
+                <tr>
+                    <th style="width:40px;min-width:40px; max-width:40px;word-wrap:break-word">
+                        Sl No
+                    </th>
+                    <th style="width:70px;min-width:70px; max-width:70px;">
+                        @Html.DisplayNameFor(model => model.First().id_enquiry)
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        @Html.DisplayNameFor(model => model.First().mode_enquiry)
+                    </th>
+                    <th style="width:90px;min-width:90px; max-width:90px;">
+                        @Html.DisplayNameFor(model => model.First().date_enquiry)
+                    </th>
+                    <th style="width:200px;min-width:200px; max-width:200px;">
+                        @Html.DisplayNameFor(model => model.First().companyname)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().projectname)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().contactperson)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().location)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().incharge)
+                    </th>                  
+                    <th style="width:80px;min-width:80px; max-width:80px;">
+                        @Html.DisplayNameFor(model => model.First().status)
+                    </th>
+                    <th style="width:40px;min-width:40px; max-width:40px;">Edit</th>
+                    @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <th style="width: 40px; min-width: 40px; max-width: 40px;">Delete</th>
+                    }
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    var sl = 0;
+                    foreach (var item in Model)
+                    {
+                        sl = sl + 1;
+                <tr>
+                    <td style="width:40px;min-width:40px; max-width:40px;word-wrap:break-word">
+                        @Html.ActionLink(sl.ToString(), "CustEnquiryDetails", new { id_enquiry = item.id_enquiry.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_enquiry, onclick = "HyperLinkProgressIconFunction()" })
+                    </td>
+                    <td style="width:70px;min-width:70px; max-width:70px;">
+                        @Html.DisplayFor(modelItem => item.id_enquiry)
+                    </td>
+                    <td style="width:100px;min-width:100px; max-width:100px;">
+                        @Html.DisplayFor(modelItem => item.mode_enquiry)
+                    </td>
+                    <td style="width:90px;min-width:90px; max-width:90px;">
+                        @if (item.date_enquiry != null && item.date_enquiry > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(item.date_enquiry.ToString("dd/MM/yyyy"))
+                        }
+                    </td>
+                    <td style="width:200px;min-width:200px; max-width:200px;">
+                        @Html.DisplayFor(modelItem => item.companyname)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayFor(modelItem => item.projectname)
+                    </td>                    
+                    <td style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayFor(modelItem => item.contactperson)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayFor(modelItem => item.location)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayFor(modelItem => item.incharge)
+                    </td>
+                    <td style="width:80px;min-width:80px; max-width:80px;">
+                        @Html.DisplayFor(modelItem => item.status)
+                    </td>
+                    <td style="width:40px;min-width:40px; max-width:40px;">
+                        <a href='@Url.Action("CustEnquiryEdit", "CustEnquiry", new { id_enquiry = item.id_enquiry })' title="Assign Customer Enquiry">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                        </a>
+                    </td>
+
+                    @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <td style="width: 40px; min-width: 40px; max-width: 40px;">
+                            <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.id_enquiry)" style="cursor:pointer;" />
+                        </td>
+                    }
+
+                </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9">
+                            <div style="text-align: center;">
+                                <h4 style="color: grey;">No data exists</h4>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @Styles.Render("~/Content/popover")
+    @section scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('[data-toggle="popover"]').popover({
+
+                title: setData,
+                html: true,
+                placement: 'right',
+                container: 'body'
+            });
+
+            function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("CustEnquiryInfo", "CustEnquiry")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+
+            $("#Company").chosen();
+           // $("#Approvestatus").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+        });
+
+
+            function DeleteItems(id_enquiry) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("CustEnquiryDelete", "CustEnquiry")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_enquiry': id_enquiry },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            // Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'CustomerEnquiry.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+
+        </script>
+
+    }

@@ -1,0 +1,1241 @@
+﻿@model ISOStd.Models.EmployeeMasterModels
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeeList", "EmployeeDetails", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Employee Management</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Employee Management</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("EmployeeEdit", "EmployeeDetails", FormMethod.Post,
+                                 new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="emp_no" name="emp_no" value="@Model.emp_no" />
+    <input type="hidden" id="work_location" name="work_location" value="@Model.division" />
+    <input type="hidden" id="OldEmailId" name="OldEmailId" value="@Model.EmailId" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Employee Management</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td colspan="4">Personal Information</td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.emp_id)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @*@Html.EditorFor(model => model.emp_id,new { htmlAttributes = new { @required = "required" } })*@
+                                <input class="form-control" type="text" id="emp_id" name="emp_id" value="@Model.emp_id" onchange="GetEmpDetails()" required />
+                                @Html.ValidationMessageFor(model => model.emp_id)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.emp_firstname)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="emp_firstname" value="@Model.emp_firstname" name="emp_firstname" required />
+                                @Html.ValidationMessageFor(model => model.emp_firstname)
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.emp_middlename)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.emp_middlename, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.emp_lastname)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.emp_lastname, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Nationaliity)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Nationaliity, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Designation)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Designation" name="Designation" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Designation != null)
+                                    {
+                                        foreach (var item in ViewBag.Designation)
+                                        {
+                                            if (item.Value == Model.Designation)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Gender)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Gender" name="Gender">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Gender != null)
+                                    {
+                                        foreach (var item in ViewBag.Gender)
+                                        {
+                                            if (item == Model.Gender)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Marital_status)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Marital_status" name="Marital_status">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Marital_status != null)
+                                    {
+                                        foreach (var item in ViewBag.Marital_status)
+                                        {
+                                            if (item == Model.Marital_status)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Date_of_Birth)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+
+                                @if (Model.Date_of_Birth != null && Model.Date_of_Birth > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Date_of_Birth" name="Date_of_Birth" value="@Model.Date_of_Birth.ToString("yyyy-MM-dd")" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Date_of_Birth" name="Date_of_Birth" />
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Date_of_join)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+
+                                @if (Model.Date_of_join != null && Model.Date_of_join > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Date_of_join" name="Date_of_join" value="@Model.Date_of_join.ToString("yyyy-MM-dd")" onchange="checkDate1();" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Date_of_join" name="Date_of_join" onchange="checkDate1();" />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.EmailId)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input class="form-control" id="EmailId" name="EmailId" value="@Model.EmailId" onchange="GetEmailDetails()" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.division)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="division" name="division" onchange="GetDeptList()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Division != null)
+                                    {
+                                        foreach (var item in ViewBag.Division)
+                                        {
+                                            if (item.Value == Model.division)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.dept_id)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="DeptId" name="DeptId" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DeptList != null)
+                                    {
+                                        foreach (var item in ViewBag.DeptList)
+                                        {
+                                            //if (item.Text == Model.dept_id)
+                                            if (item.Value == Model.DeptId)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.DeptId)
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Emp_work_location)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Emp_work_location" name="Emp_work_location" required>
+                                    @*  <option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (item.Value == Model.Emp_work_location)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.Emp_work_location)
+                            </div>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Role)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Role" name="Role" required="" multiple>
+                                    @if (ViewBag.Roles != null)
+                                    {
+                                        foreach (var item in @ViewBag.Roles)
+                                        {
+                                            if (Model.Role.ToString().Contains(item.Text))
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.Role)
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        @* <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.ReportingTo)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-field">
+                                    <select id="ReportingTo" name="ReportingTo">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.DeptHeadList != null)
+                                        {
+                                            foreach (var item in ViewBag.DeptHeadList)
+                                            {
+                                             <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.DeptInCharge)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="DeptInCharge" name="DeptInCharge">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            if (item == Model.DeptInCharge)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.MobileNo)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.JobDesc)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="display-field">
+                                <input type="file" name="JobDesc" id="JobDesc" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                @if (Model.JobDesc != "")
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.JobDesc})' target="_blank">Preview</a>
+                                    </span>
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.EvaluatedBy)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="display-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="EvaluatedBy" name="EvaluatedBy">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DeptHeadList != null)
+                                    {
+                                        foreach (var item in ViewBag.DeptHeadList)
+                                        {
+                                            if (item.Text == @Model.EvaluatedBy)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.employment_type)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="display-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="employment_type" name="employment_type">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmploymentType != null)
+                                    {
+                                        foreach (var item in ViewBag.EmploymentType)
+                                        {
+                                            if (item.Value == Model.employment_type)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+
+                    </tr>
+                    @*<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.qualification)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="display-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc multiple id="qualification" name="qualification" required>
+                               
+                                    @if (ViewBag.Qualification != null)
+                                    {
+                                        foreach (var item in ViewBag.Qualification)
+                                        {
+                                            if (Array.IndexOf(Model.qualification.ToString().Split(','), item.Value) >= 0)
+
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.years_exp)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.years_exp, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>*@
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Emp_local_contact)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Emp_local_contact, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Emp_native_phoneno)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Emp_native_phoneno, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+
+                    @*<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Emp_native_country)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Emp_native_country, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+
+
+                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Emp_accomodation)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Emp_accomodation, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+
+                       
+                    </tr>*@
+
+                    @*<tr class="row">
+                                <td class="col" colspan="4">Security Information</td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Passport_no)
+                                    </div>
+                                </td>
+                                 <td class="col">
+                                    <div class="editor-field">
+                                    @Html.EditorFor(model => model.Passport_no, new { htmlAttributes = new {  @class = "form-control"  } })
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.PassportUpload)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="file" name="PassportUpload" id="PassportUpload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                     @if (Model.PassportUpload != "")
+                                     {
+                                           <span class="bg-dark py-1 px-2 rounded">
+                                               <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.PassportUpload})' target="_blank">Preview</a>
+                                           </span>
+                                     }
+                        </div>
+                                </td>
+
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Passport_expiry)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                    @if (Model.Passport_expiry != null && Model.Passport_expiry > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="Passport_expiry" name="Passport_expiry" value="@Model.Passport_expiry.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="Passport_expiry" name="Passport_expiry"/>
+                                    }
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.UID_no)
+                                    </div>
+                                </td>
+                                 <td class="col">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.UID_no, new { htmlAttributes = new {  @class = "form-control"  } })
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Visa_Type)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="Visa_Type" name="Visa_Type">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Visa_Type != null)
+                                            {
+                                                foreach (var item in ViewBag.Visa_Type)
+                                                {
+                                                     if (item == Model.Visa_Type)
+                                                    {
+                                                <option value='@item' selected>@item</option>
+                                                    }
+                                                    else
+                                                    {
+                                                <option value='@item'>@item</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Visa_no)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.Visa_no, new { htmlAttributes = new {  @class = "form-control"  } })
+                                    </div>
+                                </td>
+
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Visa_stamped_on)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                     @if (Model.Visa_stamped_on != null && Model.Visa_stamped_on > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="Visa_stamped_on" name="Visa_stamped_on" value="@Model.Visa_stamped_on.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="Visa_stamped_on" name="Visa_stamped_on"/>
+                                    }
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.visa_Exp_date)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                     @if (Model.visa_Exp_date != null && Model.visa_Exp_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="visa_Exp_date" name="visa_Exp_date" value="@Model.visa_Exp_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="visa_Exp_date" name="visa_Exp_date"/>
+                                    }
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Visa_upload)
+                                    </div>
+                                </td>
+                               <td class="col">
+                                    <div class="editor-field">
+                                      <input type="file" name="Visa_upload" id="Visa_upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                      @if (Model.Visa_upload != "")
+                                     {
+                                           <span class="bg-dark py-1 px-2 rounded">
+                                               <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Visa_upload})' target="_blank">Preview</a>
+                                           </span>
+                                     }
+                        </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.EIDUpload)
+                                    </div>
+                                </td>
+                                 <td class="col">
+                                    <div class="editor-field">
+                                         <input type="file" name="EIDUpload" id="EIDUpload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                    @if (Model.EIDUpload != "")
+                                     {
+                                           <span class="bg-dark py-1 px-2 rounded">
+                                               <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.EIDUpload})' target="_blank">Preview</a>
+                                           </span>
+                                     }
+                        </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Eid_no)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                       @Html.EditorFor(model => model.Eid_no, new { htmlAttributes = new {  @class = "form-control"  } })
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Eid_visa_date)
+                                    </div>
+                                </td>
+                                 <td class="col">
+                                    <div class="editor-field">
+                        @if (Model.Eid_visa_date != null && Model.Eid_visa_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="Eid_visa_date" name="Eid_visa_date" value="@Model.Eid_visa_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="Eid_visa_date" name="Eid_visa_date"/>
+                                    }
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Labour_cardno)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                     @Html.EditorFor(model => model.Labour_cardno, new { htmlAttributes = new {  @class = "form-control"  } })
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Labour_cardexpiry)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                     @if (Model.Labour_cardexpiry != null && Model.Labour_cardexpiry > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="Labour_cardexpiry" name="Labour_cardexpiry" value="@Model.Labour_cardexpiry.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="Labour_cardexpiry" name="Labour_cardexpiry"/>
+                                    }
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Health_insurance_provider)
+                                    </div>
+                                </td>
+                              <td class="col">
+                                    <div class="editor-field">
+                                       @Html.EditorFor(model => model.Health_insurance_provider, new { htmlAttributes = new {  @class = "form-control"  } })
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Health_Insurance_Expiry)
+                                    </div>
+                                </td>
+                                 <td class="col">
+                                    <div class="editor-field">
+
+                        @if (Model.Health_Insurance_Expiry != null && Model.Health_Insurance_Expiry > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="Health_Insurance_Expiry" name="Health_Insurance_Expiry" value="@Model.Health_Insurance_Expiry.ToString("yyyy-MM-dd")" onchange="checkDate();" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="Health_Insurance_Expiry" name="Health_Insurance_Expiry" onchange="checkDate();"/>
+                                    }
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.HealthCardUpload)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                      <input type="file" name="HealthCardUpload" id="HealthCardUpload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                     @if (Model.HealthCardUpload != "")
+                                     {
+                                           <span class="bg-dark py-1 px-2 rounded">
+                                               <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.HealthCardUpload})' target="_blank">Preview</a>
+                                           </span>
+                                     }
+                        </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.HealthCardIssueDate)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+
+                                    @if (Model.HealthCardIssueDate != null && Model.HealthCardIssueDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="HealthCardIssueDate" name="HealthCardIssueDate" value="@Model.HealthCardIssueDate.ToString("yyyy-MM-dd")"/>
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="HealthCardIssueDate" name="HealthCardIssueDate"/>
+                                    }
+                        </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.HealthCardExpDate)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-field">
+                        @if (Model.HealthCardExpDate != null && Model.HealthCardExpDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id="HealthCardExpDate" name="HealthCardExpDate" value="@Model.HealthCardExpDate.ToString("yyyy-MM-dd")"/>
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id="HealthCardExpDate" name="HealthCardExpDate"/>
+                                    }
+                                    </div>
+                                </td>
+                            </tr>*@
+                    @*<tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Emp_info_no)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                 @Html.EditorFor(model => model.Emp_info_no, new { htmlAttributes = new {  @class = "form-control"  } })
+                                </div>
+                            </td>
+
+                        </tr>*@
+
+
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Custody_Documents)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                  <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Custody_Documents" name="Custody_Documents">@Model.Custody_Documents</textarea>
+                                </div>
+                            </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Date_of_exit)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+
+                                @if (Model.Date_of_exit != null && Model.Date_of_exit > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Date_of_exit" name="Date_of_exit" value="@Model.Date_of_exit.ToString("yyyy-MM-dd")" onchange="checkDate2();" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Date_of_exit" name="Date_of_exit" onchange="checkDate2();" />
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Remarks)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks">@Model.Remarks</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ProfilePic)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="file" name="ProfilePic" id="ProfilePic" onchange="PicFileFormatValidation(this)" accept="image/*" class="bootstrap-uploader" data-fouc />
+                                @if (Model != null && Model.ProfilePic != null && Model.ProfilePic != "")
+                                {
+                                    <img src="@Url.Content(@Model.ProfilePic)" style="width:45px;" />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeeList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+    </div>
+
+
+}
+
+@section Scripts {
+    <script>
+        $(function () {
+            @*var locationid = document.getElementById("work_location").value;
+            var data = "";
+            jQuery.ajax({
+                url: '@Url.Action("FunGetBranchList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+
+                success: function (result) {
+                    data = JSON.parse(result);
+
+                    $("#Emp_work_location").select2({
+
+                        placeholder: 'Select an option',
+
+                        data: data,
+                        formatSelection: function (item) {
+
+                            return item.text
+                        },
+                        formatResult: function (item) {
+
+                            return item.text
+                        },
+                        templateResult: formatResult,
+                    });
+
+
+                    $("#Emp_work_location").val(locationid).trigger('change');
+
+                }
+            });
+
+            function formatResult(node) {
+
+                 var $result = $('<span style="padding-left:' + (20 * node.level_step) + 'px;">' + node.text + '</span>');
+                 return $result;
+             };*@
+
+
+        });
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+        function PicFileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only jpg, jpeg, gif format");
+            }
+        }
+        function checkDate() {
+            var dt1 = document.getElementById("Health_Insurance_Expiry").value;
+            var dt2 = document.getElementById("Date_of_Birth").value;
+
+            if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Health_Insurance_Expiry',
+                    message: 'Health Insurance expiry date cannot be before Birth date'
+                });
+                $('#Health_Insurance_Expiry').val("");
+            }
+        }
+
+        function checkDate1() {
+            var dt1 = document.getElementById("Date_of_join").value;
+            var dt2 = document.getElementById("Date_of_Birth").value;
+
+            if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Date_of_join',
+                    message: 'Joining date cannot be before Birth date'
+                });
+                $('#Date_of_join').val("");
+            }
+        }
+
+        function checkDate2() {
+            var dt1 = document.getElementById("Date_of_exit").value;
+            var dt2 = document.getElementById("Date_of_join").value;
+
+            if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Date_of_join',
+                    message: 'Exit date cannot be before Join date'
+                });
+                $('#Date_of_exit').val("");
+            }
+        }
+
+        function GetEmailDetails() {
+            var EmailId = document.getElementById("EmailId").value;
+
+            // var resp_person = $("#resp_person option:selected").text();
+            if (EmailId != "" && EmailId != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("doesEmailExist", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'EmailId': EmailId },
+                    success: function (result) {
+                        if (result == "false") {
+                            bootbox.alert({
+                                title: 'EmailID',
+                                message: 'Email ID already exists. Please enter a different ID.'
+                            });
+                            document.getElementById("EmailId").value = "";
+                        }
+                        else {
+                            document.getElementById("EmailId").value = result;
+                        }
+                    }
+                });
+            }
+        }
+
+        function GetEmpDetails() {
+            var emp_id = document.getElementById("emp_id").value;
+
+            // var resp_person = $("#resp_person option:selected").text();
+            if (emp_id != "" && emp_id != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("doesEmpIDExist", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'emp_id': emp_id },
+                    success: function (result) {
+                        if (result == "false") {
+                            bootbox.alert({
+                                title: 'Employee ID',
+                                message: 'Employee ID already exists. Please enter a different ID.'
+                            });
+                            document.getElementById("emp_id").value = "";
+                        }
+                        else {
+                            document.getElementById("emp_id").value = result;
+                        }
+                    }
+                });
+            }
+        }
+        function GetDeptList() {
+            var division = $('#division').val();
+            if (division != "" && division != "Select") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': division },
+                    success: function (result) {
+
+                        if (result != null && result.length > 0) {
+                            $('#DeptId').children('option').remove();
+                            $("#DeptId").trigger('change');
+                            $("#DeptId").append("<option value=''>" + "Select" + "</option>");
+                            $.each(result, function (index, item) {
+                                $("#DeptId").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#DeptId").trigger('change');
+                            });
+                            $('#Dept_Id').trigger('change');
+                            return;
+                        }
+                        else {
+                            bootbox.alert({
+                                title: 'No Dept',
+                                message: 'Department not exists.'
+                            });
+
+                            $('#DeptId').children('option').remove();
+                            $("#DeptId").trigger('change');
+                            //$('#Emp_work_location').val(null).trigger('change');
+                            return;
+                        }
+                    }
+                });
+                GetLocationList(division);
+            }
+        }
+
+        function GetLocationList(Division) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetLocationList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'division': Division },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+
+                        $('#Emp_work_location').children('option').remove();
+                        $("#Emp_work_location").trigger('change');
+
+                        $("#Emp_work_location").append("<option value=''>" + "Select" + "</option>");
+                        $.each(result, function (index, item) {
+
+                            $("#Emp_work_location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Emp_work_location").trigger('change');
+
+                        });
+                        $('#Emp_work_location').trigger('change');
+                        return;
+                    }
+                    else {
+                        bootbox.alert({
+                            title: 'Location',
+                            message: 'No Location exists.'
+                        });
+                        $('#Emp_work_location').children('option').remove();
+                        $("#Emp_work_location").trigger('change');
+                    }
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

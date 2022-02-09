@@ -1,0 +1,871 @@
+﻿@model ISOStd.Models.EmpPerformanceEvalModels
+
+@{
+    ViewBag.Title = "AddEmployeeCompetenceEval";
+
+    ISOStd.Models.EmpPerformanceElementsModelsList objEmpPerformanceEvalList = new ISOStd.Models.EmpPerformanceElementsModelsList();
+
+    ISOStd.Models.EmpPerformanceElementsModels objElementMdl = new ISOStd.Models.EmpPerformanceElementsModels();
+    int iSrno = 0;
+    double TotalScore = 0.0;
+    var SectionId = "";
+    if (ViewBag.PerformanceElement != null)
+    {
+        objEmpPerformanceEvalList = ViewBag.PerformanceElement;
+    }
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    //ISOStd.Models.EmpPerformanceElementsModels ObjElement = new ISOStd.Models.EmpPerformanceElementsModels();
+    string user = Obj.GetCurrentUserSession().empid;
+
+    System.Data.DataSet ObjMaxRate = new System.Data.DataSet();
+    System.Data.DataSet dsList = new System.Data.DataSet();
+    System.Data.DataSet dsData = new System.Data.DataSet();
+
+    if (ViewBag.MaxRate != null)
+    {
+        ObjMaxRate = ViewBag.MaxRate;
+    }
+    if (ViewBag.dsList != null)
+    {
+        dsList = ViewBag.dsList;
+    }
+    if (ViewBag.dsData != null)
+    {
+        dsData = ViewBag.dsData;
+    }
+    int sObjMaxRate = 0;
+
+
+    int Sq_No = 0; int sWeightage = 0; double s = 0.0;
+    int tot_q = objEmpPerformanceEvalList.lstEmpPerformanceElements.Count;
+
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeePerformanceEvalList", "EmployeePerformanceEval", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Performance Evaluation</span>
+                    </a>
+                    <span class="breadcrumb-item active">Performance Evaluation Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @if (Obj.GetCurrentUserSession().EmpPerfEval.Contains("4"))
+                    {
+                        using (Html.BeginForm("EmployeePerformanceEvalPDF", "EmployeePerformanceEval", FormMethod.Post, new { id = "form1", name = "form1" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="breadcrumb-elements-item dropdown p-0">
+                                <input type="hidden" id="Performance_EvalId" name="Performance_EvalId" value="@Model.Performance_EvalId" />
+                                <button type="submit" class="dropdown-item">
+                                    <i class="icon-printer2"></i> Report
+                                </button>
+                            </div>
+                        }
+                    }
+
+                 
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Performance Evaluation Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.emp_id)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.emp_id)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Evaluation_DoneOn)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Evaluation_DoneOn != null && Model.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Evaluation_DoneOn.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Evaluated_From)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Evaluated_From != null && Model.Evaluated_From > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Evaluated_From.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Evaluated_To)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Evaluated_To != null && Model.Evaluated_To > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Evaluated_To.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Eval_DoneBy)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Eval_DoneBy)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Weakness)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Weakness)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Strengths)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Strengths)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.training_need)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.training_need)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Actions_Taken)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Actions_Taken)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    @*<td class="col-xs-3 col-md-2">
+                <p class="bg-brown py-1 px-2 rounded">
+                    @Html.LabelFor(model => model.Eval_ReviewedBy)
+                </p>
+            </td>
+            <td class="col">
+                <span class="bg-dark py-1 px-2 rounded">
+                    @Html.DisplayFor(model => model.Eval_ReviewedBy)
+                </span>
+            </td>*@
+                    @if (Obj.GetCurrentUserSession().EmpPerfEval.Contains("4"))
+                    {
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.DocUploadPath)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.DocUploadPath != "")
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.DocUploadPath })' target="_blank">Preview</a>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </span>
+                        </td>
+                    }
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.remarks)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.remarks)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.recommendation)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.recommendation)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.notified_to)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.notified_to)
+                        </span>
+                    </td>
+                  
+                </tr>
+                <tr class="row">
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.eval_period)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.eval_period)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.eval_category)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.eval_category)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.LoggedBy)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Obj.GetEmpHrNameById(Model.LoggedBy)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.eval_status)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.eval_status)
+                        </span>
+                    </td>
+
+                </tr>
+                @if (Model.Comment_JrMgr != "")
+                {
+                    <tr class="row">
+                        <td class="col-md-12">
+                            HR Update
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                               Comment
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Comment_JrMgr)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                               Date
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.JrMgr_Comment_Date != null && Model.JrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.JrMgr_Comment_Date.ToString())
+                                }
+                            </span>
+                        </td>
+                     
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.top_mgmt)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Obj.GetEmpHrNameById(Model.top_mgmt)
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (Model.Comment_SrMgr != "")
+                {
+                    <tr class="row">
+                        <td class="col-md-12">
+                            Top Management Update
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Comment
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Comment_SrMgr)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Date
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.SrMgr_Comment_Date != null && Model.SrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.SrMgr_Comment_Date.ToString())
+                                }
+                            </span>
+                        </td>
+                      
+                    </tr>
+                }
+
+             
+            </table>
+
+            @if (dsList != null && dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Training Detail</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>Training Topic</th>
+                                <th>Criticality</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        
+                                        @Obj.GetTrainingTopicById(dsList.Tables[0].Rows[i]["training_topic"].ToString())
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsList.Tables[0].Rows[i]["criticality"].ToString())
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+
+            @*@if (ViewBag.PerformanceElement != null)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Employee Performance</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Sr. No.</th>
+                                <th>Element</th>
+                                <th>Rating</th>
+                                <th>Weightage</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                           @if(ObjMaxRate.Tables.Count > 0)
+                           {
+                               sObjMaxRate = Convert.ToInt32(ObjMaxRate.Tables[0].Rows[0]["Weightage"].ToString());
+                           }
+
+                            @{
+                                int Weightage = 0; int Sq_No = 0; decimal GrandTotal = 0; int Sectionrate = 0;string Msg = "";
+                            }
+                            @foreach (var item in objEmpPerformanceEvalList.lstEmpPerformanceElements)
+                            {
+                                iSrno = iSrno + 1;
+                                Sq_No = Sq_No + 1;
+
+                                if (iSrno == 1)
+                                {
+                                    Weightage = Convert.ToInt32(item.SQ_Weightage);
+                                }
+
+
+                                if (iSrno != 1 && SectionId != item.Section)
+                                {
+
+                                    TotalScore = Weightage * Sectionrate / ((Sq_No - 1) * sObjMaxRate);
+                                    <tr>
+                                        <td>Section Weightage</td>
+                                        <td>@Weightage</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Score of above section (Weightage:@Sectionrate)</td>
+                                        <td>@TotalScore (out of @Sectionrate)</td>
+                                    </tr>
+                                    GrandTotal = GrandTotal + TotalScore;
+                                }
+
+                                if (iSrno == 1 || SectionId != item.Section)
+                                {
+                                    <tr>
+
+                                        <td colspan="4" style="font:bolder">
+                                            @Obj.GetDropdownitemById(item.Section) &nbsp;&nbsp;&#45;&nbsp;&nbsp;Weightage&#58;&nbsp;&nbsp;
+                                            @item.Section_Weightage
+                                        </td>
+                                    </tr>
+                                    {
+                                        Sq_No = 1;
+                                    }
+
+                                }
+
+                                <tr>
+                                    <td>
+                                        
+                                        @Sq_No
+                                    </td>
+                                    <td>
+                                        @item.SQId
+                                    </td>
+                                    <td>
+                                        @item.SQ_OptionsId
+                                    </td>
+                                    <td>
+                                        @item.SQ_Weightage
+                                    </td>
+                                </tr>
+
+                                if (iSrno != 1 && SectionId != item.Section)
+                                {
+                                    Weightage = Convert.ToInt32(item.SQ_Weightage);
+                                }
+                                if (SectionId == item.Section)
+                                {
+                                    Weightage = Weightage + Convert.ToInt32(item.SQ_Weightage);
+                                }
+                                SectionId = (item.Section);
+                                Sectionrate = Convert.ToInt32(item.Section_Weightage);
+
+                            }
+                            <tr>
+                                @{
+                                    TotalScore = Weightage * Sectionrate / (Sq_No * sObjMaxRate);
+                                    GrandTotal = GrandTotal + TotalScore;
+                                }
+
+
+                            <tr>
+                                <td>Section Weightage</td>
+                                <td>@Weightage</td>
+                            </tr>
+                            <tr>
+                                <td>Total Score of above section (Weightage:@Sectionrate)</td>
+                                <td>@TotalScore (out of @Sectionrate)</td>
+                            </tr>
+
+                            @if(GrandTotal == 100)
+                            {
+                                Msg = "Outstanding";
+                            }
+                            else if(GrandTotal >= 80 && GrandTotal < 99)
+                            {
+                                Msg = "Excellent";
+                            }                            
+                            else if (GrandTotal >= 60 && GrandTotal < 79)
+                            {
+                                Msg = "Good";
+                            }
+                            else if (GrandTotal >= 40 && GrandTotal < 59)
+                            {
+                                Msg = "Moderate";
+                            }
+                            else if (GrandTotal >= 20 && GrandTotal < 39)
+                            {
+                                Msg = "Average";
+                            }
+                            else if (GrandTotal >= 1 && GrandTotal < 19)
+                            {
+                                Msg = "Poor";
+                            }
+                            <tr>
+                                <td>Overall Weightage</td>
+                                <td>@GrandTotal % &nbsp;&nbsp;&#45;&nbsp;&nbsp;( @Msg )</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            }*@
+
+            @if (Model.eval_status != "Pending for Manger update")
+            {
+                if (ViewBag.PerformanceElement != null)
+                {
+                    <br />
+                    <h2 class="bg-dark pl-sm-2">Employee Performance</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                            <thead>
+                                <tr class="bg-brown">
+
+                                    <th>Sr. No.</th>
+                                    <th>Element</th>
+                                    <th>Rating</th>
+                                    <th>Weightage</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+
+
+
+                                @foreach (var item in objEmpPerformanceEvalList.lstEmpPerformanceElements)
+                                {
+                                    Sq_No = Sq_No + 1;
+                                    sWeightage = sWeightage + Convert.ToInt32(item.SQ_Weightage);
+                                    <tr>
+                                        <td>
+                                            @*@iSrno*@
+                                            @Sq_No
+                                        </td>
+                                        <td>
+                                            @item.SQId
+                                        </td>
+                                        <td>
+                                            @item.SQ_OptionsId
+                                        </td>
+                                        <td>
+                                            @item.SQ_Weightage
+                                        </td>
+                                    </tr>
+                                }
+                                @{
+                                    s = (Convert.ToInt32(Model.Weightage)) * tot_q;
+                                 
+                                    TotalScore = (sWeightage / s) * 100;
+
+                                }
+                                <tr>
+                                    <td>
+                                        Actual Score:
+                                    </td>
+                                    <td colspan="3">
+                                        @Math.Round(TotalScore,2) %
+                                       
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                                    }
+
+                                    if (dsData != null && dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                                    {
+                                        <br />
+                                        <h2 class="bg-dark pl-sm-2">No of Questions</h2>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                                <thead>
+                                                    <tr class="bg-brown">
+                                                        <th>Sl No</th>
+                                                        <th>Rating</th>
+                                                        <th>No of Questions</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int i = 0, j = 1; i < dsData.Tables[0].Rows.Count; i++, j++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @j
+                                                            </td>
+                                                            <td>
+                                                                @objElementMdl.GetRatingNameById(dsData.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                                                            </td>
+                                                            <td>
+                                                                @(dsData.Tables[0].Rows[i]["tot_quest"].ToString())
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                </tbody>
+                                            </table>
+
+
+
+                                        </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        
+                                            if (ViewBag.PerformanceElement != null)
+                                            {
+                                                <br />
+                                                <h2 class="bg-dark pl-sm-2">Employee Performance</h2>
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                                                        <thead>
+                                                            <tr class="bg-brown">
+
+                                                                <th>Sr. No.</th>
+                                                                <th>Element</th>
+                                                                <th>Rating</th>
+                                                                
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+
+
+                                                            @foreach (var item in objEmpPerformanceEvalList.lstEmpPerformanceElements)
+                                                            {
+                                                                Sq_No = Sq_No + 1;
+                                                             
+                                                                <tr>
+                                                                    <td>
+                                                                        @*@iSrno*@
+                                                                        @Sq_No
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.SQId
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.SQ_OptionsId
+                                                                    </td>
+                                                                 
+                                                                </tr>
+                                                            }
+                                                        
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                                }
+
+                                                                
+                                                                }
+                                                                
+            @if (Model.eval_status == "Pending for HR update" && user == Model.LoggedBy)
+            {
+                using (Html.BeginForm("EmployeePerformanceEvalMgrEdit", "EmployeePerformanceEval", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="Performance_EvalId" name="Performance_EvalId" value="@Model.Performance_EvalId" />
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                               Comment<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Comment_JrMgr" name="Comment_JrMgr" required>@Model.Comment_JrMgr</textarea>
+                                @Html.ValidationMessageFor(model => model.Comment_JrMgr)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.top_mgmt)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="top_mgmt" name="top_mgmt" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+
+                                                <option value='@item.Value'>@item.Text</option>
+
+                                        }
+                                    }
+                                </select>       
+                            </div>
+                        </td>
+                    </tr>
+                    </table>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+                    </div>
+                }
+            }
+
+            @if (Model.eval_status == "Pending for Top Mgmt update" && user == Model.top_mgmt)
+            {
+                using (Html.BeginForm("EmployeePerformanceEvalMgrEdit", "EmployeePerformanceEval", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="Performance_EvalId" name="Performance_EvalId" value="@Model.Performance_EvalId" />
+
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Comment<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Comment_SrMgr" name="Comment_SrMgr" required>@Model.Comment_SrMgr</textarea>
+                                    @Html.ValidationMessageFor(model => model.Comment_SrMgr)
+                                </div>
+                            </td>
+                        </tr>
+                       
+                    </table>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                      
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+                    </div>
+                }
+            }
+</div>
+    </div>
+
+</div>
+
+
+@section scripts {
+    <script>
+          //----zzz
+                    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                               @:     text: '@TempData["alertdata"]',
+                                               @:     type: 'error'
+                                               @: }).show();
+                                                                }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                             @:       text: '@TempData["Successdata"]',
+                                             @:       type: 'success'
+         @:}).show();
+        }
+                    });
+                    //zzz----
+
+    </script>
+
+
+}

@@ -1,0 +1,190 @@
+﻿@model ISOStd.Models.TUVCustomerModels
+@using System.Data
+
+@{
+    ViewBag.Title = "CustomerDetails";
+    DataSet dsProject = ViewBag.Project;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Customer Details</span>
+</div>
+<div>
+        @Html.ActionLink("Edit",  "CustomerEdit", new { CustID = Model.CustID }, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+        @Html.ActionLink("Back to List", "CustomerList", null, new {@class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+ </div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+<br />
+<fieldset>
+    <legend>CustomerModels</legend>
+
+    <div>
+        <table style="width: 100%">
+            <tr>
+                 
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.CompanyName)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.CompanyName)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Cust_Code)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Cust_Code)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Address)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Address)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Country)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Country)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.City)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.City)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.PostalCode)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.PostalCode)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.FaxNumber)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.FaxNumber)
+                    </div>
+                </td>
+               <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Email_Id)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Email_Id)
+                    </div>
+                </td>
+                </tr>
+            <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.CustType)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.CustType)
+                    </div>
+                </td>
+            </tr>   
+        </table>
+    </div>
+</fieldset>
+
+@if (dsProject != null && dsProject.Tables.Count > 0 && dsProject.Tables[0].Rows.Count > 0)
+{
+    <div id="Items">
+        <div class="editor-label">
+            <label for="Audit Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Project Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Project No</th>
+                <th>Description</th>
+                <th>Audit Criteria</th>
+                <th>Audit Team</th>
+                <th>Contract From</th>        
+                <th>Contract To</th>
+            </tr>
+            @for (int i = 0; i < dsProject.Tables[0].Rows.Count; i++)
+            {
+                <tr>
+                    
+                    <td>
+                       @dsProject.Tables[0].Rows[i]["Project_no"].ToString()
+                    </td>
+                    <td>
+                         @dsProject.Tables[0].Rows[i]["Project_desc"].ToString()
+                    </td>
+                    <td>
+                       @obj.GetIsoStdNameById(dsProject.Tables[0].Rows[i]["ISOStd"].ToString())
+                    </td>
+                     <td>
+                       @dsProject.Tables[0].Rows[i]["Audit_team"].ToString()
+                    </td>
+                    <td>
+                         @if (dsProject.Tables[0].Rows[i]["Contract_from"].ToString() != "" && dsProject.Tables[0].Rows[i]["Contract_from"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsProject.Tables[0].Rows[i]["Contract_from"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                    </td>
+                    <td>
+                         @if (dsProject.Tables[0].Rows[i]["Contract_to"].ToString() != "" && dsProject.Tables[0].Rows[i]["Contract_to"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsProject.Tables[0].Rows[i]["Contract_to"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                    </td>
+                    
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+ 

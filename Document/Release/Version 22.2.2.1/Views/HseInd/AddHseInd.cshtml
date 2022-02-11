@@ -1,0 +1,496 @@
+﻿@model ISOStd.Models.HseIndModels
+
+@{
+    ViewBag.Title = "AddHseInd";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("HseIndList", "HseInd", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Hse Induction List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Hse Ind</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+              </div>
+
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddHseInd", "HseInd", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Hse Induction List</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Hse_DateTime)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <input class="form-control" type="date" id="Hse_DateTime" name="Hse_DateTime" required />
+                                <p>
+                                    Hr: @Html.DropDownList("PlanTimeInHour", new SelectList(ViewBag.PlanTimeInHour, "PlanTimeInHour"), new { @class = "select-fixed-single" })
+                                    Min: @Html.DropDownList("PlanTimeInMin", new SelectList(ViewBag.PlanTimeInMin, "PlanTimeInMin"), new { @class = "select-fixed-single" })
+                                </p>
+                            </td>
+                           
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Project)
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Project" name="Project">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Project != null)
+                                    {
+                                        foreach (var item in ViewBag.Project)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Location" name="Location" @*onchange="getReportNo()"*@ required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            @*<td>
+            @Html.LabelFor(model => model.ReportNo)
+        </td>
+        <td class="col">
+            <input class="form-control" type="text" id="ReportNo" name="ReportNo" readonly style="background: #efefe6;" />
+        </td>*@
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.EmpType)<text style="color:red;">*</text>
+
+                            </td>
+                            @*<td>
+            <div class="editor-field">
+                <select class="chosen-select" id="EmpType" name="EmpType" required onchange="GetEmpType()">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.EmpType != null)
+                    {
+                        foreach (var item in ViewBag.EmpType)
+                        {
+                            <option value='@item'>@item</option>
+                        }
+                    }
+                </select>
+
+            </div>
+        </td>*@
+
+
+                            <td class="col">
+
+                                @if (ViewBag.EmpType != null)
+                                {
+                                    foreach (var item in ViewBag.EmpType)
+                                    {@*<div class="form-check form-check-inline">
+                    <label class="form-check-label">*@
+                                    <input type="radio" name="EmpType" value='@item' required onchange="GetEmpType()" />@item
+                                    @*</label>
+                </div>*@
+                                }
+                            }
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Employee)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Employee" name="Employee" multiple="multiple" required disabled style="background: #efefe6;">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Employee != null)
+                                    {
+                                        foreach (var item in ViewBag.Employee)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Visitors)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Visitors" name="Visitors" multiple="multiple" disabled style="background: #efefe6;">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Visitors != null)
+                                    {
+                                        foreach (var item in ViewBag.Visitors)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Others)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="Others" name="Others" disabled style="background: #efefe6;"/>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Dept)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Dept" name="Dept" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Dept != null)
+                                    {
+                                        foreach (var item in ViewBag.Dept)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.General_Behavior)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="General_Behavior" name="General_Behavior" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HseInd != null)
+                                    {
+                                        foreach (var item in ViewBag.HseInd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Site_Details_Responsibilities)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Site_Details_Responsibilities" name="Site_Details_Responsibilities" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HseInd != null)
+                                    {
+                                        foreach (var item in ViewBag.HseInd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Personal_Protective_Equipments_Compliance)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Personal_Protective_Equipments_Compliance" name="Personal_Protective_Equipments_Compliance" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HseInd != null)
+                                    {
+                                        foreach (var item in ViewBag.HseInd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                          </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.First_Aid)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="First_Aid" name="First_Aid" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HseInd != null)
+                                    {
+                                        foreach (var item in ViewBag.HseInd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Emergency_Assistance)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Emergency_Assistance" name="Emergency_Assistance" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HseInd != null)
+                                    {
+                                        foreach (var item in ViewBag.HseInd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.IMS)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="IMS" name="IMS" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HseInd != null)
+                                    {
+                                        foreach (var item in ViewBag.HseInd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Equipments_Procedures)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Equipments_Procedures" name="Equipments_Procedures" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HseInd != null)
+                                    {
+                                        foreach (var item in ViewBag.HseInd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Induction_given_by)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                @Html.TextBoxFor(model => model.Induction_given_by, new { @class = "form-control" })
+
+
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Remarks)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                @Html.TextAreaFor(model => model.Remarks, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+        
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "HseIndList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+        </div>
+    </div>
+    }
+
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+        
+                       //----zzz
+                    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+                    });
+
+    //zzz----
+
+        function getReportNo()
+           {
+            var Location = $('#Location :selected').text();
+
+            if (Location != "Select") {
+             jQuery.ajax({
+                    url: '@Url.Action("FunGetReportNo", "HseInd")',
+                    type: 'POST',
+                    dataType: "json",
+
+                 data: { 'Location': Location },
+                    success: function (result) {
+                        document.getElementById("ReportNo").value = result;
+                    }
+                });
+              }
+        }
+
+        function GetEmpType() {
+            //var Employee = document.getElementById("Employee");
+            //var Visitors = document.getElementById("Visitors");
+            var EmpType = $("input[name='EmpType']:checked").val();
+            //var EmpType = $("#EmpType option:selected").text();
+
+            if (EmpType == "Yes") {
+                //document.getElementById("Injuries").required = "required";
+                $('#Employee').prop('disabled', false).trigger("change");
+                document.getElementById("Employee").style.background = "#fff";
+
+                $('#Visitors').prop('disabled', true).trigger("change");
+                document.getElementById("Visitors").style.background = "#efefe6";
+                $('#Visitors').val('').trigger("change");
+
+                //document.getElementById('Others').disabled = true;  
+                $("#Others").prop('disabled', true);
+                document.getElementById("Others").style.background = "#efefe6";
+                document.getElementById("Others").value = "";
+            }
+            else if (EmpType == "No") {
+
+                $('#Visitors').prop('disabled', false).trigger("change");
+                document.getElementById("Visitors").style.background = "#fff";
+
+                //document.getElementById('Others').disabled = false;
+                $("#Others").prop('disabled', false);
+                document.getElementById("Others").style.background = "#fff";
+
+                $('#Employee').prop('disabled', true).trigger("change");
+                document.getElementById("Visitors").style.background = "#efefe6";
+                $('#Employee').val('').trigger("change");
+
+            }
+        }
+            
+        </script>
+    }
+
+

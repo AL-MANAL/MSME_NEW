@@ -1,0 +1,332 @@
+﻿@model ISOStd.Models.AuditProcessModels
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.AuditProcessModelsList objList = new ISOStd.Models.AuditProcessModelsList();
+
+    int icnt = 0, icnts=0;
+    if (ViewBag.objList != null)
+    {
+        objList = ViewBag.objList;
+        icnt = objList.Obj.Count;
+        icnts = 1;
+    }
+
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditorDetailList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Auditor List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Auditor Not Available Dates</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddAuditorAvailability", "AuditProcess", FormMethod.Post,
+new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Auditor Non Availability Dates</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_auditor" name="id_auditor" value="@Model.id_auditor" />
+                <input type="hidden" id="icnts" name="icnts" value="@icnts" />
+                <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.auditor_name)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.auditor_name)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            Division
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            Department
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.dept_name)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            Team
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.team)
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+                <fieldset>              
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Auditor Not Available Dates</legend>
+                        <table class="table table-lg">                        
+                            <tr class="row">                          
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.from_date)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="date" class="form-control" id="from_date" name="from_date" />
+                                        <span class="field-validation-error"><span id="from_date-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.from_date)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.to_date)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="date" class="form-control" id="to_date" name="to_date" onchange="toDateCheck()"/>                            
+                                    </div>
+                                </td>
+
+                               
+                            </tr>                       
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.comments)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments" name="comments"></textarea>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <div class="card invisible" id="hidden card">
+                        <div class="card-body scrollbar-container">
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>From Date</th> 
+                                        <th>To Date</th> 
+                                        <th>Comments</th>                                    
+                                    </tr>
+                                    @if (objList.Obj != null && objList.Obj.Count > 0)
+                                    {
+                                        for (int index = 0; index < objList.Obj.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+
+                                                </td>
+                                                <td>
+                                                    @if (objList.Obj[index].from_date != null && objList.Obj[index].from_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        <input class="form-control" type="date" id='from_date@(index)' name='from_date@(index)' value="@objList.Obj[index].from_date.ToString("yyyy-MM-dd")" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="form-control" type="date" id='from_date@(index)' name='from_date@(index)' />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (objList.Obj[index].to_date != null && objList.Obj[index].to_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        <input class="form-control" type="date" id='to_date@(index)' name='to_date@(index)' value="@objList.Obj[index].to_date.ToString("yyyy-MM-dd")" onchange='stoDateCheck(@index)' />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="form-control" type="date" id='to_date@(index)' name='to_date@(index)' onchange='stoDateCheck(@index)'/>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments@(index)" name="comments@(index)">@objList.Obj[index].comments</textarea>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "AuditorDetailList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                     @:     text: '@TempData["alertdata"]',
+                                     @:     type: 'error'
+                                     @: }).show();
+                        }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                       @:text: '@TempData["Successdata"]',
+                       @: type: 'success'
+                       @:}).show();
+            }
+
+        });
+        function toDateCheck() {
+            var dt1 = document.getElementById("from_date").value;
+            var dt2 = document.getElementById("to_date").value;
+            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+                bootbox.alert({
+                    title: 'To Date',
+                    message: 'To date must be greater than From date'
+                });
+                $('#to_date').val("");
+            }           
+        }
+        function stoDateCheck(i) {
+            var dt1 = document.getElementById("from_date"+i).value;
+            var dt2 = document.getElementById("to_date"+i).value;
+            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+                bootbox.alert({
+                    title: 'To Date',
+                    message: 'To date must be greater than From date'
+                });
+                $('#to_date'+i).val("");
+            }
+        }
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        var hideClass = 'invisible';
+        if (document.getElementById("icnts").value == "1") {
+            document.getElementById("hidden card").classList.remove(hideClass);
+        }
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("from_date").value == "") {
+                ssnMessage = $('#from_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#from_date-message');
+                ssnMessage.hide();
+            }       
+            return validflg;
+        }
+        function AddData() {
+
+            if (Validation() == true) {
+                document.getElementById("hidden card").classList.remove(hideClass);
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+              
+                var from_date = $('#from_date').val();
+
+                var to_date = $('#to_date').val();
+                var comments = $('#comments').val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+               
+                cell1.innerHTML = "<input class='form-control' type='date' id='from_date" + cnt + "' name='from_date" + cnt + "' value='" + from_date + "' />";
+               
+                cell2.innerHTML = "<input class='form-control' type='date' id='to_date" + cnt + "' name='to_date" + cnt + "' value='" + to_date + "' onchange='stoDateCheck("+cnt+")' />";
+                cell3.innerHTML = "<textarea id='comments" + cnt + "' name='comments" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + comments + "</textarea>";
+                cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+
+                //auto resize
+                        autosize($('.elastic'));
+                      
+                        document.getElementById("from_date").value = "";
+                        document.getElementById("to_date").value = "";
+                        document.getElementById("comments").value = "";
+                    }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

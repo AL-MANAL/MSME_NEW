@@ -1,0 +1,228 @@
+﻿@model ISOStd.Models.NCRLogModels
+
+@{
+    ViewBag.Title = "AddNCRLog";
+}
+
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add NCR-Log </span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("AddNCRLog", "NCRCAPA", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>NCRLog</legend>
+        <input type="hidden" id="CAR_ID" name="CAR_ID" value="@ViewBag.CAR_ID" />
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.NCRNo) 
+                    </div>
+                </td>   
+                <td>
+                    <div class="editor-field">
+                        <b>@ViewBag.NC_Num</b>
+                        <input type="hidden" id="NC_Num" name="NC_Num" value="@ViewBag.NC_Num" />
+                    </div>
+                </td> 
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.NCR_Dept)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field" >
+                        <b> @ViewBag.Deptname</b>
+                      <input type="hidden" id="NCR_Dept" name="NCR_Dept" value="@ViewBag.DeptId" />
+                    </div>
+                </td>               
+            </tr>
+            <tr>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Ncr_logDate)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Ncr_logDate" name="Ncr_logDate" required readonly/>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.NCR_Details)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.TextAreaFor(model => model.NCR_Details, new { @required = "required" })
+                    </div>
+                </td>
+                
+            </tr>
+            <tr>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Correction_Date)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Correction_Date" name="Correction_Date" readonly/>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Correction_Details)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         @Html.TextAreaFor(model => model.Correction_Details)
+                    </div>
+                </td>
+
+               
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Corrective_Action_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Corrective_Action_date" name="Corrective_Action_date" readonly/>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.FollowupDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="FollowupDate" name="FollowupDate" readonly/>
+                    </div>
+                </td>
+                </tr>
+            <tr>
+              <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ReportStatus)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="ReportStatus" name="ReportStatus" required="">
+                            <option value='Open'>Open</option>
+                            <option value='Closed'>Closed</option>
+                        </select>
+                    </div>
+                </td>                          
+            </tr>
+        </table>     
+       
+    </fieldset>
+    <div style="width: 100%; text-align: center;">
+        @Html.ActionLink("Back to List", "NCRLogList", new { CAR_ID = ViewBag.CAR_ID }, new {@class = "ActionLink", onclick="HyperLinkProgressIconFunction()"})
+        <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')"/>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        $(function () {
+
+            $('#Ncr_logDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+               
+            });
+
+            $('#Correction_Date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+              
+                onClose: function () {
+                    var dt1 = $('#Ncr_logDate').datepicker('getDate');
+                    var dt2 = $('#Correction_Date').datepicker('getDate');
+                   
+                    //check to prevent a user from entering a date below date of dt1
+                    if (dt2 < dt1) {
+                        jAlert("Correction date cannot be before NCR date");
+                        $('#Correction_Date').val("");
+                    }                   
+                }
+            });
+            $('#Corrective_Action_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+              
+                onClose: function () {
+                    var dt1 = $('#Ncr_logDate').datepicker('getDate');
+                    var dt2 = $('#Correction_Date').datepicker('getDate');
+                    var dt3 = $('#Corrective_Action_date').datepicker('getDate');
+                    //check to prevent a user from entering a date below date of dt1
+                    if (dt3 < dt1) {
+                        jAlert("Corrective action date cannot be before NCR date");
+                        $('#Corrective_Action_date').val("");
+                    }
+                    else if (dt3 < dt2) {
+                        jAlert("Corrective action date cannot be before Corrective action Correction date");
+                        $('#Corrective_Action_date').val("");
+                    }
+                }
+            });
+            $('#FollowupDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+              
+                onClose: function () {
+                    var dt1 = $('#Ncr_logDate').datepicker('getDate');
+                    var dt2 = $('#FollowupDate').datepicker('getDate');
+                    //check to prevent a user from entering a date below date of dt1
+                    if (dt2 < dt1) {
+                        jAlert("Follow up date cannot be before NCR date");
+                        $('#FollowupDate').val("");
+                    }                    
+                }
+            });
+           
+            $("#NCRDate").datepicker("setDate", new Date());
+        });
+        </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

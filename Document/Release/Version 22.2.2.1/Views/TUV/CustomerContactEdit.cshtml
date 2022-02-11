@@ -1,0 +1,85 @@
+﻿@model ISOStd.Models.TUVCustomerContactsModels
+@{
+    ViewBag.Title = "AddCustomerContact";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Update Customer Contact</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("CustomerContactEdit", "TUV", FormMethod.Post, null))
+ {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>CustomerModels</legend>
+        <input type="hidden" id="CustID" name="CustID" value="@Model.CustID" />
+        <input type="hidden" id="ContactsId" name="ContactsId" value="@Model.ContactsId" />
+        <div id="content">
+            <table id="tabcontent">
+              <tr>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ContactPerson)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="ContactPerson" name="ContactPerson" value="@Model.ContactPerson" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.EmailId)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="email" id="EmailId" name="EmailId" value="@Model.EmailId" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PhoneNumber)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.MobileNumber)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="MobileNumber" name="MobileNumber" value="@Model.MobileNumber" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+              <br />
+    <div style="width: 100%; text-align: center;">
+        @Html.ActionLink("Back to List", "CustomerContactList", new { CustID= @Model.CustID}, new {@class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+        <input type="submit" value="Update" onclick="ProgressIconFunction()"/>
+    </div>
+    </fieldset>
+ }

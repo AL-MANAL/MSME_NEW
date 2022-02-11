@@ -1,0 +1,471 @@
+﻿@model ISOStd.Models.HSEActionsTrackingRegisterModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddHSEActionsTrackingRegister";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("HSEActionsTrackingRegisterList", "HSEActionsTrackingRegister", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">HSE Action Tracking Register</span>
+                    </a>
+                    <span class="breadcrumb-item active">HSE Action Tracking Register Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+}
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">HSE Action Tracking Register Detail</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">
+
+                    @if (Obj.GetCurrentUserSession().HseATS.Contains("3"))
+                    {
+                        <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("HSEActionsTrackingRegisterEdit", "HSEActionsTrackingRegister", new { Actions_TrackingReg_Id = Model.Actions_TrackingReg_Id })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <b><i class="icon-add-to-list"></i></b>Edit
+                        </a>
+                    }
+                    @Html.ActionLink("Back to List", "HSEActionsTrackingRegisterList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.branch)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.branch)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Resp_Dept)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Resp_Dept)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Applicable_Site)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Applicable_Site)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Action_No)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Action_No)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Action_Initiated_On)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Action_Initiated_On != null && Model.Action_Initiated_On > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Action_Initiated_On.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Action_Taken)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Action_Taken)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Reason_Initiating_Action)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Reason_Initiating_Action)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Initiated_By)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Initiated_By)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Personnel_Resp)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Personnel_Resp)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Due_Date)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Due_Date != null && Model.Due_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Due_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Action_Status)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Action_Status)
+                        </span>
+                    </td>
+                </tr>
+                @if (Obj.GetCurrentUserSession().HseATS.Contains("4"))
+                {
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Upload_Report)
+                            </p>
+                        </td>
+
+                        <td class="col">
+
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Upload_Report != "" && Model.Upload_Report != null && Model.Upload_Report.Length > 0)
+                                {
+                                    foreach (var docs in Model.Upload_Report.Trim(',').Split(','))
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </span>
+                        </td>
+
+                    </tr>
+                }
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Report_date)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Report_date != null && Model.Report_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Report_date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Short_Fall_Source)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Short_Fall_Source)
+                        </span>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Category)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Category)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Resp_Section)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Resp_Section)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Risk_Rank)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Risk_Rank)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.KPI_Completion_Date)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.KPI_Completion_Date != null && Model.KPI_Completion_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.KPI_Completion_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+               
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.EndorsedBy)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.EndorsedBy)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.ApprovedBy)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.ApprovedBy)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.ReviewedBy)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.ReviewedBy)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Remarks)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Remarks)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    @if (Obj.GetCurrentUserSession().HseATS.Contains("4"))
+                    {
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Additional_Attachment)
+                            </p>
+                        </td>
+
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Additional_Attachment != "" && Model.Additional_Attachment != null && Model.Additional_Attachment.Length > 0)
+                                {
+                                    foreach (var docs in Model.Additional_Attachment.Trim(',').Split(','))
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </span>
+                        </td>
+                    }
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.NotificationPeriod)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.NotificationValue)
+                            @Html.DisplayFor(model => model.NotificationPeriod)
+                        </span>
+                    </td>
+                </tr>
+            </table>
+                </div>
+            
+
+        </div>
+    </div>
+
+  @section scripts {
+            <script>
+                //----zzz
+
+
+                $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                                @:     text: '@TempData["alertdata"]',
+                                                @:     type: 'error'
+                                        @:}).show();
+                                                                                             }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                                @:       text: '@TempData["Successdata"]',
+                                                @:       type: 'success'
+                @:}).show();
+                                                        }
+                });
+
+</script>
+
+
+        }

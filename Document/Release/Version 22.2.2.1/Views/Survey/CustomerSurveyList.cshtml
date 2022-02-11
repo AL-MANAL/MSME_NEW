@@ -1,0 +1,272 @@
+﻿
+@using System.Data;
+
+@{
+    ViewBag.Title = "Customer Survey List";
+    DataSet dsCustomerSurvey = ViewBag.dsCustomerSurvey;
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                  
+                    <span class="breadcrumb-item active">Upload Survey</span>
+
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                     <div class="breadcrumb-elements-item dropdown p-0">
+                        </div>
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("UploadCustomerSurvey", "Survey", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Upload Survey</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+
+        <div>
+
+            @if (Obj.GetCurrentUserSession().UploadSurvey.Contains("3"))
+            {
+                <div class="card-header bg-white header-elements-sm-inline">
+                    <div class="header-elements">
+                        <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddSurvey", "Survey", new { Survey_TypeId = ViewBag.Survey_TypeId })' title="Add New">
+                            <span class="ladda-label">Add Question/Rating</span>
+                            <span class="ladda-spinner"></span>
+                        </a>
+                    </div>
+                    <div class="header-elements">
+                        <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("GenerateSurveyForm", "Survey")' title="Add New">
+                            <span class="ladda-label">Generate Survey Form</span>
+                            <span class="ladda-spinner"></span>
+                        </a>
+                    </div>
+                </div>
+            }
+
+            <div class="card-body">
+                <div class="options d-flex flex-fill">
+                    @using (Html.BeginForm("CustomerSurveyList", "Survey", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        if (ViewBag.Branch != null)
+                        {
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                                <option value='' hidden>Division</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var item in ViewBag.Branch)
+                                    {
+                                        if (item.Value == ViewBag.Branch_name)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        }
+                    }
+                </div>
+            </div>
+
+
+        </div>
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <fieldset class="border p-2">
+                            <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Survey Question Add / Remove</legend>
+                            <table class="table table-lg">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Customer
+                                        </th>
+                                        <th>
+                                            Survey Date
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @if (dsCustomerSurvey != null && dsCustomerSurvey.Tables.Count > 0 && dsCustomerSurvey.Tables[0].Rows.Count > 0)
+                                    {
+                                        for (int i = 0; i < dsCustomerSurvey.Tables[0].Rows.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>
+
+                                                    @Html.ActionLink(dsCustomerSurvey.Tables[0].Rows[i]["companyname"].ToString(), "CustomerSurveyDetails",
+                                                          new
+                                                          {
+                                                              CustId = dsCustomerSurvey.Tables[0].Rows[i]["CustId"].ToString(),
+                                                              SurveyDate = Convert.ToDateTime(dsCustomerSurvey.Tables[0].Rows[i]["SurveyDate"].ToString()).ToString("yyyy/MM/dd")
+                                                          })
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    @dsCustomerSurvey.Tables[0].Rows[i]["SurveyDate"].ToString()
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+
+                        </fieldset>
+
+                    </div>
+
+
+
+                    <div class="col-md-6">
+                        <fieldset class="border p-2">
+                            <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Upload Customer Feedback</legend>
+                            <table class="table table-lg">
+                                <tr class="row">
+                                    <td class="col-xs-3 col-md-3">
+                                        <div class="editor-label">
+                                            Customer
+                                        </div>
+                                    </td>
+                                    <td class="col">
+                                        <div class="editor-field">
+                                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="CustId" name="CustId" required="">
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.CustList != null)
+                                                {
+                                                    foreach (var item in ViewBag.CustList)
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="row">
+                                    <td class="col-xs-3 col-md-3">
+                                        <div class="editor-label">
+                                            Customer Feedback
+                                        </div>
+                                    </td>
+                                    <td class="col">
+                                        <div class="editor-field">
+                                            <input type="file" name="CustSurveyFile" id="CustSurveyFile" onchange="FileFormatValidation(this)" accept=".json" class="bootstrap-uploader" required data-fouc />
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                @if (Obj.GetCurrentUserSession().UploadSurvey.Contains("3"))
+                                {
+                                    <tr>
+                                        <td class="col-xs-3 col-md-4">
+                                            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </fieldset>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+}
+        
+@section Scripts {
+    <script>
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["json"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only json format");
+            }
+        }
+
+        function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("CustomerSurveyListSearch", "Survey")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });  
+            }
+       
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,1013 @@
+﻿@model ISOStd.Models.KPIModels
+@using System.Data;
+@{
+    ViewBag.Title = "";
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    DataSet dsSource = new DataSet();
+    DataSet dsMI = new DataSet();
+    DataSet dsAction = new DataSet();
+    if (ViewBag.objList != null)
+    {
+        dsSource = ViewBag.objList;
+    }
+    if (ViewBag.MIList != null)
+    {
+        dsMI = ViewBag.MIList;
+    }
+    if (ViewBag.ActionList != null)
+    {
+        dsAction = ViewBag.ActionList;
+    }
+}
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("KPIEvaluationList", "Kpi", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Key Performance/Process Indicator</span>
+                    </a>
+                    <span class="breadcrumb-item active">Key Performance/Process Indicator Detail</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Key Performance/Process Indicator Detail</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">                  
+                    @Html.ActionLink("Back to List", "KPIEvaluationList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                   
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.kpi_ref_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.kpi_ref_no)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.group_name)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.group_name)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.team)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.team)
+                            </p>
+                        </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.established_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.established_date != null && Model.established_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.established_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.process_indicator)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.process_indicator)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.kpi_level)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.kpi_level)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.process_monitor)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.process_monitor)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.pers_resp)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.pers_resp)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.upload)
+                            </p>
+                        </td>
+                        <td class="col">
+                           
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                    <p style="margin: 0px;">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    </p>
+                                        <br />
+                                    }
+                                }
+                           
+                        </td>
+
+                      
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @if (Model.kpiapprv_status == "Approved")
+                                {
+                                    @Html.DisplayNameFor(model => model.approved_by_approve)
+                                }
+                                else
+                                {
+                                    @Html.DisplayNameFor(model => model.approved_by)
+                                }
+                               
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.approved_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ApproveOrRejectOn)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.ApproveOrRejectOn != null && Model.ApproveOrRejectOn > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.ApproveOrRejectOn.ToString("dd/MM/yyyy hh:mm:ss"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.kpiapprv_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.kpiapprv_status)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.approvedby_comments)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                               @Html.DisplayFor(model => model.approvedby_comments)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.kpi_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.kpi_status)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.status_reason)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.status_reason)
+                            </p>
+                        </td>
+
+                    </tr>
+                
+            </table>
+           
+            @if (dsSource != null && dsSource.Tables.Count > 0 && dsSource.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Causes for Failure</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>Potential Causes for Failure</th>
+                                <th>Impact</th>
+                                <th>Mitigation Measure(s)</th>
+                                <th>Target Date to implement the measure</th>
+                                <th>Status</th>
+                                <th>Status Updated On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsSource.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @dsSource.Tables[0].Rows[i]["causes_failure"].ToString()
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsSource.Tables[0].Rows[i]["impact"].ToString())
+                                    </td>
+                                    <td>
+                                        @dsSource.Tables[0].Rows[i]["mitigation_measures"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (dsSource.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsSource.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsSource.Tables[0].Rows[i]["target_date"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsSource.Tables[0].Rows[i]["failure_status"].ToString())
+                                    </td>
+                                    <td>
+                                        @if (dsSource.Tables[0].Rows[i]["status_updated_date"].ToString() != null && Convert.ToDateTime(dsSource.Tables[0].Rows[i]["status_updated_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsSource.Tables[0].Rows[i]["status_updated_date"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+            @if (dsAction != null && dsAction.Tables.Count > 0 && dsAction.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Action Plan</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>Action details</th>
+                                <th>Person Responsible</th>
+                                <th>Target Date</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsAction.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @dsAction.Tables[0].Rows[i]["Action"].ToString()
+                                    </td>
+                                    <td>
+                                        @Obj.GetEmpHrNameById(dsAction.Tables[0].Rows[i]["PersonResponsible"].ToString())
+                                    </td>
+                                    <td>
+                                        @if (dsAction.Tables[0].Rows[i]["TargetDate"].ToString() != null && Convert.ToDateTime(dsAction.Tables[0].Rows[i]["TargetDate"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsAction.Tables[0].Rows[i]["TargetDate"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                  
+                                    <td>
+                                        @dsAction.Tables[0].Rows[i]["remarks"].ToString()
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            @if (dsMI != null && dsMI.Tables.Count > 0 && dsMI.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Measurable Indicator and Evaluation</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>MI_No</th>
+                                <th>Measurable Indicator</th>
+                                <th>Expected value to be achieved</th>
+                                @*<th>KPI Type</th>*@
+                                @*<th>Monitoring Period From Date</th>
+                                <th>To Date</th>*@
+                                <th>Monitoring Mechanism</th>
+                                <th>Frequency of Evaluation</th>
+                                <th>Risk, if not achieved</th>
+                                <th>From Date</th>
+                                <th>To Date</th>
+                                <th>Evaluation Date</th>
+                                <th>Source_of_data to evaluate</th>
+                                <th>Upload</th>
+                                <th>Method of evaluation</th>
+                                <th>Value achieved</th>
+                                <th>KPI Status</th>
+                                <th>Remarks</th>
+                                <th>NCR Raise Need</th>
+                                <th>Raise NCR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsMI.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["kpi_ref_no"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["measurable_indicator"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["expected_value"].ToString()/@dsMI.Tables[0].Rows[i]["expected_value_unit"].ToString()
+                                    </td>
+                                    @*<td>
+                                        @Obj.GetKPITypeById(dsMI.Tables[0].Rows[i]["kpi_type"].ToString())
+                                    </td>*@
+                                    @*<td>
+                                        @if (dsMI.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != null && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_frm_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_frm_date"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (dsMI.Tables[0].Rows[i]["monitoring_to_date"].ToString() != null && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_to_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_to_date"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>*@
+                                    <td>
+                                        @*Obj.GetKPIMonitoringMechanismById*@ @(dsMI.Tables[0].Rows[i]["monitoring_mechanism"].ToString())
+                                    </td>
+                                    <td>
+                                        @Obj.GetKPIFrequencyEvaluationById(dsMI.Tables[0].Rows[i]["frequency_eval"].ToString())
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["risk"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (dsMI.Tables[0].Rows[i]["FromPeriod"].ToString() != null && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["FromPeriod"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["FromPeriod"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (dsMI.Tables[0].Rows[i]["ToPeriod"].ToString() != null && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["ToPeriod"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["ToPeriod"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (dsMI.Tables[0].Rows[i]["evaluation_date"].ToString() != null && dsMI.Tables[0].Rows[i]["evaluation_date"].ToString() != "" && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["evaluation_date"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["source_evaluate"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (dsMI.Tables[0].Rows[i]["upload"].ToString() != null && dsMI.Tables[0].Rows[i]["upload"].ToString() != "" && dsMI.Tables[0].Rows[i]["upload"].ToString().Length > 0)
+                                        {
+                                            foreach (var docs in dsMI.Tables[0].Rows[i]["upload"].ToString().Trim(',').Split(','))
+                                            {
+                                                <p style="margin: 0px;">
+
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                        Preview
+                                                    </a>
+                                                </p>
+                                                <br />
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["method_evaluation"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["value_achieved"].ToString()
+                                    </td>
+                                    <td>
+                                        @Obj.GetKPIEvaluationStatusById(dsMI.Tables[0].Rows[i]["kpi_status"].ToString())
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["remarks"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsMI.Tables[0].Rows[i]["raise_need"].ToString()
+                                    </td>
+                                    <td>
+                                        <a href='@Url.Action("AddNC", "NC")' title="Raise NCR " target="_blank">
+                                            <span class="badge badge-info">Raise NCR</span>
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+        </div>
+
+
+
+
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        //----zzz
+
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                @:     text: '@TempData["alertdata"]',
+                                @:     type: 'error'
+                                @: }).show();
+                                             }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                @:       text: '@TempData["Successdata"]',
+                                @:       type: 'success'
+                @:}).show();
+        }
+});
+
+//zzz----
+
+
+
+var table1 = function () {
+
+
+    //
+    // Setup module components
+    //
+
+    // Basic Datatable examples
+    var _componentDatatableBasic = function () {
+        if (!$().DataTable) {
+            console.warn('Warning - datatables.min.js is not loaded.');
+            return;
+        }
+
+        //Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            responsive: true,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: []
+            }],
+
+            colReorder: false,
+            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+            //dom: 'lBfrtip',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+
+        var table = $('#table1').DataTable({
+
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            colReorder: {
+                fixedColumnsLeft: 1
+            },
+            stateSave: true,
+
+            scrollY: '350px',
+            scrollCollapse: true,
+
+
+            keys: {
+                className: 'focus focus-success'
+            },
+
+            buttons: {
+                buttons: [
+                    {
+                        extend: 'copyHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+
+                    {
+                        extend: 'colvis',
+                        text: '<i class="icon-three-bars"></i>',
+                        className: 'btn bg-blue btn-icon dropdown-toggle'
+                    }
+                ]
+            }
+
+
+
+
+        });
+        // Adjust columns on window resize
+        setTimeout(function () {
+            $(window).on('resize', function () {
+                table.columns.adjust();
+            });
+        }, 100);
+
+
+        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+        $('.sidebar-control').on('click', function () {
+
+            setTimeout(function () {
+                //alert("gii");
+
+                table.columns.adjust().draw();
+                $("#table1").resize();
+            }, 100);
+
+        });
+        //}
+
+        $('#table1').on('page.dt', function () {
+            //table.draw();
+            //alert("zzz1");
+            $("#table1").resize();
+
+        });
+
+        $('#table1').on('column-visibility.dt', function () {
+            //table.draw();
+            //alert("zzz2");
+            $("#table1").resize();
+
+        });
+
+        $('#table1').on('order.dt', function () {
+            //table.draw();
+            //alert("zzz3");
+            $("#table1").resize();
+
+        });
+
+
+        $('#table1').on('responsive-display.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table1").resize();
+
+        });
+
+
+        $('#table1').on('responsive-resize.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table1").resize();
+
+        });
+
+
+        //.on('order.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+        //.on('search.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+
+        //.on('column-visibility.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize();
+        //})
+
+
+
+    };
+
+
+
+
+
+
+    // Select2 for length menu styling
+    var _componentSelect2 = function () {
+        if (!$().select2) {
+            console.warn('Warning - select2.min.js is not loaded.');
+            return;
+        }
+
+        // Initialize
+        $('.dataTables_length select').select2({
+            minimumResultsForSearch: Infinity,
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+    };
+
+
+    //
+    // Return objects assigned to module
+    //
+
+    return {
+        init: function () {
+            _componentDatatableBasic();
+            _componentSelect2();
+        }
+    }
+}();
+
+var table2 = function () {
+
+
+    //
+    // Setup module components
+    //
+
+    // Basic Datatable examples
+    var _componentDatatableBasic = function () {
+        if (!$().DataTable) {
+            console.warn('Warning - datatables.min.js is not loaded.');
+            return;
+        }
+
+        //Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            responsive: true,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [1, 7]
+            }],
+
+            colReorder: false,
+            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+            //dom: 'lBfrtip',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+
+        var table = $('#table2').DataTable({
+
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            colReorder: {
+                fixedColumnsLeft: 1
+            },
+            stateSave: true,
+
+            scrollY: '350px',
+            scrollCollapse: true,
+
+
+            keys: {
+                className: 'focus focus-success'
+            },
+
+            buttons: {
+                buttons: [
+                    {
+                        extend: 'copyHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+
+                    {
+                        extend: 'colvis',
+                        text: '<i class="icon-three-bars"></i>',
+                        className: 'btn bg-blue btn-icon dropdown-toggle'
+                    }
+                ]
+            }
+
+
+
+
+        });
+        // Adjust columns on window resize
+        setTimeout(function () {
+            $(window).on('resize', function () {
+                table.columns.adjust();
+            });
+        }, 100);
+
+
+        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+        $('.sidebar-control').on('click', function () {
+
+            setTimeout(function () {
+                //alert("gii");
+
+                table.columns.adjust().draw();
+                $("#table2").resize();
+            }, 100);
+
+        });
+        //}
+
+        $('#table2').on('page.dt', function () {
+            //table.draw();
+            //alert("zzz1");
+            $("#table2").resize();
+
+        });
+
+        $('#table2').on('column-visibility.dt', function () {
+            //table.draw();
+            //alert("zzz2");
+            $("#table2").resize();
+
+        });
+
+        $('#table2').on('order.dt', function () {
+            //table.draw();
+            //alert("zzz3");
+            $("#table2").resize();
+
+        });
+
+
+        $('#table2').on('responsive-display.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table2").resize();
+
+        });
+
+
+        $('#table2').on('responsive-resize.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table2").resize();
+
+        });
+
+
+        //.on('order.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+        //.on('search.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+
+        //.on('column-visibility.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize();
+        //})
+
+
+
+    };
+
+
+
+
+
+
+    // Select2 for length menu styling
+    var _componentSelect2 = function () {
+        if (!$().select2) {
+            console.warn('Warning - select2.min.js is not loaded.');
+            return;
+        }
+
+        // Initialize
+        $('.dataTables_length select').select2({
+            minimumResultsForSearch: Infinity,
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+    };
+
+
+    //
+    // Return objects assigned to module
+    //
+
+    return {
+        init: function () {
+            _componentDatatableBasic();
+            _componentSelect2();
+        }
+    }
+}();
+
+
+
+
+// Initialize module
+// ------------------------------
+
+document.addEventListener('DOMContentLoaded', function () {
+    table1.init();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    table2.init();
+});
+
+    </script>
+
+
+}

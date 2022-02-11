@@ -1,0 +1,278 @@
+﻿@model ISOStd.Models.SuppliedMaterialModels
+@{
+    ViewBag.Title = "SuppliedMaterialDetails";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.SuppliedMaterialModelsList objMatList = new ISOStd.Models.SuppliedMaterialModelsList();
+    if (ViewBag.SuppliedMaterial != null)
+    {
+        objMatList = ViewBag.SuppliedMaterial;       
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("SuppliedMaterialList", "SuppliedMaterial", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Purchase Details</span>
+                    </a>
+                    <span class="breadcrumb-item active">Purchase Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    @using (Html.BeginForm("SuppliedMaterialPDF", "SuppliedMaterial", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <input type="hidden" id="id_materials" name="id_materials" value="@Model.id_materials" />
+
+                            <button type="submit" class="dropdown-item">
+                                <i class="icon-printer2"></i> Report
+                            </button>
+
+                        </div>
+                    }
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">
+            Purchase Details
+        </h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("SuppliedMaterialEdit", "SuppliedMaterial", new { id_materials = Model.id_materials.ToString()  })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                    <b>  <i class="icon-add-to-list"></i></b> Edit
+                </a>
+                @Html.ActionLink("Back to List", "SuppliedMaterialList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>                     
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Department)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Department)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Location
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Location)                             
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.orderno)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.orderno)
+                            </p>
+                        </td>
+
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.order_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.order_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.order_date.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.provider_type)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.provider_type)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Provider Name
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.supplier_name)
+                                @Html.DisplayFor(model => model.customer_name)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.remark)
+                            </p>
+                        </td>
+                        <td class="col" colspan="3">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.remark)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.details)
+                            </p>
+                        </td>
+                        <td class="col" colspan="3">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.details)
+                            </p>
+                        </td>
+                    </tr>
+</table>
+
+            @if (objMatList.MaterialList != null && objMatList.MaterialList.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2">  Supplied Material Details</h2>
+                <div class="table-responsive">
+                    <span style="color:red;background-color:yellow"><b></b>
+                        Balance:@Model.balance
+                    </span>
+                    <table class="table-sm table-dark table-bordered table-striped table-hover">
+
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Date</th>
+                                <th>Operation Type</th>
+                                <th>Quantity</th>
+                                <th>Done By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @for (int index = 0; index < objMatList.MaterialList.Count; index++)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (objMatList.MaterialList[index].qty_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @objMatList.MaterialList[index].qty_date.ToString("dd-MM-yyyy")
+                                        }
+                                    </td>
+                                    <td>@objMatList.MaterialList[index].operation_type</td>
+                                    <td>@objMatList.MaterialList[index].quantity</td>
+                                    <td>@Obj.GetEmpHrNameById(objMatList.MaterialList[index].done_by)</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+
+    </script>
+}
+
+

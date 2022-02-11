@@ -1,0 +1,83 @@
+﻿@model ISOStd.Models.KPIEvaluationModels
+@using System.Data
+@{
+    Layout = null;
+    DataSet dsKPIDetails = ViewBag.dsKpiTrans;
+
+    if (ViewBag.dsKpiTrans != null)
+    {
+        dsKPIDetails = ViewBag.dsKpiTrans;
+    }
+    ISOStd.Models.KPIEvaluationModels obj = new ISOStd.Models.KPIEvaluationModels();
+}
+
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">KPIs Info</h4>
+    </div>
+
+    <div class="card-body">
+        <p>
+            Division:<code>@Html.DisplayFor(model => model.branch)</code>
+            Department:<code>@Html.DisplayFor(model => model.DeptId)</code>
+        </p>
+        <p>
+            KP Reference:<code>@Html.DisplayFor(model => model.KPI_Ref)</code>
+            Location:<code>@Html.DisplayFor(model => model.Location)</code>
+        </p>
+        <p>Person Responsible:<code>@Html.DisplayFor(model => model.Person_Responsible) </code></p>
+        @*<p><label><b>Frequency of evaluation:</b></label>@Html.DisplayFor(model => model.Freq_of_Eval)</p>*@
+        @if (dsKPIDetails != null && dsKPIDetails.Tables.Count > 0 && dsKPIDetails.Tables[0].Rows.Count > 0)
+        {
+
+
+            <div class="w-100 bg-primary"><h5>KPI Plan Details</h5></div>
+
+            <table class="table table-bordered table-striped">
+                <thead class="bg-blue">
+
+                    <tr>
+                        <th>Established On</th>
+                        <th>Target Date</th>
+                        <th>KPI Desc</th>
+                        <th>Target Value</th>
+                        <th>Monitoring mechanism</th>
+                        <th>Frequency of evaluation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsKPIDetails.Tables[0].Rows.Count; i++)
+                    {
+                    <tr>
+                        <td>
+                            @Convert.ToDateTime(dsKPIDetails.Tables[0].Rows[i]["EstablishedOn"].ToString()).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @if (dsKPIDetails.Tables[0].Rows[0]["target_date"].ToString() != "" && dsKPIDetails.Tables[0].Rows[0]["target_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsKPIDetails.Tables[0].Rows[i]["target_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @dsKPIDetails.Tables[0].Rows[i]["Process_Indicator"].ToString()
+                        </td>
+                        <td>
+                            @dsKPIDetails.Tables[0].Rows[i]["Measurable_Value"].ToString()
+                        </td>
+                        <td>
+                            @dsKPIDetails.Tables[0].Rows[i]["Monitoring_Mechanism"].ToString()
+                        </td>
+                        <td>
+                            @obj.GetFrequencyNameById(dsKPIDetails.Tables[0].Rows[i]["Freq_of_Eval"].ToString())
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+    </div>
+
+</div>
+

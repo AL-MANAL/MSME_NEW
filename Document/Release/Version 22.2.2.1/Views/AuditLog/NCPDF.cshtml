@@ -1,0 +1,700 @@
+﻿@using System.Data
+@model ISOStd.Models.AuditLogModels
+
+@{
+    ViewBag.Title = "NCPDF";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.AuditLogModelsList objNCList = new ISOStd.Models.AuditLogModelsList();
+    ISOStd.Models.AuditLogModels objModel = new ISOStd.Models.AuditLogModels();
+    ISOStd.Models.NCModels objNCModel = new ISOStd.Models.NCModels();
+
+
+    if (ViewBag.NonConfirmance != null)
+    {
+        objModel = ViewBag.NonConfirmance;
+    }
+
+
+    DataSet Disposition = new DataSet();
+    DataSet DispAction = new DataSet();
+    DataSet Team = new DataSet();
+    DataSet RCA = new DataSet();
+    DataSet CA = new DataSet();
+    DataSet CAList = new DataSet();
+    DataSet Verification = new DataSet();
+    DataSet VerificationList = new DataSet();
+
+    //Disposition
+    if (ViewBag.Disposition != null)
+    {
+        Disposition = ViewBag.Disposition;
+    }
+    if (ViewBag.DispAction != null)
+    {
+        DispAction = ViewBag.DispAction;
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    //Team
+    if (ViewBag.Team != null)
+    {
+        Team = ViewBag.Team;
+    }
+
+    //RCA
+    if (ViewBag.RCA != null)
+    {
+        RCA = ViewBag.RCA;
+    }
+
+    //CA
+    if (ViewBag.CA != null)
+    {
+        CA = ViewBag.CA;
+    }
+    if (ViewBag.CAList != null)
+    {
+        CAList = ViewBag.CAList;
+    }
+
+    //Verification
+    if (ViewBag.Verification != null)
+    {
+        Verification = ViewBag.Verification;
+    }
+    if (ViewBag.VerificationList != null)
+    {
+        VerificationList = ViewBag.VerificationList;
+    }
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+
+
+}
+    <style type="text/css">
+            .page {
+                page-break-before: always !important;
+            }
+
+        * {
+            overflow: visible !important;
+        }
+        .page-breaker {
+            display: block;
+            clear: both;
+            page-break-after: always;
+        }
+
+        .page_break_inside_avoid {
+            page-break-inside: avoid !important;
+        }
+
+    </style>
+
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Audit No
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @objModel.Audit_no
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Audit Date
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @if (objModel.AuditDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objModel.AuditDate.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Division
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @objModel.division
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    @objModel.location
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    @objModel.dept
+                </td>
+                @*<td class="font-size-lg font-weight-bold">
+                    Team
+                </td>
+                <td class="font-size-lg">
+                    @objModel.team
+                </td>*@
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    Category
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Category
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Details
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Details
+                </td>
+            </tr>
+            <tr class="row">
+                @*<td class="font-size-lg font-weight-bold">
+                    Details
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Details
+                </td>*@
+                <td class="font-size-lg font-weight-bold">
+                    Evidence
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Evidence
+                </td>
+            </tr>
+        </table>
+    </div>
+          
+
+    @*Disposition*@
+    @if (Disposition.Tables.Count > 0 && Disposition.Tables[0].Rows.Count > 0)
+    {     
+        <div class="card-body">
+            <div class="container-fluid">
+                <div class="page_break_inside_avoid">
+                    <h2 class="bg-dark pl-sm-2">Immediate Action (Disposition) </h2>
+                    <table class="table table table-lg table-bordered">
+                        <thead></thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Are actions taken solved NC
+                                </td>
+                                <td class="font-size-lg">
+                                    @objNCModel.GetNCDispositionActionById(Disposition.Tables[0].Rows[0]["disp_action_taken"].ToString())
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Brief explanation
+                                </td>
+                                <td class="font-size-lg">
+                                    @Disposition.Tables[0].Rows[0]["disp_explain"].ToString()
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Notified to
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(Disposition.Tables[0].Rows[0]["disp_notifiedto"].ToString())
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Notified on
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString() != null && Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString() != "")
+                                    {
+                                        @Convert.ToDateTime(Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+                    @if (DispAction != null && DispAction.Tables.Count > 0 && DispAction.Tables[0].Rows.Count > 0)
+                    {
+                        <div class="mt-5 pt-5 page_break_inside_avoid">
+                            <h2 class="bg-dark pl-sm-2">Immediate Action(Dispostion)Details</h2>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover datatable-responsive">
+                                    <thead>
+                                        <tr class="bg-brown">
+                                            <th>Sl No</th>
+                                            <th>Action</th>
+                                            <th>Person Responsible</th>
+                                            <th>Action Completed On</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0, j = 1; i < DispAction.Tables[0].Rows.Count; i++, j++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @j
+                                                </td>
+                                                <td>
+                                                    @(DispAction.Tables[0].Rows[i]["disp_action"].ToString())
+                                                </td>
+                                                <td>
+                                                    @Obj.GetMultiHrEmpNameById(DispAction.Tables[0].Rows[i]["disp_resp_person"].ToString())
+                                                </td>
+                                                <td>
+                                                    @Convert.ToDateTime(DispAction.Tables[0].Rows[i]["disp_complete_date"].ToString()).ToString("dd/MM/yyyy")
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+    }
+
+    @*Team*@
+    @if (Team.Tables.Count > 0 && Team.Tables[0].Rows.Count > 0)
+    {
+      
+
+        <div class="card-body">
+            <div class="container-fluid">
+                <div class="mt-5 pt-5 page_break_inside_avoid">
+                    <h2 class="bg-dark pl-sm-2">Team</h2>
+                    <table class="table table table-lg table-bordered">
+                        <thead></thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Team
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(Team.Tables[0].Rows[0]["nc_team"].ToString())
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Team Apporved By
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(Team.Tables[0].Rows[0]["team_approvedby"].ToString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Notified to
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(Team.Tables[0].Rows[0]["team_notifiedto"].ToString())
+                                </td>
+
+                                <td class="font-size-lg font-weight-bold">
+                                    Target date to complete the RCA
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (Team.Tables[0].Rows[0]["team_targetdate"].ToString() != null && Team.Tables[0].Rows[0]["team_targetdate"].ToString() != "")
+                                    {
+                                        @Convert.ToDateTime(Team.Tables[0].Rows[0]["team_targetdate"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+                </div>
+            </div>
+    }
+
+
+    @*RCA*@
+    @if (RCA.Tables.Count > 0 && RCA.Tables[0].Rows.Count > 0)
+    {
+     
+
+        <div class="card-body">
+            <div class="container-fluid">
+                <div class="mt-5 pt-5 page_break_inside_avoid">
+                    <h2 class="bg-dark pl-sm-2">RCA</h2>
+                    <table class="table table table-lg table-bordered">
+                        <thead></thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Techniques adopted
+                                </td>
+                                <td class="font-size-lg">
+                                    @objNCModel.GetRCATechniqueById(RCA.Tables[0].Rows[0]["rca_technique"].ToString())
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    NC Reported Date
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (RCA.Tables[0].Rows[0]["rca_reporteddate"].ToString() != null && RCA.Tables[0].Rows[0]["rca_reporteddate"].ToString() != "")
+                                    {
+                                        @Convert.ToDateTime(RCA.Tables[0].Rows[0]["rca_reporteddate"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Details of root causes analysis
+                                </td>
+                                <td class="font-size-lg">
+                                    @RCA.Tables[0].Rows[0]["rca_details"].ToString()
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Upload documents
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (RCA.Tables[0].Rows[0]["rca_upload"].ToString() != null && RCA.Tables[0].Rows[0]["rca_upload"].ToString() != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = RCA.Tables[0].Rows[0]["rca_upload"].ToString() })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="font-size-lg font-weight-bold">
+                                    Need of corrective action
+                                </td>
+                                <td class="font-size-lg">
+                                    @RCA.Tables[0].Rows[0]["rca_action"].ToString()
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    If No, justify
+                                </td>
+                                <td class="font-size-lg">
+                                    @RCA.Tables[0].Rows[0]["rca_justify"].ToString()
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Reported by
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(RCA.Tables[0].Rows[0]["rca_reportedby"].ToString())
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Notified to
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(RCA.Tables[0].Rows[0]["rca_notifiedto"].ToString())
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+                </div>
+            </div>
+    }
+
+    @*CA*@
+    @if (CA.Tables.Count > 0 && CA.Tables[0].Rows.Count > 0)
+    {
+
+
+        <div class="card-body">
+            <div class="container-fluid">
+                <div class="mt-5 pt-5 page_break_inside_avoid">
+                    <h2 class="bg-dark pl-sm-2">Corrective Action</h2>
+                    <table class="table table table-lg table-bordered">
+                        <thead></thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Verification due date
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (CA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString() != null && CA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString() != "")
+                                    {
+                                        @Convert.ToDateTime(CA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Proposed by
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(CA.Tables[0].Rows[0]["ca_proposed_by"].ToString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Notified to
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(CA.Tables[0].Rows[0]["ca_notifiedto"].ToString())
+                                </td>
+
+                                <td class="font-size-lg font-weight-bold">
+                                    Notified Date
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (CA.Tables[0].Rows[0]["ca_notifed_date"].ToString() != null && CA.Tables[0].Rows[0]["ca_notifed_date"].ToString() != "")
+                                    {
+                                        @Convert.ToDateTime(CA.Tables[0].Rows[0]["ca_notifed_date"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+                @if (CAList != null && CAList.Tables.Count > 0 && CAList.Tables[0].Rows.Count > 0)
+                {
+                    <br />
+                    <div class="mt-5 pt-5 page_break_inside_avoid">
+
+                        <h2 class="bg-dark pl-sm-2">Corrective Action Details</h2>
+                        <div>
+                            <table class="table table-lg table-bordered table-striped">
+                                <thead>
+                                    <tr class="bg-brown">
+                                        <th>Sl No</th>
+                                        <th>Division</th>
+                                        <th>Location</th>
+                                        <th>Department</th>
+                                        <th>Root cause </th>
+                                        <th>Corrective action</th>
+                                        <th>Resource required</th>
+                                        <th>Target date</th>
+                                        <th>Person responsible</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0, j = 1; i < CAList.Tables[0].Rows.Count; i++, j++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @j
+                                            </td>
+                                            <td>
+                                                @Obj.GetCompanyBranchNameById(CAList.Tables[0].Rows[i]["ca_div"].ToString())
+                                            </td>
+                                            <td>
+                                                @Obj.GetDivisionLocationById(CAList.Tables[0].Rows[i]["ca_loc"].ToString())
+                                            </td>
+                                            <td>
+                                                @Obj.GetDeptNameById(CAList.Tables[0].Rows[i]["ca_dept"].ToString())
+                                            </td>
+                                            <td>
+                                                @(CAList.Tables[0].Rows[i]["ca_rootcause"].ToString())
+                                            </td>
+                                            <td>
+                                                @(CAList.Tables[0].Rows[i]["ca_ca"].ToString())
+                                            </td>
+                                            <td>
+                                                @(CAList.Tables[0].Rows[i]["ca_resource"].ToString())
+                                            </td>
+                                            <td>
+                                                @Convert.ToDateTime(CAList.Tables[0].Rows[i]["ca_target_date"].ToString()).ToString("dd/MM/yyyy")
+                                            </td>
+                                            <td>
+                                                @Obj.GetMultiHrEmpNameById(CAList.Tables[0].Rows[i]["ca_resp_person"].ToString())
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                        }
+                    </div>
+                </div>
+    }
+
+    @*Verification*@
+    @if (Verification.Tables.Count > 0 && Verification.Tables[0].Rows.Count > 0)
+    {
+
+
+        <div class="card-body">
+            <div class="container-fluid">
+                <div class="mt-5 pt-5 page_break_inside_avoid">
+
+                    <h2 class="bg-dark pl-sm-2">Verification</h2>
+                    <table class="table table table-lg table-bordered">
+                        <thead></thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Are proposed actions implemented effectively?
+                                </td>
+                                <td class="font-size-lg">
+                                    @objNCModel.GetNCActionImplementById(Verification.Tables[0].Rows[0]["v_implement"].ToString())
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Brief explanation
+                                </td>
+                                <td class="font-size-lg">
+                                    @(Verification.Tables[0].Rows[0]["v_implement_explain"].ToString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Is RCA process effective?
+                                </td>
+                                <td class="font-size-lg">
+                                    @(Verification.Tables[0].Rows[0]["v_rca"].ToString())
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Brief explanation
+                                </td>
+                                <td class="font-size-lg">
+                                    @(Verification.Tables[0].Rows[0]["v_rca_explain"].ToString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Similar discrepancies detected from date of implementing corrective action?
+                                </td>
+                                <td class="font-size-lg">
+                                    @(Verification.Tables[0].Rows[0]["v_discrepancies"].ToString())
+                                </td>
+
+                                <td class="font-size-lg font-weight-bold">
+                                    Brief explanation
+                                </td>
+                                <td class="font-size-lg">
+                                    @(Verification.Tables[0].Rows[0]["v_discrep_explain"].ToString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Upload Documents
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (Verification.Tables[0].Rows[0]["v_upload"].ToString() != null && Verification.Tables[0].Rows[0]["v_upload"].ToString() != "" && Verification.Tables[0].Rows[0]["v_upload"].ToString().Length > 0)
+                                    {
+                                        foreach (var docs in Verification.Tables[0].Rows[0]["v_upload"].ToString().Trim(',').Split(','))
+                                        {
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        }
+                                    }
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    NCR Status
+                                </td>
+                                <td class="font-size-lg">
+                                    @(Verification.Tables[0].Rows[0]["v_status"].ToString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Closed Date
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (Verification.Tables[0].Rows[0]["v_closed_date"].ToString() != null && Verification.Tables[0].Rows[0]["v_closed_date"].ToString() != "")
+                                    {
+                                        @Convert.ToDateTime(Verification.Tables[0].Rows[0]["v_closed_date"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Verified by
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(Verification.Tables[0].Rows[0]["v_notifiedto"].ToString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-size-lg font-weight-bold">
+                                    Verified On
+                                </td>
+                                <td class="font-size-lg">
+                                    @if (Verification.Tables[0].Rows[0]["v_verified_date"].ToString() != null && Verification.Tables[0].Rows[0]["v_verified_date"].ToString() != "")
+                                    {
+                                        @Convert.ToDateTime(Verification.Tables[0].Rows[0]["v_verified_date"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="font-size-lg font-weight-bold">
+                                    Notified To
+                                </td>
+                                <td class="font-size-lg">
+                                    @Obj.GetMultiHrEmpNameById(Verification.Tables[0].Rows[0]["v_notifiedto"].ToString())
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+                @if (VerificationList != null && VerificationList.Tables.Count > 0 && VerificationList.Tables[0].Rows.Count > 0)
+                {
+                    <div class="mt-5 pt-5 page_break_inside_avoid">
+                        <h2 class="bg-dark pl-sm-2">Verification Details</h2>
+                        <div>
+                            <table class="table table-lg table-bordered table-striped">
+                                <thead>
+                                    <tr class="bg-brown">
+                                        <th>Sl No</th>
+                                        <th>Division</th>
+                                        <th>Location</th>
+                                        <th>Department</th>
+                                        <th>Corrective Action Proposed</th>
+                                        <th>Implementation status</th>
+                                        <th>Is CA effective?</th>
+                                        <th>If No, reasons</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0, j = 1; i < VerificationList.Tables[0].Rows.Count; i++, j++)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                @j
+                                            </td>
+                                            <td>
+                                                @Obj.GetCompanyBranchNameById(VerificationList.Tables[0].Rows[i]["ca_div"].ToString())
+                                            </td>
+                                            <td>
+                                                @Obj.GetDivisionLocationById(VerificationList.Tables[0].Rows[i]["ca_loc"].ToString())
+                                            </td>
+                                            <td>
+                                                @Obj.GetDeptNameById(VerificationList.Tables[0].Rows[i]["ca_dept"].ToString())
+                                            </td>
+                                            <td>
+                                                @(VerificationList.Tables[0].Rows[i]["ca_ca"].ToString())
+                                            </td>
+                                            <td>
+                                                @(VerificationList.Tables[0].Rows[i]["implement_status"].ToString())
+                                            </td>
+                                            <td>
+                                                @(VerificationList.Tables[0].Rows[i]["ca_effective"].ToString())
+                                            </td>
+                                            <td>
+                                                @(VerificationList.Tables[0].Rows[i]["reason"].ToString())
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                }
+            </div>
+            </div>
+
+    }
+
+</div>

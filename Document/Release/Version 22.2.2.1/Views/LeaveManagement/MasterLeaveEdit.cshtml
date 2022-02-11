@@ -1,0 +1,250 @@
+﻿@model ISOStd.Models.LeaveManagementModels
+
+@{
+    ViewBag.Title = "AddCustomer";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Edit Leave Master</span>
+</div>
+<div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("MasterLeaveEdit", "LeaveManagement", FormMethod.Post,
+                         new { enctype = "multipart/form-data" })) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+   <input type="hidden" id="leave_id" name="leave_id" value='@Model.leave_id' />
+    <div>
+           <table id="tabcontent">
+                <tr>
+                    <td colspan="10" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Edit Employee Leave Master</td>
+                </tr>
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.cal_year)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                        <select id="cal_year" name="cal_year" required="">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Years != null)
+                            {
+                                foreach (var item in ViewBag.Years)
+                                {
+                                    if(item.Text==Model.cal_year)
+                                    {
+                                     <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                   
+                                }
+                            }
+                        </select>
+                    </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.emp_no)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                           
+                             <input type="text" id="emp_firstname" name="emp_firstname" style="width:250px;" value="@Model.emp_firstname" required onclick="CalYear()" onchange='getEmpDetails(this.value)'/>
+                           <input type="text" id="emp_no" name="emp_no" value="@Model.emp_no" readonly />
+                        </div>
+                    </td>
+                    
+                </tr>
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.open_bal)
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <div class="display-field">
+                          <input type="text" id="open_bal" name="open_bal" onchange="setBalance()" value="@Model.open_bal" required/>
+                        </div>
+                    </td>
+                    
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.close_bal)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                             <input type="text" id="close_bal" name="close_bal" value="@Model.close_bal" onchange="setBalance()" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                   
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.balance)
+                        </div>
+                    </td>
+                 <td>
+                        <div class="display-field">
+                              <input type="number" id="balance" name="balance" value="@Model.balance" readonly />
+                        </div>
+                    </td>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.onSite)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                           <select id="onSite" name="onSite" required="">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.OnSite != null)
+                            {
+                                foreach (var item in ViewBag.OnSite)
+                                {
+                                    if (item == Model.onSite)
+                                    {
+                                     <option value='@item' selected>@item</option>
+                                    }
+                                    else
+                                    {
+                                    <option value='@item'>@item</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+    </div>
+    <div style="width: 100%; text-align: center;">
+             @Html.ActionLink("Back to List", "MasterLeaveList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+         <input type="submit" value="Update"  onclick="ProgressIconFunction('#form1')" />
+    </div>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function getEmpDetails(emp_firstname) {
+            GetEmpNo(emp_firstname);
+            var emp_no = document.getElementById("emp_no").value;
+            var year = document.getElementById("cal_year");
+            var syear = year.options[year.selectedIndex].value;
+            getEmpStatus(emp_no, syear);
+        }
+        function GetEmpNo(emp_firstname) {
+            jQuery.ajax({
+                url: '@Url.Action("GetEmpNoByName", "LeaveManagement")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'emp_firstname': emp_firstname },
+                success: function (result) {
+                    if (result != "") {
+                        document.getElementById("emp_no").value = result;
+                    }
+                }
+            });
+
+        }
+        function CalYear() {
+            var select = document.getElementById("cal_year");
+            var syear = select.options[select.selectedIndex].text;
+            if (syear == "Select") {
+                jAlert("Select Calender Year");
+            }
+        }
+        $(function () {
+
+            $("#emp_firstname").autocomplete({
+
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetEmployeeNameListMaster", "LeaveManagement")',
+                        type: "POST",
+                        dataType: "json",
+                        scroll: true,
+                        scrollHeight: 100,
+                        maxHeight: 100,
+                        data: { emp_firstname: request.term },
+                        success: function (data) {
+                            if (data.length == 0) {
+                                document.getElementById("emp_no").value = "";
+                                document.getElementById("emp_firstname").value = "";
+                            }
+                            response($.map(data, function (item) {
+                                return { label: item, value: item };
+
+                            }))
+                        }
+                    })
+                },
+                select: function (e, ui) {
+                    e.preventDefault();
+                    $(this).val(ui.item.label);
+                    getEmpDetails(ui.item.value);
+                },
+                messages: {
+                    noResults: "", results: ""
+                }
+            });
+        });
+
+        function getEmpStatus(empno, year) {
+            if (empno != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("getEmpStatus", "LeaveManagement")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'empno': empno, 'year': year },
+                    success: function (result) {
+                        if (result != "") {
+                            jAlert("Employee Leave master already added for the year");
+                            document.getElementById("emp_no").value = "";
+                            document.getElementById("cal_year").value = "";
+                            document.getElementById("emp_firstname").value = "";
+                        }
+                    }
+
+                });
+            }
+        }
+        function setBalance() {
+            var open = document.getElementById("open_bal").value;
+            var close = document.getElementById("close_bal").value;
+
+            if (parseInt(close) > parseInt(open)) {
+                jAlert("Used Leaves must be less than Provided leaves");
+                document.getElementById("close_bal").value = "";
+                document.getElementById("balance").value = "";
+            }
+            else {
+                var bal = open - close;
+                document.getElementById("balance").value = bal;
+            }
+        }
+    </script>
+}

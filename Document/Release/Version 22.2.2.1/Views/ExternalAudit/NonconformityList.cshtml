@@ -1,0 +1,604 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.ExternalAuditModels>
+
+    @{
+        ViewBag.Title = "";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+        ISOStd.Models.ExternalAuditModels ObjModel = new ISOStd.Models.ExternalAuditModels();
+        int icnt = 0;
+        if (ViewBag.NC != null)
+        {
+            ObjModel = ViewBag.NC;
+            icnt = 1;
+        }
+    }
+    @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <a href="@Url.Action("RaiseNCList", "ExternalAudit", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item">Raise NC List</span>
+                        </a>
+                        <span class="breadcrumb-item active">NC List</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">External Audit Finding List</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+            <thead>
+                <tr>
+                    <th>
+                        Sl No.
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().nc_no)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().corrective_agreed_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().finding_details)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().why_finding)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().upload)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().finding_category)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().nc_status)
+                    </th>
+                    <th data-priority="2" class="text-center not-export-column">Actions</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+                        <tr>
+                            <td>
+                             @i
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.nc_no)
+                            </td>
+                            <td>
+                                @if (item.corrective_agreed_date != null && item.corrective_agreed_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(item.corrective_agreed_date.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.finding_details)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.why_finding)
+                            </td>
+                            <td>
+                                @if (item.upload != null && item.upload != "" && item.upload.Length > 0)
+                                {
+                                    foreach (var docs in item.upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                Preview
+                                            </a>
+                                        </p>
+                                        <br />
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.finding_category)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.nc_status)
+                            </td>
+
+                            <td class="text-center">
+                                <div class="list-icons">
+                                    <div class="list-icons-item dropdown">
+                                        <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-gear mr-2"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item" href='@Url.Action("NCStatus", "ExternalAudit", new { id_nc = item.id_nc})' title="Update Status" onclick="HyperLinkProgressIconFunction()">
+                                                <i class="icon-pencil7"></i>Update NC Status
+                                            </a>
+                                                <a class="dropdown-item" href='@Url.Action("NonconformityList", "ExternalAudit", new { id_nc = item.id_nc, id_external_audit = item.id_external_audit })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-pencil7"></i>Edit NC
+                                                </a>
+                                            <a class="dropdown-item" href='@Url.Action("NonconformityDetails", "ExternalAudit", new { id_nc = item.id_nc, id_external_audit = item.id_external_audit })' title="View" onclick="HyperLinkProgressIconFunction()">
+                                                <i class="icon-pencil7"></i>View NC
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("NonconformityUpdate", "ExternalAudit", FormMethod.Post,
+        new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="card-body invisible" id="hidden card1">
+                <input type="hidden" id="id_nc" name="id_nc" value="@ObjModel.id_nc" />
+                <input type="hidden" id="id_external_audit" name="id_external_audit" value="@ObjModel.id_external_audit" />
+                <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <div class="container-fluid">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Edit External Audit Finding</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        NC No
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <p class="bg-grey-300 py-1 px-2 rounded">
+                                        @ObjModel.nc_no
+                                    </p>
+                                </td>
+                              
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    Finding Detail<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="finding_details" name="finding_details" required>@ObjModel.finding_details</textarea>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    Finding Category<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="finding_category" name="finding_category" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Category != null)
+                                        {
+                                            foreach (var item in ViewBag.Category)
+                                            {
+                                                if (item.Value == ObjModel.finding_category)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    Why finding is categorized as NC / PNC?<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="why_finding" name="why_finding" required>@ObjModel.why_finding</textarea>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Corrective Action Agreed Date<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        @if (ObjModel.corrective_agreed_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            <input type="date" id="corrective_agreed_date" name="corrective_agreed_date" value="@ObjModel.corrective_agreed_date.ToString("yyyy-MM-dd")" class="form-control" />
+                                        }
+                                        else
+                                        {
+                                            <input type="date" id="corrective_agreed_date" name="corrective_agreed_date" required class="form-control" />
+                                        }
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Upload Documents
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                        @if (ObjModel.upload != null && ObjModel.upload != "" && ObjModel.upload.Length > 0)
+                                        {
+
+                                            <span class="form-text text-muted">
+                                                <code>
+                                                    (Uncheck in case to remove a uploaded file)
+                                                </code>
+                                            </span>
+                                            foreach (var docs in ObjModel.upload.Trim(',').Split(','))
+                                            {
+                                                <div class="form-check">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                            Preview
+                                                        </a>
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                             
+                            </tr>
+                         
+                        </table>
+
+                    </fieldset>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                    @Html.ActionLink("Back to List", "RaiseNCList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                    <div class="mt-2 mt-sm-0">
+                        <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" id="btnCreate" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+
+
+    @section scripts {
+        <script>
+
+
+               $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+           {
+
+                                        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @:     }).show();
+
+            }
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+                                        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+                                        @:        }).show();
+
+             }
+               });
+            $('.form-check-input-styled').uniform();
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+            });
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                    file.value = "";
+                    jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+                }
+            }
+            var hideClass = 'invisible';
+            if (document.getElementById("itemcnt").value == "1") {
+                document.getElementById("hidden card1").classList.remove(hideClass);
+            }
+     
+                var table1 = function () {
+                    @*var ShowEdit = @(Obj.GetCurrentUserSession().InternalDoc.Contains("3") ? "true" : "false");
+              var ShowDownld = @(Obj.GetCurrentUserSession().InternalDoc.Contains("4") ? "true" : "false");
+              var ShowDel = @(Obj.GetCurrentUserSession().InternalDoc.Contains("5") ? "true" : "false");*@
+
+                    // Basic Datatable examples
+                    var _componentDatatableBasic = function () {
+                        if (!$().DataTable) {
+                            console.warn('Warning - datatables.min.js is not loaded.');
+                            return;
+                        }
+
+                        //Setting datatable defaults
+                        $.extend($.fn.dataTable.defaults, {
+                            autoWidth: false,
+                            responsive:true,
+                            columnDefs: [{
+                                orderable: false,
+                                //width: 100,
+                                targets: 'not-export-column'
+
+                            }],
+                            responsivePriority: 2, targets: -1,
+                            colReorder: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            //dom: 'lBfrtip',
+                            language: {
+                                search: '<span>Filter:</span> _INPUT_',
+                                searchPlaceholder: 'Type to filter...',
+                                lengthMenu: '<span>Show:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            }
+                        });
+
+                        var myClass = "";
+
+
+                        var table = $('#table1').DataTable({
+                            drawCallback: function () {
+
+                                var dropdownMenu;
+
+                                // and when you show it, move it to the body
+                                $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                                    // grab the menu
+                                    dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                                    // detach it and append it to the body
+                                    $('body').append(dropdownMenu.detach());
+
+                                    // grab the new offset position
+                                    var eOffset = $(e.target).offset();
+
+                                    // make sure to place it where it would normally go (this could be improved)
+                                    dropdownMenu.css({
+                                        'display': 'block',
+                                        'top': eOffset.top + $(e.target).outerHeight(),
+                                        'left': eOffset.left
+                                    });
+                                });
+
+                                // and when you hide it, reattach the drop down, and hide it normally
+                                $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                                    $(e.target).append(dropdownMenu.detach());
+                                    dropdownMenu.hide();
+                                });
+
+                            },
+
+                            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                            colReorder: {
+                                fixedColumnsLeft: 1
+                            },
+                            //stateSave: true,
+                            //stateSaveParams: function (settings, data) {
+                            //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            //        delete data.columns[i].visible;
+                            //        delete data.columns[i].search;
+                            //    }
+                            //},
+                            scrollY: '350px',
+                            scrollCollapse: true,
+
+                            keys: {
+                                className: 'focus focus-success'
+                            },
+
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'copyHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document History Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+
+                                    },
+                                    {
+                                        extend: 'pdfHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'csvHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'print',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+
+                                    {
+                                        extend: 'colvis',
+                                        text: '<i class="icon-three-bars"></i>',
+                                        className: 'btn bg-blue btn-icon dropdown-toggle',
+                                        columns: ':visible:not(.not-export-column)'
+                                    }
+                                ]
+                            }
+
+                        });
+                        // Adjust columns on window resize
+                        setTimeout(function () {
+                            $(window).on('resize', function () {
+                                table.columns.adjust();
+                            });
+                        }, 100);
+
+
+                        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                        $('.sidebar-control').on('click', function () {
+
+                            setTimeout(function () {
+                                //alert("gii");
+
+                                table.columns.adjust().draw();
+                                $("#table1").resize();
+                            } , 100);
+
+                        });
+                        //}
+
+                        $('#table1').on('page.dt', function () {
+                            //table.draw();
+                            //alert("zzz1");
+                            $("#table1").resize();
+
+                        });
+
+                        $('#table1').on('column-visibility.dt', function () {
+                            //table.draw();
+                            //alert("zzz2");
+                            $("#table1").resize();
+
+                        });
+
+                        $('#table1').on('order.dt', function () {
+                            //table.draw();
+                            //alert("zzz3");
+                            $("#table1").resize();
+
+                        });
+
+
+                        $('#table1').on('responsive-display.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#table1").resize();
+
+                        });
+
+
+                        $('#table1').on('responsive-resize.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#table1").resize();
+
+                        });
+
+
+                        //.on('order.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+                        //.on('search.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+
+                        //.on('column-visibility.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize();
+                        //})
+                    };
+
+                    // Select2 for length menu styling
+                    var _componentSelect2 = function () {
+                        if (!$().select2) {
+                            console.warn('Warning - select2.min.js is not loaded.');
+                            return;
+                        }
+
+                        // Initialize
+                        $('.dataTables_length select').select2({
+                            minimumResultsForSearch: Infinity,
+                            dropdownAutoWidth: true,
+                            width: 'auto'
+                        });
+                    };
+
+
+                    //
+                    // Return objects assigned to module
+                    //
+
+                    return {
+                        init: function () {
+                            _componentDatatableBasic();
+                            _componentSelect2();
+                        }
+                    }
+                }();
+
+
+                // Initialize module
+                // ------------------------------
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    table1.init();
+                });
+
+        </script>
+
+    }

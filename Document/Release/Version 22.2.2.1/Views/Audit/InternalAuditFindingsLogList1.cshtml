@@ -1,0 +1,173 @@
+﻿@model IEnumerable<ISOStd.Models.InternalAuditFindingsLog>
+
+    @{
+        ViewBag.Title = "InternalAuditFindingsLogList1";
+    }
+
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">NCR List </span>
+    </div>
+    <br />
+    <div>
+        @Html.ActionLink("Back", "InternalAuditFindingsLogList", "Audit",new { AuditTransID = ViewBag.sAuditTransID,  AuditNum=ViewBag.AuditNum@*, AuditFindingID = ViewBag.AuditFindingID*@ }, new { @class="ActionLink",
+       onclick="HyperLinkProgressIconFunction()"})
+
+    </div>
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+    <br />
+    <div id="content">
+        <table id="table1">
+            <tr>
+                <th>
+                    Sl No
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NCRNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NCRDesc)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ISOstandardID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ISO_standard_clause)
+                </th>
+                @*  <th>
+            @Html.DisplayNameFor(model => model.ReportStatus)
+        </th>*@
+                <th>
+                    @Html.DisplayNameFor(model => model.FindingCategory)
+                </th>
+                <th>
+                    Preview
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CorrectiveActionDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Followupdate)
+                </th>
+                <th>
+                  Correction taken
+                </th>
+                <th>
+                  Results of Investigation
+                </th>
+                <th>
+                    Corrective Action
+                </th>
+
+            </tr>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+            <tr>
+                <td>
+                    @i
+                </td>
+                @if (item.NCRNo != "")
+                {
+                    <td>
+                        @Html.ActionLink(item.NCRNo, "InternalAuditFindingsLogDetails",
+                            new { AuditFindingID = item.AuditFindingID, AuditTransID = item.AuditTransID, AuditNum = ViewBag.AuditNum }, new { onclick = "HyperLinkProgressIconFunction()" })
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+
+                    @* <td>
+                @ViewBag.AuditNum
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuditConductedBy)
+            </td>*@
+                    @* <td>
+                @Html.DisplayFor(modelItem => item.Reference)
+            </td>*@
+                    @*<td>
+                @Html.DisplayFor(modelItem => item.FindingDescription)
+            </td>*@
+                    @* <td>
+                @Html.DisplayFor(modelItem => item.NCRNo)
+            </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NCRDesc)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ISOstandardID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ISO_standard_clause)
+                    </td>
+                    @*  <td>
+                @Html.DisplayFor(modelItem => item.ReportStatus)
+            </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FindingCategory)
+                    </td>
+                    <td>
+                        @if (item.Checklist != "")
+                        {
+                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Checklist })' target="_blank">Preview</a>
+                        }
+                    </td>
+                    <td>
+                        @if (item.CorrectiveActionDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @item.CorrectiveActionDate.ToString("dd/MM/yyyy")
+                        }
+                       
+                    </td>
+                    <td>
+                        @if (item.Followupdate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @item.Followupdate.ToString("dd/MM/yyyy")
+                        }
+                      
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Correctiontaken)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Resultsofinvestigation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CorrectiveAction)
+                    </td>
+                    @*<td>
+                @Html.Raw(HttpUtility.HtmlDecode(item.Audit_Details))
+            </td>*@
+                
+            </tr>
+
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>

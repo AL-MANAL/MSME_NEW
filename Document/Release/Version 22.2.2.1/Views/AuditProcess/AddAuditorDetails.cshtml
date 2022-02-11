@@ -1,0 +1,442 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@{
+    ViewBag.Title = "";
+
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditorDetailList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Auditor List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Auditor Details</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+@using (Html.BeginForm("AddAuditorDetails", "AuditProcess", FormMethod.Post,
+                                 new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Auditor Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.auditor_name) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditor_name" name="auditor_name" required onchange="checkAuditor()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col">
+                            Division <br />
+                            <input class="form-control" type="text" id="directorate" name="directorate"  readonly />
+                        </td>
+                        <td class="col">
+                            Department <br />
+                            <input class="form-control" type="text" id="group" name="group" readonly />
+                        </td>
+                        @*<td class="col-xs-3 col-md-2">
+                            Team <br />
+                            <input class="form-control" type="text" id="team" name="team" readonly />
+                        </td>*@                   
+                    </tr>
+                    </table>
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Competence Details</legend>
+                    <table class="table table-lg">
+
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.qualification) <text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="qualification" name="qualification" required></textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.years_exp) <text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="years_exp" name="years_exp" />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.trainings_completed) <text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="trainings_completed" name="trainings_completed" required></textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.upload_cetificate)
+                            </td>
+                            <td class="col">
+                                <input type="file" name="upload_cetificate" id="upload_cetificate" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                            </td>
+                        </tr>
+                    </table>
+                    </fieldset>
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">LA Certificates</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.standards)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.type_course)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.completed_on)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.yearsexp)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    Upload Certificate(s)
+                                </td>
+                                <td class="col-xs-3 col-md-2"></td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="standards" name="standards">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.standards != null)
+                                    {
+                                        foreach (var item in ViewBag.standards)
+                                        {
+                                    <option value='@item.Value'>@item.Text</option>
+
+                                        }
+                                    }
+                                    </select>
+                                    <span class="field-validation-error"><span id="standards-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.standards)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="type_course" name="type_course">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Course != null)
+                                    {
+                                        foreach (var item in ViewBag.Course)
+                                        {
+                                    <option value='@item.Value'>@item.Text</option>
+
+                                        }
+                                    }
+                                    </select>
+                                    <span class="field-validation-error"><span id="type_course-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.type_course)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    <input type="date" class="form-control" id="completed_on" name="completed_on" />
+                                    <span class="field-validation-error"><span id="completed_on-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.completed_on)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    <input type="text" class="form-control" id="yearsexp" name="yearsexp" />
+                                    <span class="field-validation-error"><span id="yearsexp-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.yearsexp)
+
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+
+                                    <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                </td>
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <div class="card invisible" id="hidden card">
+                        <div class="card-body scrollbar-container">
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                                <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>ISO Standards</th>
+                                        <th>Type of Course Completed</th>
+                                        <th>Course Completed On</th>
+                                        <th>Years of Auditing Experience</th>
+                                        <th>Upload Certificate(s)</th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+</div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "AuditorDetailList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+        function checkAuditor()
+        {
+            var auditor_name = $('#auditor_name').val();
+            if (auditor_name != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunCheckAudiorExsists", "AuditProcess")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'auditor_name': auditor_name },
+                    success: function (result) {
+                        if (result == true) {
+                                              
+                            bootbox.alert({
+                                title: '',
+                                message: 'Auditor already exists'
+                            });
+                            $("#auditor_name").val('').trigger('change');
+                        }
+                        else
+                        {
+                            getDetails();
+                        }
+                      
+                    }
+
+                });
+            }
+        }
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        function getDetails() {
+            var sauditor_name = $('#auditor_name').val();
+            if (sauditor_name != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': sauditor_name },
+                    success: function (result) {
+                        document.getElementById("directorate").value = result.division;
+                        document.getElementById("group").value = result.department;
+                       // document.getElementById("team").value = result.team;
+                    }
+                });
+            }
+        }
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("standards").value == "") {
+                ssnMessage = $('#standards-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#standards-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("type_course").value == "") {
+                ssnMessage = $('#type_course-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#type_course-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("completed_on").value == "") {
+                ssnMessage = $('#completed_on-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#completed_on-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("yearsexp").value == "") {
+                ssnMessage = $('#yearsexp-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#yearsexp-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+        function AddData() {
+
+            if (Validation() == true) {
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+
+
+                var completed_on = $('#completed_on').val();
+                var yearsexp = $('#yearsexp').val();
+
+                var standards = $.map($("#standards option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var standardsVal = $("#standards").val();
+
+                var type_course = $.map($("#type_course option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var type_courseVal = $("#type_course").val();
+
+                var upload = $('#upload').val();
+
+                uploadServerPath = UploadDoc(cnt);
+
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+                cell1.innerHTML = "<select class='select-fixed-single' id='standards" + cnt + "' name='standards" + cnt + "'><option value='" + standardsVal + "' selected>" + standards + "</option>@if (ViewBag.standards != null)
+                {
+                    foreach (var item in ViewBag.standards)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell2.innerHTML = "<select class='select-fixed-single' id='type_course" + cnt + "' name='type_course" + cnt + "'><option value='" + type_courseVal + "' selected>" + type_course + "</option>@if (ViewBag.Course != null)
+                {
+                    foreach (var item in ViewBag.Course)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell3.innerHTML = "<input class='form-control' type='date' id='completed_on" + cnt + "' name='completed_on" + cnt + "' value='" + completed_on + "' />";
+                cell4.innerHTML = "<input class='form-control' type='text' id='yearsexp" + cnt + "' name='yearsexp" + cnt + "' value='" + yearsexp + "' />";
+                cell5.innerHTML = "<input type='hidden' id='supload" + cnt + "' name='supload" + cnt + "' value='" + uploadServerPath + "'><div id='cert"+cnt+"'></div>"
+
+                cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+
+                        //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+                        document.getElementById("hidden card").classList.remove(hideClass);
+                        document.getElementById("hidden card").classList.add(showClass);
+
+                        document.getElementById("completed_on").value = "";
+                        document.getElementById("yearsexp").value = "";
+                        document.getElementById("upload").value = "";
+                        $("#standards").val('').trigger('change');
+                        $("#type_course").val('').trigger('change');
+                    }
+        }
+        function UploadDoc(ind) {
+            var upload = ($("#upload")).files; //$('#testfile').file;
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("upload").files.length;
+
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("upload").files[i];
+                formData.append("upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDoc", "AuditProcess")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    var slen = result.split(',');
+                    var len = "";
+                   
+                    for (var i = 0; i < slen.length; i++) {
+                        len = len + '<a href="KIPIC/Reports/DisplayDocument?Document=' + slen[i].toString() + '" target="_blank">Preview</a><br/>'
+                    }
+                   
+                    document.getElementById("cert" + ind).innerHTML = len;
+                    document.getElementById("supload" + ind).value = result;
+                    uploadServerPath = result;
+                    return result;
+                }
+            });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

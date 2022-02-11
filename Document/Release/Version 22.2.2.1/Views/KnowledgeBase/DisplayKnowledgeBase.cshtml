@@ -1,0 +1,187 @@
+﻿
+@model IEnumerable< ISOStd.Models.KnowledgeBaseModels>
+
+@{
+    ViewBag.Title = "DisplayKnowledgeBase";
+}
+<script type="text/javascript" src="~/Scripts/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="~/Scripts/ckeditor/adapters/jquery.js"></script>
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Knowledge List </span>
+</div>
+
+<div class="ActionLink">
+    @Html.ActionLink("Add New", "AddKnowledgeBase", null, new { id_knowledge_base = ViewBag.id_knowledge_base }, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+    <br />
+
+@using (Html.BeginForm("DisplayKnowledgeBase", "KnowledgeBase", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    <div class="editor-field" style="margin-left: 50px;">
+        @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by KB Number or Topic", style = "width: 20%; " })
+
+        <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+            <span class="glyphicon glyphicon-search"></span>Search
+        </button>
+
+        
+        </div>
+}
+
+        @*@Html.PagedListPager(Model, page => Url.Action("DisplayKnowledgeBase",
+    new
+    {
+        page,
+        SearchText = Request.QueryString["SearchText"]
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })*@
+ 
+      <div id="content">
+            <table id="table1">
+              
+                <thead>
+                   
+                    <tr>
+
+                        <th style="width:450px;min-width:450px; max-width:450px;background-color: #2B649A;color:#fff; text-align : center ">
+                            @Html.DisplayNameFor(model => model.id_knowledge_base)
+                        </th>
+                        <th style="width:450px;min-width:450px; max-width:450px;background-color: #2B649A;color:#fff; text-align : center">
+                            @Html.DisplayNameFor(model => model.topic)
+                        </th>
+                     
+                        <th style="width:450px;min-width:450px; max-width:450px;background-color: #2B649A;color:#fff; text-align : center">
+                            @Html.DisplayNameFor(model => model.Evidence)
+                        </th>
+
+                        @*<th>Action</th>*@
+                    </tr>
+
+
+                    
+                    @*<tr>
+                        <th style="width:550px;min-width:550px; max-width:550px;">
+                            @Html.DisplayNameFor(model => model.details)
+                        </th>*@
+                    
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                          
+                                <tr>
+
+
+                                    <td colspan="2">
+                                        <div style="text-align:center;color:#2B649A">
+                                            @Html.DisplayFor(modelItem => item.id_knowledge_base, new { @readonly = "true" })
+                                        </div>
+                                    </td>
+
+                                    <td colspan="4">
+                                        <div style="text-align:center; width : 100% ;color:#2B649A">
+                                            @Html.DisplayFor(modelItem => item.topic ,new {  @readonly = "true" })
+                                        </div>
+                                    </td>
+
+                                    <td colspan="2">
+                                        <div style="text-align:center ;color:#2B649A">
+                                        @if (item.Evidence != "")
+                                        {
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Evidence ,@color ="#2B649A" , @readonly = "true" })' target="_blank">Preview</a>
+                                        }
+                                        </div>
+                                    </td>
+                                    @*<td>
+                                            <a href='@Url.Action("LegalRegisterEvaluationEdit", "LegalRegister", new { legalregister_evaluation_Id = item.legalregister_evaluation_Id })' title="Edit Legal Register Evaluation details"
+                                               onclick="HyperLinkProgressIconFunction()">
+                                                <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                                            </a>
+                                        </td>*@
+                                </tr>
+
+                                <tr>
+
+
+
+                                    <td colspan="10">
+                                        @Html.TextAreaFor(modelItem => item.details, new { @class = "ckeditor" , @backgroundcolor = "#2B649A", @color="#fff", @readonly = "true"  })
+                                    </td>
+
+                                </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9">
+                                <div style="text-align: center;">
+                                    <h4 style="color: grey;">No data exists</h4>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+
+            </table>
+        </div>
+        @section scripts {
+
+            <script type="text/javascript">
+                function downloadInnerHtml(filename, elId) {
+                    var $table = $('#table1');
+                    $rows = $table.find('tr');
+
+                    var csvData = "";
+
+                    for (var i = 0; i < $rows.length; i++) {
+                        var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                        for (var y = 0; y < $cells.length; y++) {
+                            if (y > 0) {
+                                csvData += ",";
+                            }
+
+                            var txt = ($($cells[y]).text()).toString().trim();
+
+                            if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                                txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                            }
+                            csvData += txt;
+                        }
+                        csvData += '\n';
+                    }
+
+
+                    var elHtml = csvData;
+                    var link = document.createElement('a');
+                    mimeType = 'application/csv;charset=utf-8';
+
+                    link.setAttribute('download', filename);
+                    link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+                    link.click();
+                }
+                var fileName = 'KnowledgeBase.csv'; // You can use the .txt extension if you want
+
+                $('#downloadLink').click(function () {
+                    downloadInnerHtml(fileName, 'content');
+                });
+
+            </script>
+            @Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/ckeditor")
+@Scripts.Render("~/bundles/ckeditor/adapters")
+        }

@@ -1,0 +1,57 @@
+﻿@using System.Data
+@{
+    Layout = null;
+    DataSet dsAuditor = ViewBag.objAudit;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Auditor List</h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-striped table-hover datatable-responsive">
+            <thead>
+                <tr class="bg-brown">
+                    <th>Auditor Name</th>
+                    <th>Status</th>
+                    <th>Confirmed Date</th>
+                    <th>Comments</th>    
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsAuditor.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @obj.GetEmpHrNameById(dsAuditor.Tables[0].Rows[i]["auditor"].ToString())
+                        </td>
+                        <td>
+                            @(dsAuditor.Tables[0].Rows[i]["apprv_status"].ToString())
+                        </td>
+                        <td>
+                            @if (dsAuditor.Tables[0].Rows[i]["apprv_date"].ToString() != "" && dsAuditor.Tables[0].Rows[i]["apprv_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsAuditor.Tables[0].Rows[i]["apprv_date"].ToString()).ToString("dd/MM/yyyy hh:mm:ss")
+                            }
+                        </td>
+                        <td>
+                            @(dsAuditor.Tables[0].Rows[i]["comments"].ToString())
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+    </div>
+
+</div>
+
+
+

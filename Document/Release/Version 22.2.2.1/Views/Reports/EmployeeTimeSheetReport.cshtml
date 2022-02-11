@@ -1,0 +1,346 @@
+﻿@using System.Data;
+
+@{
+    ViewBag.Title = "EmployeeTimeSheetReport";
+    DataSet dsTimeSheet=new DataSet();
+    string sCompanyname = "", sEmpId = "", sEmpName = "", sMonthof = "", sDesignation = "";
+    DateTime dtMonthOf = new DateTime();    
+
+    if (ViewBag.dsTimeSheetReportList != null)
+    {
+        dsTimeSheet = ViewBag.dsTimeSheetReportList;
+         if(dsTimeSheet.Tables.Count > 0 && dsTimeSheet.Tables[0].Rows.Count >0)
+         {
+             sCompanyname = dsTimeSheet.Tables[0].Rows[0]["Companyname"].ToString();
+             DateTime.TryParse(dsTimeSheet.Tables[0].Rows[0]["MonthOf"].ToString(), out dtMonthOf);
+             sEmpId = dsTimeSheet.Tables[0].Rows[0]["CompEmpId"].ToString();
+             sEmpName = dsTimeSheet.Tables[0].Rows[0]["FirstName"].ToString() + " " + dsTimeSheet.Tables[0].Rows[0]["LastName"].ToString();
+             sDesignation = dsTimeSheet.Tables[0].Rows[0]["Designation"].ToString();
+         }
+     }
+     ISOStd.Models.EmpTimeSheetReportFieldModels objTimeSheet = new ISOStd.Models.EmpTimeSheetReportFieldModels();
+     if (ViewBag.objTimeSheet != null)
+     {
+
+         objTimeSheet = ViewBag.objTimeSheet;
+     }
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Employee Time Sheet Report </span>
+</div>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    if (dsTimeSheet.Tables.Count > 0 && dsTimeSheet.Tables[0].Rows.Count > 0)
+    {
+    <div style="float: right;padding-right: 50px;">
+       
+         <button type="submit" class="btn btn-success btn-lg" name="command" id="command"  value="Print" 
+             style="width: 85px; height: 33px;background-color: #449d44 !important; padding: 0px;">
+            <span class="glyphicon glyphicon-print"></span>Print
+        </button> 
+    </div>   
+    } 
+<fieldset>
+    <legend>EmpTimeSheetReportFieldModels</legend>
+    <table id="tabcontent">
+        <tr>
+            <td>
+                <div class="editor-label">
+                    From
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    <input type="text" id="FromDate" name="FromDate" required readonly /><input type="hidden" id="FromDateval" name="FromDateval" />
+                    <span class="field-validation-error"><span id="FromDate-message" style="display: none;">Please select From date</span></span>
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    <select id="Empid" name="Empid" required="">
+                        @if (ViewBag.EmpId != null)
+                        {
+                            foreach (var item in ViewBag.EmpLists)
+                            {
+                                if (item.Value == ViewBag.EmpId)
+                                {
+                            <option value='@item.Value' selected>@item.Text</option>
+                                }
+                                else
+                                {
+                            <option value='@item.Value'>@item.Text</option>
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            foreach (var item in ViewBag.EmpLists)
+                            {                                   
+                            <option value='@item.Value'>@item.Text</option>                                   
+                                        
+                            }
+                        }
+                    </select>
+                </div>
+            </td>
+        </tr>
+    </table> 
+    </fieldset> 
+     <div style="width: 100%; text-align: center;">
+        <input type="submit" id="Generate" name="command" value="Generate" />
+    </div>
+    <br /><br />
+    
+    
+                        if (dsTimeSheet.Tables.Count > 0 && dsTimeSheet.Tables[0].Rows.Count > 0)
+                        {
+                                 
+       
+               
+    <div id="divPrint" name="divPrint">
+        <div id="divHeader" style="vertical-align: middle;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="text-align: center; font-weight: bold; width: 80%; font-size: 16px;">
+                        <span>Advanced Recruitment Services</span>
+                        <br />
+                        <span>Time Sheet‎</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Company Name
+                    </div>
+                </td>
+                <td>
+                    @sCompanyname
+                </td>
+                <td>
+                    <div class="editor-label">
+                        Month Of
+                    </div>
+                </td>
+                <td>
+                    @dtMonthOf.ToString("MMM")-@dtMonthOf.ToString("yyyy")
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Name of Employee
+                    </div>
+                </td>
+                <td>
+                    @sEmpName
+                </td>
+                <td>
+                    <div class="editor-label">
+                        Employee ID
+                    </div>
+                </td>
+                <td>
+                    @sEmpId
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Designation
+                    </div>
+                </td>
+                <td>@sDesignation</td>
+            </tr>
+        </table>
+        <table id="table1">
+
+            <tr>
+                <th>Date
+                </th>
+                <th>First Half In Time
+                </th>
+                <th>First Half Out Time
+                </th>
+                <th>Second Half In Time
+                </th>
+                <th>Second Half Out Time
+                </th>
+                <th>Over Time
+                </th>
+                <th>Remarks
+                </th>
+            </tr>
+            @*@for (int iterate = 1; iterate < DateTime.DaysInMonth(dtMonthOf.Year, dtMonthOf.Month); iterate++)
+               
+                {
+                    DateTime dtCurentdate = new DateTime(dtMonthOf.Year, dtMonthOf.Month, iterate);
+                    <tr>
+                        <td>i</td>
+                        @if(dtMonthOf == dtCurentdate)
+                            {
+                        <td>
+                                dsTimeSheet.Tables[0].Rows[iterate]["FirstHalf_InTime"].ToString();
+                            
+                        </td>*@
+            @for (int iterate = 1; iterate < dsTimeSheet.Tables[0].Rows.Count; iterate++)
+            {
+                <tr>
+                    <td>@iterate</td>
+                    <td>@dsTimeSheet.Tables[0].Rows[iterate]["FirstHalf_InTime"].ToString();</td>
+                    <td>@dsTimeSheet.Tables[0].Rows[iterate]["FirstHalf_OutTime"].ToString()</td>
+                    <td>@dsTimeSheet.Tables[0].Rows[iterate]["SecondHalf_InTime"].ToString()</td>
+                    <td>@dsTimeSheet.Tables[0].Rows[iterate]["SecondHalf_OutTime"].ToString()</td>
+                    <td>@dsTimeSheet.Tables[0].Rows[iterate]["OverTime"].ToString()</td>
+                    <td>@dsTimeSheet.Tables[0].Rows[iterate]["Remarks"].ToString()</td>
+
+
+                </tr>
+            }
+        </table>
+
+        @if (ViewBag.objTimeSheet != null)
+        {
+            <table style="width: 50%;">
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Number of Days
+                        </div>
+                    </td>
+                    <td>
+
+                        <div class="display-field">
+                            @DateTime.DaysInMonth(dtMonthOf.Year, dtMonthOf.Month)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Number of Working Days)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sNumOfWorkingDays
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Number of Holiday
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sNumOfHoliday
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Number of OFF Days
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sNumOfOffDays
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Sick Leave
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sSickLeave
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Absent
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sAbsent
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Normal Over Time
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sNormalOverTime
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Holiday Over Time
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sHolidayOverTime
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            Deduction
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objTimeSheet.sDeduction
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        }
+    </div>
+                        }
+
+}
+
+@section Scripts {
+    <script>
+        $(function () {
+
+            $('#FromDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true,                
+            });
+            $("#FromDate").datepicker("setDate", new Date());
+
+        });
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

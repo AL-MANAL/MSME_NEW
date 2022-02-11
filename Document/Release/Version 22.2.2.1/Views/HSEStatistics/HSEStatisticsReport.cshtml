@@ -1,0 +1,203 @@
+﻿@using System.Data;
+@{
+   
+    ViewBag.Title = "HSEStatisticsReport";
+
+    // ISOStd.Models.WasteManagementModels objModel = new ISOStd.Models.WasteManagementModels();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+    DataSet dsStatistics = new DataSet();
+    if (ViewBag.dsReport != null)
+    {
+        dsStatistics = ViewBag.dsReport;
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ReportList", "Reports", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Report Types</span>
+                    </a>
+                    <span class="breadcrumb-item active">HSE Statics Report</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    @if (obj.GetCurrentUserSession().Rept.Contains("4"))
+                    {
+                        using (Html.BeginForm("HSEStatisticsReport", "HSEStatistics", FormMethod.Post, new { id = "form1", name = "form1" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+
+                            <div class="breadcrumb-elements-item dropdown p-0">
+                                <input type="hidden" id="Vyear" name="Vyear" value="@ViewBag.Yearval" />
+                                <input type="hidden" id="VMonth" name="VMonth" value="@ViewBag.Monthval" />
+                                <button type="submit" class="dropdown-item" name="command" id="command">
+                                    <i class="icon-printer2"></i> Report
+                                </button>
+                            </div>
+                        }
+                    }
+
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("HSEStatisticsReport", "HSEStatistics", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<div class="card">
+   
+ 	   <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">HSE Statics Report</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+ 	   <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">
+                      Year
+                </div>
+ 		<div class="col-md-3">
+                      <select class="form-control select-search select2-hidden-accessible" data-fouc id="Vyear" name="Vyear">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Year != null && ViewBag.Yearval != null)
+                            {
+                                foreach (var item in ViewBag.Year)
+                                {
+                                    if (item.Value == ViewBag.Yearval)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in ViewBag.Year)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                </div>
+ 		<div class="col-md-2">
+                       Month
+                </div>
+		<div class="col-md-3">
+                   <select class="form-control select-search select2-hidden-accessible" data-fouc id="VMonth" name="VMonth">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Month != null && ViewBag.Monthval != null)
+                            {
+                                foreach (var item in ViewBag.Month)
+                                {
+                                    if (item == ViewBag.Monthval)
+                                    {
+                                        <option value='@item' selected>@item</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item'>@item</option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in ViewBag.Month)
+                                {
+                                    <option value='@item'>@item</option>
+                                }
+                            }
+                        </select>
+                </div>
+                <div class="col-md-3">
+                       <button type="submit" id="Generate" name="command" value="Generate"  class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Generate</button>
+                </div>
+            </div>          
+            </div>
+    @if (dsStatistics != null && dsStatistics.Tables.Count > 0 && dsStatistics.Tables[0].Rows.Count > 0)
+{
+    if (ViewBag.Yearval != null || ViewBag.Monthval != null)
+    {
+         
+ <div class="card-body">
+
+ <table class="table table-lg">
+           <thead class="table table-lg table-bordered">
+                <tr class="bg-blue font-weight-bold">
+                    <th> Sl No. </th>
+                    <th> Parameter Name </th>
+                    <th> Total </th>
+                </tr>
+ 	  </thead>
+                @for (int i = 0,j=1; i < dsStatistics.Tables[0].Rows.Count; i++,j++)
+                {
+                    <tr>
+                        <td>
+                            @j
+                        </td>
+                        <td>
+                            @dsStatistics.Tables[0].Rows[i]["para_name"].ToString()
+                        </td>
+                        <td>
+                            @dsStatistics.Tables[0].Rows[i]["total"].ToString()
+                        </td>
+                    </tr>
+                }
+
+</table>
+   
+</div>
+ }
+}
+
+</div>
+    
+}
+
+@section Scripts {
+    <script>
+      
+    </script>
+}

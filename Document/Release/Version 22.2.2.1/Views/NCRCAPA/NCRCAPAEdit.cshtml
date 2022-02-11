@@ -1,0 +1,473 @@
+﻿@model ISOStd.Models.NCRCAPAModels
+
+@{
+    ViewBag.Title = "NCRCAPAEdit";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("NCRCAPAList", "NCRCAPA", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> NCRCAPA List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> NCR-CAPA Edit </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("NCRCAPAEdit", "NCRCAPA", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+        <input type="hidden" id="CAR_ID" name="CAR_ID" value="@Model.CAR_ID" />
+        
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Findings detail</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+
+                    <table class="table table-lg">
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.AuditNum)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="AuditNum" name="AuditNum" onchange="GetDivisionDetails()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.AuditNumList != null)
+                                        {
+                                            foreach (var data in ViewBag.AuditNumList)
+                                            {
+                                                if (data.Value == Model.AuditNum)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Division
+                            </td>
+                            <td class="col">
+                                <input type="text" id="branch" name="branch" class="form-control" readonly style="background-color:lightgray;" />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.NC_Num)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.NC_Num)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.IssuedOn)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="date" id="IssuedOn" name="IssuedOn" value="@Model.IssuedOn.ToString("yyyy-MM-dd")" required />
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.IssuedBy)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="IssuedBy" name="IssuedBy" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpLists != null)
+                                        {
+                                            foreach (var data in ViewBag.EmpLists)
+                                            {
+                                                if (data.Text == Model.IssuedBy)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.issuedTo)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select  class="form-control select-fixed-multiple" data-fouc multiple="multiple" id="issuedTo" name="issuedTo" style="height: 200px; width: 200px;" required>
+
+                                        @if (ViewBag.EmpLists != null)
+                                        {
+                                            foreach (var data in ViewBag.EmpLists)
+                                            {
+                                                if (Array.IndexOf(Model.issuedTo.ToString().Split(','), data.Value) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+
+
+
+                        <tr class="row">
+                            <td class="col" style="background-color: #4cc4dd; color: #fff; font-weight: bold;" colspan="4">
+                                
+                                    Details of detected discrepancy<text style="color:red;">*
+                              
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col" colspan="4">
+                               
+                                    @Html.TextAreaFor(model => model.Discrepancy_Details, new { @required = "required", @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                               
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col" colspan="4">
+                                <div class="editor-label">
+                                    <b> @Html.LabelFor(model => model.Discrepancy_Related)<text style="color:red;">*</text></b>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td colspan="4">
+                                <div class="editor-field">
+                                    @if (ViewBag.DiscrepancyRelatedList != null)
+                                    {
+                                        foreach (var item in ViewBag.DiscrepancyRelatedList)
+                                        {
+                                            var checkBoxId = "chk" + item.Discrepancy;
+                                            @*<input type="checkbox" id="@checkBoxId" name="@checkBoxId" class="chkboxclass" value="@item.Discrepancy" @item.Checked />
+                                            <label id="@item" for="@checkBoxId" class="CheckBoxLabelClass">@item.Discrepancy</label>*@
+
+
+                                            <div class="form-check form-check-inline col-xs-3 col-md-2" style="text-align:justify;">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input-styled chkboxclass" id="@checkBoxId" name="@checkBoxId" value="@item.Discrepancy" @item.Checked />
+                                                    <label id="@item" for="@checkBoxId" class="CheckBoxLabelClass">@item.Discrepancy</label>
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.FindingType)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="FindingType" name="FindingType" required="">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.FindingType != null)
+                                        {
+                                            foreach (var data in ViewBag.FindingType)
+                                            {
+                                                if (data == Model.FindingType)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.FindingIdentified)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="FindingIdentified" name="FindingIdentified" required="">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.FindingIdentified != null)
+                                        {
+                                            foreach (var data in ViewBag.FindingIdentified)
+                                            {
+                                                if (data == Model.FindingIdentified)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.upload)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+
+                                    <input type="file" name="upload" id="upload" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                                           multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+
+                                    <br />
+                                    @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                    {
+                                        <div class="editor-label">
+                                            <p style="font-weight: bold; margin: 0px;">Document List:</p>
+                                        </div>
+                                        <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                        foreach (var docs in Model.upload.Trim(',').Split(','))
+                                        {
+                                            <div class="form-check">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc   />
+                                                    <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                        @System.IO.Path.GetFileName(docs)
+                                                    </a>
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+
+            </div>
+
+           
+
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+
+
+
+
+                @Html.ActionLink("Back to List", "NCRCAPAList", "NCRCAPA",null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+
+            </div>
+
+
+        </div>
+
+
+            }
+
+            @section Scripts {
+                <script>
+
+
+                    
+                 //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+                    $('.form-check-input-styled').uniform();
+
+
+
+        function GetEmployeeList() {
+
+            var Dept = $('#dept').val();
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetDeptEmpList", "Trainings")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'DeptId': Dept },
+                success: function (result) {
+                    if (result != null && result.length > 0) {
+                        var x = document.getElementById("issuedTo");
+
+                        $.each(result, function (index, item) {
+                            var option = document.createElement("option");
+                            option.text = item.Text;
+                            option.value = item.Value;
+                            x.add(option);
+                        });
+                    }
+                    else {
+                        jAlert("No Employee exists.");
+                    }
+                }
+            });
+        }
+                    $(function () {
+                        GetDivisionDetails();
+
+                        $("#QCDocsVal").click(function () {
+                            if ($("#QCDocsVal").prop('checked')) {
+                                {
+                                    $(this).prop('checked', true);
+                                }
+                            }
+                            else {
+
+                                $(this).prop('checked', false);
+                                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                            }
+
+                        });
+                    });
+          
+
+                    function FileFormatValidation(file) {
+                        var ext = file.value.split(".").pop().toLowerCase();
+                        if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                            file.value = "";
+                            bootbox.alert({
+                                title: 'File type',
+                                message: 'Invalid file format, please upload only pdf format.'
+                            });
+                        }
+                        }
+
+       function GetDivisionDetails() {
+                var AuditNum = $("#AuditNum").val();
+                $.ajax({
+                    url:'@Url.Action("GetDivisionDetailsbyAuditNum","NCRCAPA")',
+                    dataType: "json",
+                    type: 'post',
+                    data: { 'AuditNum': AuditNum},
+                    success: function (result) {
+                        if (result != null && result != "") {
+                            document.getElementById("branch").value = result;
+                        }
+                        else {
+                            document.getElementById("branch").value = "";
+                        }
+                    }
+                })
+
+            }
+
+
+                </script>
+                @Scripts.Render("~/bundles/jqueryval")
+            }

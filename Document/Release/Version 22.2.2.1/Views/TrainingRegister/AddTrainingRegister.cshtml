@@ -1,0 +1,331 @@
+﻿@model ISOStd.Models.TrainingRegisterModels
+@{
+    ViewBag.Title = "AddTrainingRegister";
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingRegisterList", "TrainingRegister", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Training Register</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Training Register</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+
+}
+
+@using (Html.BeginForm("AddTrainingRegister", "TrainingRegister", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Training Register</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.emp_id)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" @*multiple="multiple"*@ data-fouc id="emp_id" name="emp_id" onchange="GetEmpDetails()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var data in ViewBag.EmpList)
+                                    {
+                                         <option value='@data.Value'>@data.Text</option>
+                                        @*if (Array.IndexOf(Model.emp_id.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }*@
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Division
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="branch" name="branch" disabled />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Designation
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="designation" name="designation" disabled />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Department
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="department" name="department" disabled />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Location
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="location" name="location" disabled />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.date_tr)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="date" class="form-control" id="date_tr" name="date_tr" required/>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.dept_head)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="dept_head" name="dept_head" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DeptHead != null)
+                                    {
+                                        foreach (var item in ViewBag.DeptHead)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.tr_type)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="tr_type" name="tr_type" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.TrainingType != null)
+                                    {
+                                        foreach (var item in ViewBag.TrainingType)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.tr_topic)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="tr_topic" name="tr_topic" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.TrainingTopic != null)
+                                    {
+                                        foreach (var item in ViewBag.TrainingTopic)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.tr_centername)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="tr_centername" name="tr_centername" required />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.tr_location)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="tr_location" name="tr_location" required />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.tr_startdate)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="date" class="form-control" id="tr_startdate" name="tr_startdate" required />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.tr_enddate)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="date" class="form-control" id="tr_enddate" name="tr_enddate" required />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.tr_expirydate)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="date" class="form-control" id="tr_expirydate" name="tr_expirydate" required />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.upload)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx, .xls, .xlsx,image/*" class="bootstrap-uploader" data-fouc />
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "TrainingRegisterList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Add" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Report</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg", "jpeg", "gif", ".png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        function GetEmpDetails() {
+            var Empid = $("#emp_id").val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetEmpDetailsbyId", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'emp_no': Empid },
+                success: function (result) {
+                    if (result != null && result != "") {
+                        document.getElementById("branch").value = result.division;
+                        document.getElementById("department").value = result.DeptID;
+                        document.getElementById("location").value = result.Work_Location;
+                        document.getElementById("designation").value = result.Designation;
+                    }                    
+                }
+            });
+        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

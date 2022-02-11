@@ -1,0 +1,195 @@
+﻿@model ISOStd.Models.MeetingItemLogModels
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MeetingList", "Meeting", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Meeting</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Meeting Item Log</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+
+
+
+@using (Html.BeginForm("AddMeetingItemLog", "Meeting", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Meeting Item Log</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table id="tabcontent" class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                Item discussed
+
+                            </td>
+                            <td class="col">
+
+                                @ViewBag.item_discussed
+                                <input type="hidden" id="Item_no" name="Item_no" value="@ViewBag.Item_no" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.LogStatus)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="LogStatus" name="LogStatus" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.LogStatus != null)
+                                    {
+                                        foreach (var item in ViewBag.LogStatus)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.action_taken_on)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="action_taken_on" name="action_taken_on" required  />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.action_completed_by)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_completed_by" name="action_completed_by" required="">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpLists != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpLists)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "MeetingDetails", new { meeting_ref = ViewBag.meeting_ref }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+
+        </div>
+
+
+    </div>
+
+}
+
+@section Scripts {
+    <script>
+            
+            
+                          //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+      
+
+      
+
+ 
+    });
+    //zzz----
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,431 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.MgmtDocumentsModels>
+
+    @{
+        ViewBag.Title = "MgmtDocumentsList";
+
+    }
+    <link href='@Url.Content("~/Content/popover/popover.css")' rel="stylesheet">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Internal System Documents </span>
+    </div>
+ 
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+    <br />
+    @using (Html.BeginForm("MgmtDocumentsListSearch", "MgmtDocuments", FormMethod.Post, new { id = "form1", name = "form1" }))
+    {
+
+        @* @if (ViewBag.Role != null && ViewBag.Role.ToLower() != "Preparer".ToLower())
+            {
+        *@<input type="hidden" id="ApprovestatusVal" name="ApprovestatusVal" value="@ViewBag.Approvestatus" />
+
+        <span style="margin-left:20px">   <b style="color:#31b0d5;">Approval Status</b></span>
+        <select id="Approvestatus" name="Approvestatus" required="" style="width:100px">
+            @if (ViewBag.ApprovestatusVal != null && ViewBag.Approvestatus != null)
+            {
+                foreach (var item in ViewBag.Approvestatus)
+                {
+                    if (item.Key == ViewBag.ApprovestatusVal)
+                    {
+                        <option value='@item.Key' selected>@item.Value</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Key'>@item.Value</option>
+                    }
+                }
+
+            }
+            else if (ViewBag.Approvestatus != null)
+            {
+                foreach (var item in ViewBag.Approvestatus)
+                {
+                    <option value='@item.Key'>@item.Value</option>
+                }
+            }
+        </select>
+
+        <span style="margin-left:20px">   <b style="color:#31b0d5;">Department</b></span>
+
+        <select id="Department" name="Department">
+            <option value='' hidden>Select</option>
+            @if (ViewBag.Department != null && ViewBag.DeptSearch != null)
+            {
+                foreach (var item in ViewBag.Department)
+                {
+                    if (item.Text == ViewBag.DeptSearch)
+                    {
+                        <option value='@item.Value' selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Value'>@item.Text</option>
+                    }
+                    @*<option value='@item.Value'>@item.Text</option>*@
+
+                }
+            }
+            else
+            {
+                foreach (var item in ViewBag.Department)
+                {
+                    <option value='@item.Value'>@item.Text</option>
+                }
+            }
+        </select>
+        <span style="margin-left:20px">   <b style="color:#31b0d5;">Document Type</b></span>
+
+        <select id="Doctype" name="Doctype">
+            <option value='' hidden>Select</option>
+            @if (ViewBag.DocumentType != null && ViewBag.DocumentType != null)
+            {
+                foreach (var item in ViewBag.DocumentType)
+                {
+                    if (item.Text == ViewBag.Doctype1)
+                    {
+                        <option value='@item.Value' selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Value'>@item.Text</option>
+                    }
+                    @*<option value='@item.Value'>@item.Text</option>*@
+
+                }
+            }
+            else
+            {
+                foreach (var item in ViewBag.Doctype1)
+                {
+                    <option value='@item.Value'>@item.Text</option>
+                }
+            }
+        </select>
+
+        <span id="tab" style="color:#31b0d5;font-weight: bold; padding: 10px;">And/Or</span>
+
+        @*   }*@
+
+        @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Document Reference or Name", style = "width:10%; " })
+        <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+            <span class="glyphicon glyphicon-search"></span> Search
+        </button>
+
+
+
+        @Html.ActionLink("Add New", "AddMgmtDocuments", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <span style="margin-left: 20px"> <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer; " id="downloadLink" />Download</span>
+    }
+    <br />
+
+
+
+    @Html.PagedListPager(Model, page => Url.Action("MgmtDocumentsList",
+    new
+    {
+        page,
+        Approvestatus = Request.QueryString["Approvestatus"],
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+    <div id="content">
+        <table id="table1">
+            <thead>
+                <tr>
+                    <th style="width:40px;min-width:40px; max-width:100px;">
+                        Sl No
+                    </th>
+                    <th style="width:150px; min-width:150px; max-width:150px;">
+                        Doc. Ref.
+                    </th>
+                    <th style="width:200px; min-width:200px; max-width:200px;">
+                        Doc. Name
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        @Html.DisplayNameFor(model => model.First().Department)
+                    </th>
+                    @*<th style="width:60px;min-width:60px; max-width:60px;">
+                            @Html.DisplayNameFor(model => model.First().DocLevels)
+                        </th>*@
+
+                    <th style="width:100px; min-width:100px; max-width:100px;">
+                        @Html.DisplayNameFor(model => model.First().Doctype)
+                    </th>
+
+                    @*  <th style="width:100px; min-width:100px; max-width:100px;">
+                            @Html.DisplayNameFor(model => model.First().ISOStds)
+                        </th>*@
+                    <th style="width:100px; min-width:100px; max-width:100px;">
+                        Document
+                    </th>
+                    <th style="width:100px; min-width:100px; max-width:100px;">
+                        Annexure
+                    </th>
+
+                    <th style="width: 50px; min-width: 50px; max-width: 50px;word-wrap:break-word">
+                        History
+                    </th>
+                    @*<th style="width: 100px; min-width: 100px; max-width: 100px;">Approval Status</th>
+                        <th style="width: 100px; min-width: 100px; max-width: 100px;">Reviewed Status</th>*@
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Prepared By</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Reviewed By</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Approved By</th>
+                    <th style="width:60px; min-width:60px; max-width:60px;">Edit</th>
+                    @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                    }
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                        <tr>
+                            <td style="width:40px;min-width:40px; max-width:100px;">
+                                @i
+                            </td>
+                            <td style="width:150px; min-width:150px; max-width:150px;">
+                                @Html.ActionLink(item.DocRef.ToString(), "MgmtDocumentsDetails", new { idMgmt = item.idMgmt.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.idMgmt, onclick = "HyperLinkProgressIconFunction()" })
+                            </td>
+                            <td style="width:200px; min-width:200px; max-width:200px;word-wrap:break-word">
+                                @Html.DisplayFor(modelItem => item.DocName)
+                            </td>
+                            <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                @Html.DisplayFor(modelItem => item.Department)
+                            </td>
+                            @*<td style="width:60px;min-width:60px; max-width:60px;word-wrap:break-word">
+                                       @Html.DisplayFor(modelItem => item.DocLevels)
+                                </td>*@
+                            <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                @Html.DisplayFor(modelItem => item.Doctype)
+                            </td>
+                            @*  <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                    @Html.DisplayFor(modelItem => item.ISOStds)
+                                </td>*@
+                            <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                @*   @if (item.PreparedBy.Contains(ViewBag.user) || item.ReviewedBy.Contains(ViewBag.user) || item.ApprovedBy.Contains(ViewBag.user) || item.UploadedBy.Contains(ViewBag.user))
+                                    {
+                                       if (item.DocUploadPath != "")
+                                        {
+                                           <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.DocUploadPath })' target="_blank">Preview</a>
+                                        }
+                                    }*@
+                                @if (item.Approved_Status == "Approved")
+                                {
+                                    if (item.DocUploadPath != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.DocUploadPath })' target="_blank">Preview</a>
+                                    }
+                                }
+                            </td>
+                            <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                <a href='@Url.Action("AddAnnexure", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="Add New Annexure" onclick="HyperLinkProgressIconFunction()">
+                                    <img src="@Url.Content("~/Images/icon_add.png")" title="Add Annexure" onclick="HyperLinkProgressIconFunction()" />
+                                </a>
+                                <a href='@Url.Action("AnnexureList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="View Annexure List" onclick="HyperLinkProgressIconFunction()">
+                                    <img src="@Url.Content("~/Images/icon_list.png")" title="View Annexure list" onclick="HyperLinkProgressIconFunction()" />
+                                </a>
+                            </td>
+                            <td style="width:50px; min-width:50px; max-width:50px;word-wrap:break-word">
+                                <a href='@Url.Action("MgmtDocumentsHistoryList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                    <img src="@Url.Content("~/Images/historyicon.png")" onclick="HyperLinkProgressIconFunction()" />
+                                </a>
+                            </td>
+                            @* <td style="width:100px; min-width:100px; max-width:100px;">
+                                    @if (ViewBag.Role.ToLower() != "Preparer".ToLower() && item.Approved_Status.ToLower() == "Not Approved".ToLower() && item.ApprovedBy.Contains(ViewBag.CurrentEmpName))
+                                    {
+                                    <a href='@Url.Action("MgmtDocumentsApprove", "MgmtDocuments", new { idMgmt = item.idMgmt })' title="Approve document details" style="color:red;">
+                                        Approve
+                                    </a>
+                                    }
+                                    else
+                                    {
+                                    @item.Approved_Status
+                                    }
+                                </td>*@
+                            @*<td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                    @Html.DisplayFor(modelItem => item.Approved_Status)
+                                </td>
+                                <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                    @Html.DisplayFor(modelItem => item.Reviewed_Status)
+                                </td>*@
+                            <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                @Html.DisplayFor(modelItem => item.PreparedBy)
+                            </td>
+                            <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                @Html.DisplayFor(modelItem => item.ReviewedBy)
+                            </td>
+                            <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+                                @Html.DisplayFor(modelItem => item.ApprovedBy)
+                            </td>
+
+                            <td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+                                @if (item.ReviewedBy.Contains(ViewBag.CurrentEmpName)
+                        || item.ApprovedBy.Contains(ViewBag.CurrentEmpName)
+                        || item.PreparedBy.Contains(ViewBag.CurrentEmpName)
+                        || ViewBag.CurrentEmpName == item.UploadedBy)
+                                {
+
+                                    <a href='@Url.Action("MgmtDocumentsEdit", "MgmtDocuments", new { idMgmt = item.idMgmt })' title="Edit document details" onclick="HyperLinkProgressIconFunction()">
+                                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                                    </a>
+                                }
+
+                            </td>
+                            @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                            {
+                                <td style="width: 60px; min-width: 60px; max-width: 60px;word-wrap:break-word">
+
+                                    @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+                                    <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.idMgmt)" style="cursor:pointer;" />
+                                </td>
+                            }
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10">
+                            <div style="text-align: center;">
+                                <h4 style="color: grey;">No data exists</h4>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @Styles.Render("~/Content/popover")
+    @section scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+        $(function () {
+            $("#Doctype").chosen();
+            $("#Department").chosen();
+
+        });
+
+
+        $(document).ready(function () {
+
+            $('[data-toggle="popover"]').popover({
+
+                title: setData,
+                html: true,
+                placement: 'right',
+                container: 'body'
+            });
+
+            function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("MgmtDocumentsInfo", "MgmtDocuments")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+        });
+        function DeleteItems(idMgmt) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("MgmtDocDelete", "MgmtDocuments")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'idMgmt': idMgmt },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'InternalSysDocList.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+        </script>
+
+    }

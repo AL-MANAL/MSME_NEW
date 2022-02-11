@@ -1,0 +1,930 @@
+﻿@model ISOStd.Models.ProjectMgmtModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "ProjectEdit";
+    DataSet dsDesignProcessDetails = ViewBag.ProjectDesignDetails;
+    string sid_projectdesign = "", sDicipline = "", sIntRevno = "", sDrawingNumber = "", sUpload = "", sReviewedBy = "", sCustFeedback = "",
+        sRevNo = "", sCustApprStatus = "", sApprovedBy = "", SubmitFinding = "SubmitFinding", Save = "Save";
+    DateTime dtCustApprDate = new DateTime();
+    DateTime dtDgnSntDate = new DateTime();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    if (dsDesignProcessDetails != null && dsDesignProcessDetails.Tables.Count > 0 && dsDesignProcessDetails.Tables[0].Rows.Count > 0)
+    {
+        sid_projectdesign = dsDesignProcessDetails.Tables[0].Rows[0]["id_projectdesign"].ToString();
+        sDicipline = obj.GetDropdownitemById(dsDesignProcessDetails.Tables[0].Rows[0]["Dicipline"].ToString());
+        sIntRevno = dsDesignProcessDetails.Tables[0].Rows[0]["IntRevno"].ToString();
+        sDrawingNumber = dsDesignProcessDetails.Tables[0].Rows[0]["DrawingNumber"].ToString();
+        sUpload = dsDesignProcessDetails.Tables[0].Rows[0]["Upload"].ToString();
+        sReviewedBy = obj.GetEmpHrNameById(dsDesignProcessDetails.Tables[0].Rows[0]["ReviewedBy"].ToString());
+        sApprovedBy = obj.GetEmpHrNameById(dsDesignProcessDetails.Tables[0].Rows[0]["ApprovedBy"].ToString());
+        if (dsDesignProcessDetails.Tables[0].Rows[0]["CustApprDate"].ToString() != "" && dsDesignProcessDetails.Tables[0].Rows[0]["CustApprDate"].ToString() != null)
+        {
+            dtCustApprDate = Convert.ToDateTime(dsDesignProcessDetails.Tables[0].Rows[0]["CustApprDate"].ToString());
+        }
+        if (dsDesignProcessDetails.Tables[0].Rows[0]["DgnSntDate"].ToString() != "" && dsDesignProcessDetails.Tables[0].Rows[0]["DgnSntDate"].ToString() != null)
+        {
+            dtDgnSntDate = Convert.ToDateTime(dsDesignProcessDetails.Tables[0].Rows[0]["DgnSntDate"].ToString());
+        }
+            sCustFeedback = dsDesignProcessDetails.Tables[0].Rows[0]["CustFeedback"].ToString();
+            sRevNo = dsDesignProcessDetails.Tables[0].Rows[0]["RevNo"].ToString();
+            sCustApprStatus = dsDesignProcessDetails.Tables[0].Rows[0]["CustApprStatus"].ToString();
+        }
+    }
+
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Edit Project Design Process </span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("ProjectDesignProcessEdit", "ProjectMgmt", FormMethod.Post,
+                         new { enctype = "multipart/form-data", style = "float: left;width:50%;", id = "form1", name = "form1" }))
+{
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+             <fieldset>
+        <legend>EditProject</legend>
+        
+        <input type="hidden" id="id_projectmgmt" name="id_projectmgmt" value="@Model.id_projectmgmt"/>
+        <div style="max-width: 90%;">
+        <table id="tabcontent" style="float: left;">
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ProjectNo)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ProjectNo" name="ProjectNo" value="@Model.ProjectNo" required/>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ProjectName)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ProjectName" name="ProjectName" value="@Model.ProjectName" required/>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Location)<text style="color: red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                           <select id="Location" name="Location" required>
+                               <option value=''>Select</option>
+                               @if (ViewBag.Company!=null)
+                               {
+                                 foreach (var item in ViewBag.Company)
+                                 {
+                                     if(item.Text==Model.Location)
+                                     {
+                                      <option value='@item.Value' selected>@item.Text</option>
+                                     }
+                                     else
+                                     {
+                                      <option value='@item.Value'>@item.Text</option>
+                                     }  
+                                 }
+                               }
+                           </select>
+                        </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Customer)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Customer" name="Customer" value="@Model.Customer"/>
+                    </div>
+
+                </td>
+
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.StartDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="StartDate" name="StartDate" value="@Model.StartDate.ToString("dd/MM/yyyy")" style="width: 150px;" />
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PlannedEndDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="PlannedEndDate" name="PlannedEndDate" value="@Model.PlannedEndDate.ToString("dd/MM/yyyy")" style="width: 150px;" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ActualEndDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ActualEndDate" name="ActualEndDate" value="@Model.ActualEndDate.ToString("dd/MM/yyyy")" style="width: 150px;" />
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ProjectManager)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="ProjectManager" name="ProjectManager">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.EmpList != null)
+                            {
+                                foreach (var item in ViewBag.EmpList)
+                                {
+                                    if (item.Text == Model.ProjectManager)
+                                    {
+                                <option value='@item.Value' selected>@item.Text</option>    
+                                    }
+                                    else
+                                    {
+                                <option value='@item.Value'>@item.Text</option>    
+                                    }
+
+                                }
+                            }
+                        </select>
+                    </div>
+
+                </td>
+            </tr>
+             <tr>
+                <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Team)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Team" name="Team" multiple style="height: 200px; width: 200px;">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        if (Model.Team.Contains(item.Text))
+                                        {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                        <option value='@item.Value'>@item.Text</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                    </td>
+                   <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Remarks)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.TextAreaFor(model => model.Remarks)
+                        </div>
+
+                    </td>
+                     
+              
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ProjectDocs)
+                    </div>
+                </td>
+                <td>
+                   
+                    <div class="editor-field">
+
+                        <input type="file" name="ProjectDocs" id="ProjectDocs" title="Project Docs" onchange="FileFormatValidation(this)"
+                            multiple="multiple" accept=".dwg, .dxf, .pdf, .doc, .docx,image/*" style="height: 38px;" />
+
+                        <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                        @*@Html.ValidationMessageFor(model => model.QCDocs)*@
+
+                        @if (Model.ProjectDocs != null && Model.ProjectDocs != "" && Model.ProjectDocs.Length > 0)
+                        {
+                            <div class="editor-label">
+                                <p style="font-weight: bold; margin: 0px;">Project Docs. List:</p>
+                            </div>
+                            <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                            foreach (var docs in Model.ProjectDocs.Trim(',').Split(','))
+                            {
+                            <p style="margin: 0px;">
+                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file"/>
+                                 <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                 @System.IO.Path.GetFileName(docs)</a>
+                            </p>
+                            }
+                        }
+
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ProjectStatus)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="ProjectStatus" name="ProjectStatus">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.ProjectStatus != null)
+                            {
+                                foreach (var item in ViewBag.ProjectStatus)
+                                {
+                                    if (item.Text == Model.ProjectStatus)
+                                    {
+                                <option value='@item.Value' selected>@item.Text</option>       
+                                    }
+                                    else
+                                    {
+                                <option value='@item.Value'>@item.Text</option>       
+                                    }
+
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+            </tr>
+           
+           
+
+        </table>
+                  <div style="width: 100%; text-align: center;">
+        @Html.ActionLink("Back to List", "ProjectList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')" />
+    </div>
+      </div>
+    </fieldset>
+    
+     
+   
+}
+         @using (Html.BeginForm("DesignProcessPlanUpdate", "ProjectMgmt", FormMethod.Post, new
+         {
+             enctype = "multipart/form-data",
+             style = "float: left;width:50%;",
+             id = "form2",
+             name = "form2"
+         }))
+         {
+            @Html.ValidationSummary(true)
+             @Html.AntiForgeryToken()
+             <div>
+                 <input type="hidden" id="id_projectdesign" name="id_projectdesign" value="@sid_projectdesign"/>
+                 <input type="hidden" id="id_projectmgmt" name="id_projectmgmt" value="@Model.id_projectmgmt" />
+                 <table style="margin-top: 18px; margin-bottom: 20px;">
+                     <tr>
+                         <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Design Process detail</td>
+                     </tr>
+                     <tr>
+
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.Dicipline)<text style="color:red;">*</text>
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                        <select id="Dicipline" name="Dicipline" > 
+                         <option value='' hidden>Select</option>
+                            @if (ViewBag.Dicipline != null)
+                            {
+                                foreach (var item in ViewBag.Dicipline)
+                                {
+                                    if (item.Text == sDicipline)
+                                    {
+                               <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                 <option value='@item.Value'>@item.Text</option>
+                                    }
+
+                                }
+                            }
+                        </select>
+                         <span class="field-validation-error"><span id="Dicipline-message" style="display: none;">Dicipline field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Dicipline)
+                    </div>
+                         </td>
+
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.DrawingNumber)<text style="color:red;">*</text>
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                           <input type="text" id="DrawingNumber" name="DrawingNumber" value="@sDrawingNumber"/>
+                           <span class="field-validation-error"><span id="DrawingNumber-message" style="display: none;">DrawingNumber field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.DrawingNumber)
+                    </div>
+                         </td>
+                     </tr>
+                     <tr>
+                         <td>
+                             <div class="editor-label">
+                               @Html.LabelFor(model => model.IntRevno)<text style="color:red;">*</text>
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                              <input type="number" id="IntRevno" name="IntRevno" value="@sIntRevno" />
+                              <span class="field-validation-error"><span id="IntRevno-message" style="display: none;">Internal Revno field is required.</span></span>
+                              @Html.ValidationMessageFor(model => model.IntRevno)
+                            </div>
+                         </td>
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.Upload)
+                             </div>
+                         </td>
+                         <td>
+                            <div class="editor-field">
+                           <input type="file" name="Upload" id="Upload" title="Drawing Docs" onchange="FileFormatValidation(this)"
+                            multiple="multiple" accept=".dwg, .dxf, .pdf, .doc, .docx,image/*" style="height: 38px;" />                         
+                            @Html.ValidationMessageFor(model => model.Upload)
+                        <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                        </div>
+                         </td>
+
+                     </tr>
+                     <tr>
+                         <td>
+                             <div class="editor-label">
+                                @Html.LabelFor(model => model.ReviewedBy)<text style="color:red;">*</text>
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                        <select id="ReviewedBy" name="ReviewedBy">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Reviewer != null)
+                            {
+                                foreach (var item in ViewBag.Reviewer)
+                                {
+                                    if (item.Text == sReviewedBy)
+                                    {
+                                <option value='@item.Value' selected>@item.Text</option>    
+                                    }
+                                    else
+                                    {
+                                <option value='@item.Value'>@item.Text</option>    
+                                    }
+
+                                }
+                            }
+                        </select>
+                         <span class="field-validation-error"><span id="ReviewedBy-message" style="display: none;">ReviewedBy field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.ReviewedBy)
+                    </div>
+                         </td>
+
+                         <td>
+                             <div class="editor-label">
+                                 @Html.LabelFor(model => model.ApprovedBy)<text style="color:red;">*</text>
+                             </div>
+                         </td>
+                         <td>
+                             <div class="editor-field">
+                        <select id="ApprovedBy" name="ApprovedBy">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Approver != null)
+                            {
+                                foreach (var item in ViewBag.Approver)
+                                {
+                                    if (item.Text == sApprovedBy)
+                                    {
+                                <option value='@item.Value' selected>@item.Text</option>    
+                                    }
+                                    else
+                                    {
+                                <option value='@item.Value'>@item.Text</option>    
+                                    }
+
+                                }
+                            }
+                        </select>
+                        <span class="field-validation-error"><span id="ApprovedBy-message" style="display: none;">ApprovedBy field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.ApprovedBy)
+                    </div>
+                         </td>
+                     </tr>
+
+                      <tr>
+            <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.CustApprDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="CustApprDate" name="CustApprDate" value="@dtCustApprDate.ToString("dd/MM/yyyy")" style="width: 150px;" />
+                    </div>
+                </td>
+
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DgnSntDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="DgnSntDate" name="DgnSntDate" value="@dtDgnSntDate.ToString("dd/MM/yyyy")" style="width: 150px;" />
+                    </div>
+                </td>
+            </tr>
+                     <tr>
+                    <td>
+                         <div class="editor-label">
+                            @Html.LabelFor(model => model.CustFeedback)
+                        </div>
+                    </td>
+                    <td>
+                          <div class="editor-field">
+                           <textarea id="CustFeedback" name="CustFeedback" value="@sCustFeedback"></textarea>                           
+                        </div>
+                    </td>
+                     <td>
+                         <div class="editor-label">
+                            @Html.LabelFor(model => model.RevNo)
+                        </div>
+                    </td>
+                    <td>
+                          <div class="editor-field">
+                            <input type="number" id="RevNo" name="RevNo" value="@sRevNo"/>                 
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CustApprStatus)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="CustApprStatus" name="CustApprStatus">
+                                <option value='' hidden></option>
+                                @if (ViewBag.ProjectStatus != null)
+                                {
+                                    foreach (var item in ViewBag.ProjectStatus)
+                                    {
+                                        if (item.Value == sCustApprStatus)
+                                        {
+                               <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                 <option value='@item.Value'>@item.Text</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                            
+                        </div>
+
+                    </td>
+                </tr>
+                 </table>
+                 <div style="padding-right: 200px; text-align:center;">
+
+                     @if (dsDesignProcessDetails != null && dsDesignProcessDetails.Tables.Count > 0 && dsDesignProcessDetails.Tables[0].Rows.Count > 0)
+                     {
+                         <input type="submit" id="@SubmitFinding" name="button" value="UpdateDesign" onclick="return Validation()" />
+                         <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()" style="display: none;" />
+                     }
+                     else
+                     {   
+                         <input type="submit" id="@SubmitFinding" name="button" value="UpdateDesign" onclick="return Validation()" style="display: none;" />
+                         <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()"  />
+                     }
+
+                     <input type="button" value="Add New" onclick="AddNewItem()" />
+                 </div>
+             </div>
+         }
+        <br />
+@if (dsDesignProcessDetails != null && dsDesignProcessDetails.Tables.Count > 0 && dsDesignProcessDetails.Tables[0].Rows.Count > 0)
+{
+    <div id="dvItems" >
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label">
+            <label for="Audit Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Design Review Process</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Action</th>
+                <th>Dicipline</th>
+                <th>DrawingNumber</th>
+                <th>Internal Revno</th>
+                <th>ReviewedBy</th>
+                <th>ApprovedBy</th>
+                <th>Upload</th>
+                <th>Customer Approval Date</th>
+                 <th>Design Sent Date</th>
+                 <th>Customer Feedback</th>
+                 <th>Rev No</th>
+                 <th>Customer Approval Status</th>
+            </tr>
+            @for (int i = 0; i < dsDesignProcessDetails.Tables[0].Rows.Count; i++)
+            {
+                <tr id="@i">
+                   
+                    <td>
+                        <a onclick="EditItem(@dsDesignProcessDetails.Tables[0].Rows[i]["id_projectdesign"].ToString(), @i)" title="Edit Design Review">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                    </td>
+                    <td>
+                       @obj.GetDropdownitemById(dsDesignProcessDetails.Tables[0].Rows[i]["Dicipline"].ToString())
+                    </td>
+                    <td>
+                        @dsDesignProcessDetails.Tables[0].Rows[i]["DrawingNumber"].ToString()
+                    </td>
+                    <td>
+                        @dsDesignProcessDetails.Tables[0].Rows[i]["IntRevno"].ToString()
+                    </td>
+                      <td>
+                      @obj.GetEmpHrNameById(dsDesignProcessDetails.Tables[0].Rows[i]["ReviewedBy"].ToString())
+                      </td>
+                      <td>
+                      @obj.GetEmpHrNameById(dsDesignProcessDetails.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                    </td>
+                    <td>  
+                        
+                        @{
+                string[] sSUpload = new string[1000];
+                string Upload = dsDesignProcessDetails.Tables[0].Rows[i]["Upload"].ToString();
+                sSUpload = Upload.Split(',');
+                int s = sSUpload.Count();
+                for (int j = 0; j < sSUpload.Count(); j++)
+                {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = sSUpload[j] }) 'target="_blank">Preview</a><br />
+
+                }
+                                
+                          }
+                                             
+                 
+                    </td>
+                     <td>
+                          @if (dsDesignProcessDetails.Tables[0].Rows[i]["CustApprDate"].ToString() != "" && dsDesignProcessDetails.Tables[0].Rows[i]["CustApprDate"].ToString() != null)
+                          {
+                      @Convert.ToDateTime(dsDesignProcessDetails.Tables[0].Rows[i]["CustApprDate"].ToString()).ToString("dd/MM/yyyy")
+                          }
+                    </td>
+                    <td>
+                         @if (dsDesignProcessDetails.Tables[0].Rows[i]["DgnSntDate"].ToString() != "" && dsDesignProcessDetails.Tables[0].Rows[i]["DgnSntDate"].ToString() != null)
+                         {
+                         @Convert.ToDateTime(dsDesignProcessDetails.Tables[0].Rows[i]["DgnSntDate"].ToString()).ToString("dd/MM/yyyy")
+                         }
+                    </td>
+                    <td>
+                        @dsDesignProcessDetails.Tables[0].Rows[i]["CustFeedback"].ToString()
+                    </td>
+                    <td>
+                        @dsDesignProcessDetails.Tables[0].Rows[i]["RevNo"].ToString()
+                    </td>
+                    <td>
+                        @obj.GetDropdownitemById(dsDesignProcessDetails.Tables[0].Rows[i]["CustApprStatus"].ToString())
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+
+@section Scripts {
+       <script type="text/javascript">
+           $(function () {
+
+               $("#Dicipline").chosen();
+               $("#ReviewedBy").chosen();
+               $("#ApprovedBy").chosen();
+               $("#CustApprStatus").chosen();
+               $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+              
+           });
+           function AddNewItem() {
+               document.getElementById("SubmitFinding").style.display = "None";
+               document.getElementById("Save").style.display = "";
+               ResetControl();
+           }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("Dicipline").value == "") {
+                ssnMessage = $('#Dicipline-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Dicipline-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("IntRevno").value == "") {
+                ssnMessage = $('#IntRevno-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#IntRevno-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("DrawingNumber").value == "") {
+                ssnMessage = $('#DrawingNumber-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#DrawingNumber-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("ReviewedBy").value == "") {
+                ssnMessage = $('#ReviewedBy-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ReviewedBy-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("ApprovedBy").value == "") {
+                ssnMessage = $('#ApprovedBy-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ApprovedBy-message');
+                ssnMessage.hide();
+            }
+
+            //if (document.getElementById("Upload").value == "") {
+            //    ssnMessage = $('#Upload-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#Upload-message');
+            //    ssnMessage.hide();
+            //}
+
+            return validflg;
+        }
+
+        function ResetControl() {
+
+            document.getElementById("Dicipline").selectedIndex = "0";
+            document.getElementById("ReviewedBy").selectedIndex = "0";
+            document.getElementById("ApprovedBy").selectedIndex = "0";
+            document.getElementById("IntRevno").value = "";
+            document.getElementById("DrawingNumber").value = "";
+            document.getElementById("Upload").value = "";
+            document.getElementById("CustApprDate").value = "";
+            document.getElementById("DgnSntDate").value = "";
+            document.getElementById("CustFeedback").value = "";
+            document.getElementById("RevNo").value = "";
+            document.getElementById("CustApprStatus").value = "";
+
+            var ssnMessage = $('#Dicipline-message');
+            ssnMessage.hide();
+            ssnMessage = $('#ReviewedBy-message');
+            ssnMessage.hide();
+            ssnMessage = $('#ApprovedBy-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_Planned_Date-message');
+            ssnMessage.hide();
+            ssnMessage = $('#IntRevno-message');
+            ssnMessage.hide();
+            //ssnMessage = $('#Upload-message');
+            //ssnMessage.hide();
+        }
+
+
+        function EditItem(id_projectdesign, Id) {
+            Id++;
+            var table = document.getElementById("team-list");
+            document.getElementById("id_projectdesign").value = id_projectdesign;
+          
+            document.getElementById("DrawingNumber").value = table.rows[Id].cells[2].innerText;
+            document.getElementById("IntRevno").value = table.rows[Id].cells[3].innerText;
+            //document.getElementById("ReviewedBy").value = table.rows[Id].cells[4].innerText;
+            //document.getElementById("ApprovedBy").value = table.rows[Id].cells[5].innerText;
+            document.getElementById("CustApprDate").value = table.rows[Id].cells[7].innerText;
+            document.getElementById("DgnSntDate").value = table.rows[Id].cells[8].innerText;
+            document.getElementById("CustFeedback").value = table.rows[Id].cells[9].innerText;
+            document.getElementById("RevNo").value = table.rows[Id].cells[10].innerText;
+            //document.getElementById("CustApprStatus").value = table.rows[Id].cells[11].innerText;
+
+            document.getElementById("SubmitFinding").style.display = "";
+            document.getElementById("Save").style.display = "none";
+
+            //var Dicipline = table.rows[Id].cells[1].innerText;
+            //var Reviewer = table.rows[Id].cells[4].innerText;
+            //var Approver = table.rows[Id].cells[5].innerText;
+            //var CustApprStatus = table.rows[Id].cells[11].innerText;
+           
+            var Diciplineval = (table.rows[Id].cells[1].innerText).split(',');
+            $('#Dicipline').val('').trigger("chosen:updated");
+            $('#Dicipline option').filter(function () {
+                return Diciplineval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger("chosen:updated"); //Set selected
+
+            var ReviewedByval = (table.rows[Id].cells[4].innerText).split(',');
+            $('#ReviewedBy').val('').trigger("chosen:updated");
+            $('#ReviewedBy option').filter(function () {
+                return ReviewedByval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger("chosen:updated"); //Set selected
+
+
+            var ApprovedByval = (table.rows[Id].cells[5].innerText).split(',');
+            $('#ApprovedBy').val('').trigger("chosen:updated");
+            $('#ApprovedBy option').filter(function () {
+                return ApprovedByval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger("chosen:updated"); //Set selected
+
+
+            var CustApprStatuseval = (table.rows[Id].cells[11].innerText).split(',');
+            $('#CustApprStatus').val('').trigger("chosen:updated");
+            $('#CustApprStatus option').filter(function () {
+                return CustApprStatuseval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger("chosen:updated"); //Set selected
+          
+
+         }
+
+      
+         
+
+         
+          
+        
+           function FileFormatValidation(file) {
+               var ext = file.value.split(".").pop().toLowerCase();
+               if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png", "dwg", "dxf"]) == -1) {
+                   file.value = "";
+                   jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+               }
+           }
+
+
+           $(function () {
+
+               $("#QCDocsVal").click(function () {
+                   if ($("#QCDocsVal").prop('checked')) {
+                       {
+                           $(this).prop('checked', true);
+                       }
+                   }
+                   else {
+
+                       $(this).prop('checked', false);
+                       document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                   }
+
+               });
+
+               $("#Customer").autocomplete({
+                   source: function (request, response) {
+                       $.ajax({
+                           url: '@Url.Action("GetCustomerList", "ProjectMgmt")',
+                        type: "POST",
+                        dataType: "json",
+                        scroll: true,
+                        scrollHeight: 100,
+                        maxHeight: 100,
+                        data: { Customer: request.term },
+                        success: function (data) {
+
+                            if (data.length == 0) {
+
+                            }
+                            response($.map(data, function (item) {
+                                return { label: item, value: item };
+                            }))
+                        }
+                    })
+                },
+                   select: function (e, ui) {
+                       e.preventDefault();
+                       $(this).val(ui.item.label);
+
+                   },
+                   messages: {
+                       noResults: "", results: ""
+                   }
+               });
+
+               $('#StartDate').datepicker({
+                   dateFormat: "dd/mm/yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true,
+
+               });
+               $('#PlannedEndDate').datepicker({
+                   dateFormat: "dd/mm/yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true,
+
+               });
+               $('#ActualEndDate').datepicker({
+                   dateFormat: "dd/mm/yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true,
+
+               });
+
+               $('#CustApprDate').datepicker({
+                   dateFormat: "dd/mm/yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true,
+
+               });
+
+               $('#DgnSntDate').datepicker({
+                   dateFormat: "dd/mm/yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true,
+
+               });
+               $("#StartDate").datepicker("StartDate", new Date());
+               $("#PlannedEndDate").datepicker("PlannedEndDate", new Date());
+               $("#ActualEndDate").datepicker("ActualEndDate", new Date());
+
+
+           });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

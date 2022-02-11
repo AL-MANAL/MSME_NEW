@@ -1,0 +1,227 @@
+﻿
+@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "SuppPerformanceEvalPDF";
+
+    ISOStd.Models.SupplierPerpRatingModels obj = new ISOStd.Models.SupplierPerpRatingModels();
+    if (ViewBag.Supplier != null)
+    {
+        obj = ViewBag.Supplier;
+    }
+
+    DataSet dsEvalDetails = new DataSet();
+    if (ViewBag.PerformanceElement != null)
+    {
+        dsEvalDetails = ViewBag.PerformanceElement;
+    }
+    int iSrno = 0; int Weightage = 0;
+    decimal TotalScore = 0;
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    ISOStd.Models.SurveyModels objSurvey = new ISOStd.Models.SurveyModels();
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always
+    }
+</STYLE>
+
+@*<div class="bp-header__main">
+        <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+    </div>*@
+
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+
+    @*<h1 class="mb-0 text-center">External Provider Performance Evaluation Report</h1>*@
+    <table class="table table-lg table-bordered">
+        <tr class="row">
+            <td colspan="4">
+                <h3>Report Details</h3>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Division
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.branch
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Department
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.Department
+                </div>
+            </td>
+            <td>
+                <b>
+                    Location
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.Location
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <b>
+                    External Provider Name
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.supplier_name
+                </div>
+            </td>
+            <td>
+                <b>
+                    Evaluation Date
+                </b>
+            </td>
+            <td>
+                <div>
+                    @if (obj.evalu_date.ToString() != "" && obj.evalu_date.ToString() != null)
+                    {
+                        @Convert.ToDateTime(obj.evalu_date.ToString("dd/MM/yyyy"));
+                    }
+                </div>
+            </td>
+        </tr>
+
+        @*<tr>
+            <td>
+                <b>
+                    Auditee
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.auditee
+                </div>
+            </td>
+            <td>
+                <b>
+                    Auditor
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.auditor
+                </div>
+            </td>
+        </tr>*@
+        <tr>
+            <td>
+                <b>
+                    Overall Performance
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.overall_perf
+                </div>
+            </td>
+        </tr>
+
+    </table>
+</div>
+<br />
+<br />
+
+
+@if (dsEvalDetails != null && dsEvalDetails.Tables.Count > 0 && dsEvalDetails.Tables[0].Rows.Count > 0)
+{
+
+    <h5 for="Incident Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">Performance Details</h5>
+
+
+    <table class="table table-lg">
+        <tr>
+            <th> Sr. No.</th>
+            <th> Element</th>
+            <th> Rating</th>
+            @*<th> Weightage</th>*@
+        </tr>
+        @for (int i = 0; i < dsEvalDetails.Tables[0].Rows.Count; i++)
+        {
+            iSrno = iSrno + 1;
+            Weightage = Weightage + Convert.ToInt16(objSurvey.GetSurveyRatingWeightageById(dsEvalDetails.Tables[0].Rows[i]["SQ_OptionsId"].ToString()));
+            <tr>
+                <td>
+                    @iSrno
+                </td>
+                <td>
+                    @objSurvey.GetSurveyQuestionNameById(dsEvalDetails.Tables[0].Rows[i]["SQId"].ToString()))
+                </td>
+                <td>
+                    @objSurvey.GetSurveyRatingNameById(dsEvalDetails.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                </td>
+                @*<td>
+                    @objSurvey.GetSurveyRatingWeightageById(dsEvalDetails.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                </td>*@
+            </tr>
+
+        }
+        @*@{
+            TotalScore = Weightage * 100 / (iSrno * 10);
+        }*@
+
+    </table>
+
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <table class="table table-lg">
+
+            <tr>
+                <td>
+                    Excellent <br /><span class="bg-dark py-1 px-2 rounded text-danger">  @obj.exceptional</span>
+                </td>
+                <td>
+                    Good  <br /><span class="bg-dark py-1 px-2 rounded text-danger">@obj.satisfactory</span>
+                </td>
+                <td>
+                    Average<br /> <span class="bg-dark py-1 px-2 rounded text-danger">@obj.insufficient  </span>
+                </td>
+                <td>
+                    Poor<br /> <span class="bg-dark py-1 px-2 rounded text-danger"> @obj.unsatisfactory</span>
+                </td>
+                @*<td>
+                    Insufficient info. to rate<br /> <span class="bg-dark py-1 px-2 rounded text-danger">@obj.insufficient</span>
+                </td>*@
+            </tr>
+            @*<tr class="row">
+                <td> Total Score</td>
+                <td>@TotalScore</td>
+            </tr>*@
+        </table>
+
+    </div>
+
+
+</div>

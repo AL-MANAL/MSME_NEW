@@ -1,0 +1,290 @@
+﻿@model ISOStd.Models.EmployeeMasterModels
+@using System.Data;
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.EmployeeMasterModelList objTList = new ISOStd.Models.EmployeeMasterModelList();
+    ISOStd.Models.EmployeeMasterModelList objQList = new ISOStd.Models.EmployeeMasterModelList();
+    ISOStd.Models.EmployeeMasterModelList objList = new ISOStd.Models.EmployeeMasterModelList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    DataSet dsMI = new DataSet();
+    int icnt = 0, icnt1 = 0, icnt2 = 0;
+    if (ViewBag.objQList != null)
+    {
+        objQList = ViewBag.objQList;
+        icnt = objQList.EmployeeList.Count;
+    }
+    if (ViewBag.objSkillList != null)
+    {
+        objList = ViewBag.objSkillList;
+        icnt1 = objList.EmployeeList.Count;
+    }
+    if (ViewBag.objTList != null)
+    {
+        objTList = ViewBag.objTList;
+        icnt2 = objTList.EmployeeList.Count;
+    }
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeeList", "EmployeeDetails", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Employee Management</span>
+                    </a>
+                    <span class="breadcrumb-item active">Employee Competence Details</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddCompetenceDetails", "EmployeeDetails", FormMethod.Post,
+                                                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Employee Competence Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="emp_no" name="emp_no" value="@Model.emp_no" />
+
+              
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.emp_id)
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.emp_id)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.emp_firstname)
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.emp_firstname)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.years_exp)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                          @Html.DisplayFor(model => model.years_exp)
+                        </td>
+                    </tr>
+
+
+
+                </table>
+
+                <fieldset>
+
+               
+
+                    <div class="card" id="hidden card">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                     
+                                        <th>Qualification</th>
+                                        <th>Year Passed</th>
+                                        <th>Document(s)</th>
+
+                                    </tr>
+                                    @if (objQList.EmployeeList != null && objQList.EmployeeList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objQList.EmployeeList.Count; index++)
+                                        {
+                                            <tr>
+                                               
+                                                <td>
+                                                    @Obj.GetDropdownitemById(objQList.EmployeeList[index].qualification)
+                                                   
+                                                </td>
+                                                <td>
+                                                    @Obj.GetDropdownitemById(objQList.EmployeeList[index].q_year)
+                                                   
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='upload1 @index' name="upload1 @index" value='@objQList.EmployeeList[index].upload'>
+                                                    @if (objQList.EmployeeList[index].upload != null && objQList.EmployeeList[index].upload != "" && objQList.EmployeeList[index].upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objQList.EmployeeList[index].upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        @System.IO.Path.GetFileName(docs)
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                  
+
+                    <div class="card" id="hidden card1">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                       
+                                        <th>Skills</th>
+                                    </tr>
+                                    @if (objList.EmployeeList != null && objList.EmployeeList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objList.EmployeeList.Count; index++)
+                                        {
+                                            <tr>
+                                               
+                                                <td>
+                                                    @objList.EmployeeList[index].skill
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card" id="hidden card2">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list2">
+                                    <tr class="bg-blue">
+                                    
+                                        <th>Type of Training</th>
+                                        <th>Training Duration in Days</th>
+                                        <th>Training Completed On</th>
+                                        <th>Document(s)</th>
+
+                                    </tr>
+                                    @if (objTList.EmployeeList != null && objTList.EmployeeList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objTList.EmployeeList.Count; index++)
+                                        {
+                                            <tr>
+                                               
+                                                <td>
+                                                    @objTList.EmployeeList[index].training_type
+                                                </td>
+                                                <td>
+                                                    @objTList.EmployeeList[index].duration
+                                                </td>
+                                                <td>
+                                                    @if (objTList.EmployeeList[index].completed_date != null && objTList.EmployeeList[index].completed_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        @objTList.EmployeeList[index].completed_date.ToString("yyyy-MM-dd")
+                                                        
+                                                    }
+                                                   
+                                                </td>
+                                                <td>
+                                                  
+                                                    @if (objTList.EmployeeList[index].training_upload != null && objTList.EmployeeList[index].training_upload != "" && objTList.EmployeeList[index].training_upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objTList.EmployeeList[index].training_upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        Preview
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                 
+
+                </fieldset>
+
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeeList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                     @:     text: '@TempData["alertdata"]',
+                                     @:     type: 'error'
+                                     @: }).show();
+                        }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                       @:text: '@TempData["Successdata"]',
+                       @: type: 'success'
+                       @:}).show();
+            }
+
+        });
+      
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

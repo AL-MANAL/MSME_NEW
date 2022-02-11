@@ -1,0 +1,1660 @@
+﻿@model ISOStd.Models.ObjectivesModels
+@using System.Data
+
+@{
+    ViewBag.Title = "ObjectivesDetails";
+
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.ObjectivesModels obj = new ISOStd.Models.ObjectivesModels();
+    ISOStd.Models.ObjectivesModelsList ObjectPCFF = new ISOStd.Models.ObjectivesModelsList();
+    ISOStd.Models.ObjectivesModelsList ObjectPlan = new ISOStd.Models.ObjectivesModelsList();
+    ISOStd.Models.ObjectivesModelsList EvalList = new ISOStd.Models.ObjectivesModelsList();
+
+
+    if (ViewBag.ObjectPCFF != null)
+    {
+        ObjectPCFF = ViewBag.ObjectPCFF;
+    }
+
+    if (ViewBag.ObjectPlan != null)
+    {
+        ObjectPlan = ViewBag.ObjectPlan;
+    }
+
+    if (ViewBag.EvalList != null)
+    {
+        EvalList = ViewBag.EvalList;
+    }
+
+    string login_user = ObjGlobal.GetCurrentUserSession().empid;
+}
+<style>
+    #TextDiv {
+        font-size: 2em;
+        text-align: center;
+        margin: 0 auto;
+    }
+</style>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ObjectivesList", "Objectives", new {View = ViewBag.View })" class="breadcrumb-item">
+                        @if (ViewBag.View == "1")
+                        {
+                            <span class="breadcrumb-item">Quality Objectives </span>
+                            <span class="breadcrumb-item active">  Quality Objectives Details </span>
+                        }
+                        else if (ViewBag.View == "2")
+                        {
+                            <span class="breadcrumb-item">Health & Safety Objectives </span>
+                            <span class="breadcrumb-item active">  Health & Safety Objective Details</span>
+                        }
+                        else if (ViewBag.View == "3")
+                        {
+                            <span class="breadcrumb-item">Environment Objectives </span>
+                            <span class="breadcrumb-item active"> Environment Objective Details </span>
+                        }
+                    </a>                   
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @*@if (Obj.GetCurrentUserSession().IncidentRpt.Contains("4"))
+        {*@
+                    @using (Html.BeginForm("ObjectivesPDF", "Objectives", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@Model.Objectives_Id" />
+                        <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@Model.ObjectivesTrans_Id" />
+                        <button type="submit" class="dropdown-item">
+                            <i class="icon-printer2"></i> Report
+                        </button>
+                    </div>
+                    }
+                    @*}*@
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        @if (ViewBag.View == "1")
+        {
+            <h5 class="card-title">Quality Objective Details</h5>
+        }
+        else if (ViewBag.View == "2")
+        {
+            <h5 class="card-title">Health & Safety Objective Details</h5>
+        }
+        else if (ViewBag.View == "3")
+        {
+            <h5 class="card-title">Environment Objective Details</h5>
+        }
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">
+                    @if (ObjGlobal.GetCurrentUserSession().Objectives.Contains("3") && Model.Approved_Status_id == "0")
+                    {
+                        <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("ObjectivesEdit", "Objectives", new { Objectives_Id = Model.Objectives_Id,View = ViewBag.View })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <b>  <i class="icon-add-to-list"></i></b> Edit
+                        </a>
+                    }
+                    @Html.ActionLink("Back to List", "ObjectivesList", new { View = ViewBag.View }, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_Criteria)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_Criteria)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Estld_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Estld_by)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.objective_level)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.objective_level)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Obj_Ref)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Obj_Ref)
+                        </span>
+                    </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Dept)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Dept)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Location)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Obj_Ref)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Obj_Ref)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Obj_Estld_On)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Obj_Estld_On != null && Model.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.Obj_Estld_On.ToShortDateString()
+                                }
+                            </p>
+                        </td>
+                    </tr>
+
+                    @*Trans*@
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Objectives_val)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Objectives_val)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Base_Line_Value)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Base_Line_Value)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.baseline_data)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.baseline_data)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Action_Plan)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Action_Plan != null && Model.Action_Plan != "" && Model.Action_Plan.Length > 0)
+                                {
+                                    foreach (var docs in Model.Action_Plan.Trim(',').Split(','))
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Obj_Target)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Obj_Target)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Accepted_Value)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Accepted_Value)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.unit)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.unit)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Target_Date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Target_Date != null && Model.Target_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.Target_Date.ToShortDateString()
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Freq_of_Eval)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Freq_of_Eval)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Monitoring_Mechanism)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Monitoring_Mechanism)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.obj_inline)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.obj_inline)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Risk_ifObjFails)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Risk_ifObjFails)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Approved_By)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Approved_By)
+                            </p>
+                        </td>
+                        @if (Model.Approved_Status_id == "1")
+                        {
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Approved Date
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ApprovedDate != null && Model.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Model.ApprovedDate.ToString()
+                                    }
+                                </p>
+                            </td>
+                        }
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                    </tr>
+                    @if (Model.Approved_Status_id == "2")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Rejected Date
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ApprovedDate != null && Model.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Model.ApprovedDate.ToString()
+                                    }
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Rejected Document
+                                </p>
+                            </td>
+                            <td class="col">
+                                @if (Model.obj_reject_upload != null && Model.obj_reject_upload != "" && Model.obj_reject_upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.obj_reject_upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Reason for not accepting Objective
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.obj_reject_comment)
+                                </p>
+                            </td>
+                        </tr>
+                    }
+
+            </table>
+
+            <br />
+
+            @*Approval Details*@
+            @if (Model.Approved_Status_id == "0" && Model.Approved_ById.Contains(login_user))
+            {
+                using (Html.BeginForm("ObjectivesApprovebyDetails", "Objectives", FormMethod.Post, new { enctype = "multipart/form-data", id = "formstatus", name = "formstatus" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@Model.Objectives_Id" />
+                    <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@Model.ObjectivesTrans_Id" />
+                    <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+                    <div class="card-body">
+
+                        <div class="container-fluid">
+                            <div id="TextDiv">
+                                <h1>Objective Status</h1>
+                                <label><input type="radio" id="obj_status" name="obj_status" value="1" required onchange="CheckedbyRequired()" />Accept</label> &nbsp;&nbsp;&nbsp;
+                                <label><input type="radio" id="obj_status" name="obj_status" value="2" required onchange="CheckedbyRequired()" />Reject</label>
+                            </div>
+                            <div class="card card-table">
+                                <table class="table table-bordered" id="commentstatus" style="display:none">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">   Reason for not accepting Objective</td>
+                                            <td class="col"> <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="obj_reject_comment" name="obj_reject_comment"></textarea></td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">  Upload Document</td>
+                                            <td class="col">
+                                                <input type="file" name="obj_reject_upload" id="obj_reject_upload" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                                                       accept=".pdf, .doc, .docx, .jpg, .jpeg, .xls, .xlsx, image/*" class="bootstrap-uploader" data-fouc required />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" style="display: block; margin: 0 auto; text-align: center" class="btn bg-indigo-400" onclick="ProgressIconFunction('#formstatus')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                    </div>
+                }
+            }
+
+            @*PCFF*@
+            @if (ViewBag.ObjectPCFF != null && ObjectPCFF.ObjectivesMList != null && ObjectPCFF.ObjectivesMList.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2"> Objective Potential Causes for Failure Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table11">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>
+                                    Action No
+                                </th>
+                                <th>
+                                    Potential Cause
+                                </th>
+                                <th>
+                                    Impact
+                                </th>
+                                <th>
+                                    Mitigation Measure(s)
+                                </th>
+                                <th>
+                                    Target Date to implement the measure
+                                </th>
+                                <th>
+                                    Status Updated On
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th>
+                                    Notified To
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < ObjectPCFF.ObjectivesMList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @(i + 1)
+                                    </td>
+                                    <td>
+                                        @ObjectPCFF.ObjectivesMList[i].potential_causes
+                                    </td>
+                                    <td>
+                                        @ObjectPCFF.ObjectivesMList[i].impact
+                                    </td>
+                                    <td>
+                                        @ObjectPCFF.ObjectivesMList[i].mitigation_measure
+                                    </td>
+                                    <td>
+                                        @if (ObjectPCFF.ObjectivesMList[i].targeted_on.ToString() != "" && ObjectPCFF.ObjectivesMList[i].targeted_on > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(ObjectPCFF.ObjectivesMList[i].targeted_on.ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (ObjectPCFF.ObjectivesMList[i].updated_on.ToString() != "" && ObjectPCFF.ObjectivesMList[i].updated_on > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(ObjectPCFF.ObjectivesMList[i].updated_on.ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @(ObjectPCFF.ObjectivesMList[i].potential_status)
+                                    </td>
+                                    <td>
+                                        @(ObjectPCFF.ObjectivesMList[i].Pcff_Notify)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <br />
+
+            @*Objective Action Plan*@
+            @if (ViewBag.ObjectPlan != null && ObjectPlan.ObjectivesMList != null && ObjectPlan.ObjectivesMList.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2"> Objective Action Plan Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>
+                                    Action No
+                                </th>
+                                <th>
+                                    Ref. Action Plan
+                                </th>
+                                <th>
+                                    Planned On
+                                </th>
+                                <th>
+                                    Action to be taken
+                                </th>
+                                <th>
+                                    Resource Required
+                                </th>
+                                <th>
+                                    Target completion date
+                                </th>
+                                <th>
+                                    Personnel Responsible
+                                </th>
+                                <th class="not-export-column">
+                                    File Upload
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < ObjectPlan.ObjectivesMList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @(i + 1)
+                                    </td>
+                                    <td>
+                                        @ObjectPlan.ObjectivesMList[i].action_ref_no
+                                    </td>
+                                    <td>
+                                        @if (ObjectPlan.ObjectivesMList[i].begin_date.ToString() != "" && ObjectPlan.ObjectivesMList[i].begin_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].begin_date.ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @ObjectPlan.ObjectivesMList[i].actionplan
+                                    </td>
+                                    <td>
+                                        @ObjectPlan.ObjectivesMList[i].resource
+                                    </td>
+                                    <td>
+                                        @if (ObjectPlan.ObjectivesMList[i].end_date.ToString() != "" && ObjectPlan.ObjectivesMList[i].end_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].end_date.ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @*ObjGlobal.GetMultiHrEmpNameById*@ @(ObjectPlan.ObjectivesMList[i].resp_person)
+                                    </td>
+
+                                    <td>
+                                        @if (ObjectPlan.ObjectivesMList[i].upload != "")
+                                        {
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = ObjectPlan.ObjectivesMList[i].upload })' target="_blank">Preview</a>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <p class="bg-dark py-1 px-2 rounded text-danger">No File</p>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <br />
+
+            @*Objective Action Plan Status*@
+            @if (ViewBag.ObjectPlan != null && ObjectPlan.ObjectivesMList != null && ObjectPlan.ObjectivesMList.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2"> Objective Action Plan Status Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>
+                                    Action No
+                                </th>
+                                <th>
+                                    Ref. Action Plan
+                                </th>
+                                <th>
+                                    Action to be taken
+                                </th>
+                                <th>
+                                    Target completion date
+                                </th>
+                                <th>
+                                    Action Status
+                                </th>
+                                <th>
+                                    Reasons for not completing
+                                </th>
+                                <th>
+                                    Status Updated On
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < ObjectPlan.ObjectivesMList.Count; i++)
+                            {
+                            <tr>
+                                <td>
+                                    @(i + 1)
+                                </td>
+                                <td>
+                                    @ObjectPlan.ObjectivesMList[i].action_ref_no
+                                </td>
+                                <td>
+                                    @ObjectPlan.ObjectivesMList[i].actionplan
+                                </td>
+                                <td>
+                                    @if (ObjectPlan.ObjectivesMList[i].end_date.ToString() != "" && ObjectPlan.ObjectivesMList[i].end_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].end_date.ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td> 
+                                <td>
+                                    @ObjectPlan.ObjectivesMList[i].action_status
+                                </td>
+                                <td>
+                                    @ObjectPlan.ObjectivesMList[i].reason_notcomplete
+                                </td>
+                                <td>
+                                    @if (ObjectPlan.ObjectivesMList[i].status_updated_on.ToString() != "" && ObjectPlan.ObjectivesMList[i].status_updated_on > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].status_updated_on.ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <br />
+            @*Objective Evaluation Plan*@
+            @if (ViewBag.EvalList != null && EvalList.ObjectivesMList != null && EvalList.ObjectivesMList.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2"> Objective Evaluation Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table2">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>
+                                    Action No
+                                </th>
+                                <th>
+                                    Evaluation Date
+                                </th>
+                                <th>
+                                    Evaluation Period
+                                </th>
+                                <th>
+                                    Source of Data
+                                </th>
+                                <th>
+                                    Upload
+                                </th>
+                                <th>
+                                    Method of Evaluation
+                                </th>
+                                <th>
+                                    Measured Value
+                                </th>
+                                <th>
+                                    Objective Status for the period
+                                </th>
+                                <th>
+                                    Overall Objective Status
+                                </th>
+                                <th>
+                                    Remarks
+                                </th>
+                                <th>
+                                    Notified To
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < EvalList.ObjectivesMList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @(i + 1)
+                                    </td>
+                                    <td>
+                                        @if (EvalList.ObjectivesMList[i].Obj_Eval_On.ToString() != "" && EvalList.ObjectivesMList[i].Obj_Eval_On > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(EvalList.ObjectivesMList[i].Obj_Eval_On.ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (EvalList.ObjectivesMList[i].FromPeriod.ToString() != "" && EvalList.ObjectivesMList[i].FromPeriod > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(EvalList.ObjectivesMList[i].FromPeriod.ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                        -
+                                        @if (EvalList.ObjectivesMList[i].ToPeriod.ToString() != "" && EvalList.ObjectivesMList[i].ToPeriod > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(EvalList.ObjectivesMList[i].ToPeriod.ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @EvalList.ObjectivesMList[i].Obj_Achieved_Val
+                                    </td>
+                                    <td>
+                                        @if (EvalList.ObjectivesMList[i].Evidence != "")
+                                        {
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = EvalList.ObjectivesMList[i].Evidence })' target="_blank">Preview</a>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <p class="bg-dark py-1 px-2 rounded text-danger">No File</p>
+                                        }
+                                    </td>
+                                    <td>
+                                        @EvalList.ObjectivesMList[i].Trend
+                                    </td>
+                                    <td>
+                                        @EvalList.ObjectivesMList[i].Status_Obj_Eval
+                                    </td>
+                                    <td>
+                                        @EvalList.ObjectivesMList[i].Source_data
+                                    </td>
+                                    <td>
+                                        @EvalList.ObjectivesMList[i].Method_eval
+                                    </td>
+                                    <td>
+                                        @EvalList.ObjectivesMList[i].Remark
+                                    </td>
+                                    <td>
+                                        @ObjGlobal.GetMultiHrEmpNameById(EvalList.ObjectivesMList[i].Notified_to)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <br />
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+
+         //Objevtive Plan Details
+        var table11 = function () {
+
+             var ShowDownld = @(ObjGlobal.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+                    columnDefs: [{
+                        orderable: false,
+                        width: 100,
+                        targets: 'not-export-column'
+                    }],
+                    responsivePriority: 2, targets: -1,
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                var Delclass= @(ObjGlobal.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                var table = $('#table11').DataTable({
+                    drawCallback: function () {
+
+                        var dropdownMenu;
+
+                        // and when you show it, move it to the body                                     
+                        $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                            // grab the menu        
+                            dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                            // detach it and append it to the body
+                            $('body').append(dropdownMenu.detach());
+
+                            // grab the new offset position
+                            var eOffset = $(e.target).offset();
+
+                            // make sure to place it where it would normally go (this could be improved)
+                            dropdownMenu.css({
+                                'display': 'block',
+                                'top': eOffset.top + $(e.target).outerHeight(),
+                                'left': eOffset.left
+                            });
+                        });
+
+                        // and when you hide it, reattach the drop down, and hide it normally                                                   
+                        $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                            $(e.target).append(dropdownMenu.detach());
+                            dropdownMenu.hide();
+                        });
+
+                    },
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives PCFF Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives PCFF Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives PCFF Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives PCFF Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives PCFF Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table11").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table11').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+
+                });
+
+                $('#table11').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table11").resize();
+
+                });
+
+                $('#table11').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table11").resize();
+
+                });
+
+
+                $('#table11').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table11").resize();
+
+                });
+
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table11").resize();
+
+                });
+                                                          
+            };
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+            
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table11.init();
+        });
+
+
+    //Objevtive Plan Details
+        var table1 = function () {
+
+             var ShowDownld = @(ObjGlobal.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+                    columnDefs: [{
+                        orderable: false,
+                        width: 100,
+                        targets: 'not-export-column'
+                    }],
+                    responsivePriority: 2, targets: -1,
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                var Delclass= @(ObjGlobal.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                var table = $('#table1').DataTable({
+                    drawCallback: function () {
+
+                        var dropdownMenu;
+
+                        // and when you show it, move it to the body                                     
+                        $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                            // grab the menu        
+                            dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                            // detach it and append it to the body
+                            $('body').append(dropdownMenu.detach());
+
+                            // grab the new offset position
+                            var eOffset = $(e.target).offset();
+
+                            // make sure to place it where it would normally go (this could be improved)
+                            dropdownMenu.css({
+                                'display': 'block',
+                                'top': eOffset.top + $(e.target).outerHeight(),
+                                'left': eOffset.left
+                            });
+                        });
+
+                        // and when you hide it, reattach the drop down, and hide it normally                                                   
+                        $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                            $(e.target).append(dropdownMenu.detach());
+                            dropdownMenu.hide();
+                        });
+
+                    },
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Plan Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Plan Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Plan Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Plan Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Plan Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table1").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table1').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+                                                          
+            };
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+            
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+
+        //Evaluation Table
+
+         var table2 = function () {
+
+             var ShowDownld = @(ObjGlobal.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+                    columnDefs: [{
+                        orderable: false,
+                        width: 100,
+                        targets: 'not-export-column'
+                    }],
+                    responsivePriority: 2, targets: -1,
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                var Delclass= @(ObjGlobal.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                var table = $('#table2').DataTable({
+                    drawCallback: function () {
+
+                        var dropdownMenu;
+
+                        // and when you show it, move it to the body                                     
+                        $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                            // grab the menu        
+                            dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                            // detach it and append it to the body
+                            $('body').append(dropdownMenu.detach());
+
+                            // grab the new offset position
+                            var eOffset = $(e.target).offset();
+
+                            // make sure to place it where it would normally go (this could be improved)
+                            dropdownMenu.css({
+                                'display': 'block',
+                                'top': eOffset.top + $(e.target).outerHeight(),
+                                'left': eOffset.left
+                            });
+                        });
+
+                        // and when you hide it, reattach the drop down, and hide it normally                                                   
+                        $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                            $(e.target).append(dropdownMenu.detach());
+                            dropdownMenu.hide();
+                        });
+
+                    },
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Evaluation Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Evaluation Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Evaluation Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Evaluation Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Objectives Evaluation Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table2").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table2').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table2").resize();
+
+                });
+
+                $('#table2').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table2").resize();
+
+                });
+
+                $('#table2').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table2").resize();
+                });
+
+
+                $('#table2').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table2").resize();
+                });
+
+
+                $('#table2').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table2").resize();
+                });
+                                                          
+            };
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+            
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table2.init();
+        });
+
+
+        function CheckedbyRequired() {
+            var status = $("input[type='radio'][id='obj_status']:checked").val();
+            if (status == "2") {
+                $("#obj_reject_comment").attr('required', true);
+                document.getElementById("commentstatus").style.display = "table";
+            }
+            else {
+                $("#obj_reject_comment").attr('required', false);
+                document.getElementById("commentstatus").style.display = "none";
+            }
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png", "xlx", "xlsx"]) == -1) {
+                file.value = "";
+
+                bootbox.alert({
+                    title: 'File Format',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png, xls,xlsx format.'
+                });
+            }
+        }
+    </script>
+}
+

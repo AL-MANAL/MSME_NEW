@@ -2127,7 +2127,7 @@ namespace ISOStd.Controllers
                     int count = dsRiskModels1.Tables[0].Rows.Count;
                     if (count >= 1)
                     {
-                        sSqlstmt = "select risk_id_trans,tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,t.origin_risk"
+                        sSqlstmt = "select risk_id_trans,tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,t.origin_risk,"
                            + "(CASE WHEN tt.apprv_status='0' THEN 'Pending for Approval' WHEN tt.apprv_status='1' THEN 'Rejected' WHEN tt.apprv_status='2' THEN 'Approved' END) as apprv_status,tt.apprv_comment"
                         + " from risk_register t left join  risk_register_trans tt on t.risk_id = tt.risk_id  where t.risk_id = '" + srisk_id + "' order by risk_id_trans desc limit 1";
 

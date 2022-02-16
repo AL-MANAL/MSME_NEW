@@ -1,0 +1,877 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@using System.Data
+
+@{
+    ViewBag.Title = "";
+    DataSet dsAuditee = ViewBag.objAudit;
+    DataSet dsAuditor = ViewBag.objAuditor;
+    DataSet dsApprv = ViewBag.objApprv;
+    DataSet dsPlan = ViewBag.objPlan;
+
+    int cnt = 0,cnt1 = 0;
+    cnt = dsAuditee.Tables[0].Rows.Count;
+    cnt1 = dsAuditor.Tables[0].Rows.Count;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+    var frm_time = "";
+    var to_time = "";
+    var auditdate = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <span class="breadcrumb-item active">Internal Audit Planning</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Internal Audit Planning</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <input type="hidden" id="audit_type" name="audit_type" value="@Model.audit_type" />
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                  
+                 
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_no)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_type)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_type)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row" id="id1" style="display:none">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_criteria)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_criteria)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row" id="id2" style="display:none">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_code)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_code)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_scope)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_scope)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_method)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_method)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_objective)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_objective)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_lang)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_lang)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_methodology)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_methodology)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.PlannedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.PlannedBy)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.AuditPlanDate)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.AuditPlanDate != null && Model.AuditPlanDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.AuditPlanDate.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                       
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.logged_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.logged_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.logged_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.logged_date != null && Model.logged_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.logged_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                 
+                  
+                </tbody>
+            </table>
+            @if (dsApprv != null && dsApprv.Tables.Count > 0 && dsApprv.Tables[0].Rows.Count > 0)
+            {
+            <h2 class="bg-dark pl-sm-2">Internal Audit Approval Details</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Approver Name</th>
+                            <th>Status</th>
+                            <th>Approve/Reject Date</th>
+                            <th>Comments</th>                     
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < dsApprv.Tables[0].Rows.Count; i++)
+                        {
+
+                            <tr>                         
+                                <td>
+                                    @obj.GetEmpHrNameById(dsApprv.Tables[0].Rows[i]["approver"].ToString())
+                                </td>
+                                <td>
+                                    @(dsApprv.Tables[0].Rows[i]["apprv_status"].ToString())
+                                </td>
+                               
+                                <td>
+                                    @if (dsApprv.Tables[0].Rows[i]["apprv_date"].ToString() != "" && dsApprv.Tables[0].Rows[i]["apprv_date"].ToString() != null)
+                                    {
+                                        @Convert.ToDateTime(dsApprv.Tables[0].Rows[i]["apprv_date"].ToString()).ToString("dd/MM/yyyy hh:mm:ss")
+                                    }
+                                </td>
+                                <td>
+                                    @dsApprv.Tables[0].Rows[i]["comments"].ToString()
+                                </td>
+                                
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            }
+
+
+@if (ViewBag.status == "Approval")
+{
+    if (dsPlan != null && dsPlan.Tables.Count > 0 && dsPlan.Tables[0].Rows.Count > 0)
+    {
+        <h2 class="bg-dark pl-sm-2">Internal Audit Planning Details</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                            <thead>
+                                <tr class="bg-brown">
+                                    <th>Division</th>
+                                    <th>Department</th>
+                                    @*<th>Team</th>*@
+                                    <th>Location</th>
+                                    <th>Audit Scheduled Date</th>
+                                    <th>Auditor(s)</th>
+                                    <th>Auditee(s)</th>
+                                    <th>CheckList</th>
+                                    <th>Documents required before the audit</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < dsPlan.Tables[0].Rows.Count; i++)
+                                {
+
+                                    <tr>
+                                        <td>
+                                            @obj.GetMultiCompanyBranchNameById(dsPlan.Tables[0].Rows[i]["branch"].ToString())
+                                        </td>
+                                        <td>
+                                            @obj.GetMultiDeptNameById(dsPlan.Tables[0].Rows[i]["dept_name"].ToString())
+                                        </td>
+                                        @*<td>
+                                            @obj.GetTeamNameByID(dsPlan.Tables[0].Rows[i]["team"].ToString())
+                                        </td>*@
+                                        <td>
+                                            @obj.GetDivisionLocationById(dsPlan.Tables[0].Rows[i]["location"].ToString())
+                                        </td>
+                                        <td>
+                                            @if (dsPlan.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsPlan.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                            {
+                                                frm_time = dsPlan.Tables[0].Rows[i]["fromtime"].ToString();
+                                                to_time = dsPlan.Tables[0].Rows[i]["totime"].ToString();
+                                                auditdate = @Convert.ToDateTime(dsPlan.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy") + "  " + frm_time + " - " + to_time;
+                                            }
+                                            @auditdate
+                                        </td>
+                                        <td>
+                                           @obj.GetMultiHrEmpNameById(dsPlan.Tables[0].Rows[i]["auditors"].ToString())
+                                        </td>
+                                        <td>
+                                            @obj.GetMultiHrEmpNameById(dsPlan.Tables[0].Rows[i]["auditee_team"].ToString())
+                                        </td>
+                                        <td>
+                                            @obj.GetChecklistBychecklistId(dsPlan.Tables[0].Rows[i]["checklist"].ToString())
+                                        </td>
+                                        <td>
+                                            @dsPlan.Tables[0].Rows[i]["doc_req"].ToString()
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
+
+    }
+
+                using (Html.BeginForm("AuditProcessApproval", "AuditProcess", FormMethod.Post,
+                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                 
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Accept/Reject <text style="color:red;">*</text>
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (ViewBag.ApprStatus != null)
+                                    {
+                                    foreach (var item in ViewBag.ApprStatus)
+                                    {
+                                    <input type="radio" name="apprv_status" id="apprv_status" data-name='@item.Value' value='@item.Key' onclick="setType()" required />@item.Value
+                                    }
+                                    }
+
+
+                                </p>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Comments
+                                </p>
+                            </td>
+                            <td class="col">
+                                <div class="bg-dark py-1 px-2 rounded">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments" name="comments"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                }
+            }
+
+               @if (ViewBag.status == "Auditee")
+               {
+                using (Html.BeginForm("AuditeeApproval", "AuditProcess", FormMethod.Post,
+                                       new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                    <input type='hidden' id='itemcnt' name="itemcnt" value='@cnt' />
+                    if (dsAuditee != null && dsAuditee.Tables.Count > 0 && dsAuditee.Tables[0].Rows.Count > 0)
+                    {
+                    <h2 class="bg-dark pl-sm-2">Internal Audit Planning Details</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                            <thead>
+                                <tr class="bg-brown">
+                                    <th>Division</th>
+                                    <th>Department</th>
+                                    @*<th>Team</th>*@
+                                    <th>Location</th>
+                                    <th>Audit Scheduled Date</th>                            
+                                    <th>Auditor(s)</th>
+                                    <th>Auditee(s)</th>
+                                    <th>CheckList</th>     
+                                    <th>Status</th>   
+                                    <th>Comments</th>  
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < dsAuditee.Tables[0].Rows.Count; i++)
+                                {
+
+                                    <tr>
+                                        <td>
+                                           
+                                            <input type='hidden' id='Audit_Id@(i)' name="Audit_Id@(i)" value='@dsAuditee.Tables[0].Rows[i]["Audit_Id"].ToString()' />
+                                            <input type='hidden' id='Plan_Id@(i)' name="Plan_Id@(i)" value='@dsAuditee.Tables[0].Rows[i]["Plan_Id"].ToString()' />
+                                            @obj.GetMultiCompanyBranchNameById(dsAuditee.Tables[0].Rows[i]["branch"].ToString())
+                                        </td>
+                                        <td>
+                                            @obj.GetMultiDeptNameById(dsAuditee.Tables[0].Rows[i]["dept_name"].ToString())
+                                        </td>
+                                        @*<td>
+                                            @obj.GetTeamNameByID(dsAuditee.Tables[0].Rows[i]["team"].ToString())
+                                        </td>*@ 
+                                        <td>
+                                            @obj.GetDivisionLocationById(dsAuditee.Tables[0].Rows[i]["location"].ToString())
+                                        </td>                            
+                                        <td>
+                                            @if (dsAuditee.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditee.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                            {
+                                                frm_time = dsAuditee.Tables[0].Rows[i]["fromtime"].ToString();
+                                                to_time = dsAuditee.Tables[0].Rows[i]["totime"].ToString();
+                                                auditdate = @Convert.ToDateTime(dsAuditee.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy") + "  " + frm_time + " - " + to_time;
+                                            }
+                                            @auditdate
+                                        </td>
+                                        <td>
+                                            @obj.GetMultiHrEmpNameById(dsAuditee.Tables[0].Rows[i]["auditors"].ToString())
+                                        </td>  
+                                        <td>
+                                            @obj.GetMultiHrEmpNameById(dsAuditee.Tables[0].Rows[i]["auditee_team"].ToString())
+                                        </td>  
+                                        <td>
+                                            @obj.GetChecklistBychecklistId(dsAuditee.Tables[0].Rows[i]["checklist"].ToString())
+                                        </td>  
+                                        <td>
+                                            @if (ViewBag.AuditorStatus != null)
+                                            {
+                                                foreach (var item in ViewBag.AuditorStatus)
+                                                {
+                                                    <input type="radio" name="apprv_status@(i)" id="apprv_status@(i)" data-name='@item.Value' value='@item.Key' onclick="ssetType(@i)" required />@item.Value
+                                                }
+                                            }
+                                        </td>
+                                        <td>
+                                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments@(i)" name="comments@(i)"></textarea>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    }
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                }
+               }
+            @if (ViewBag.status == "Auditor")
+            {
+                using (Html.BeginForm("AuditorApproval", "AuditProcess", FormMethod.Post,
+                                       new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                    <input type='hidden' id='itemcnt' name="itemcnt" value='@cnt1' />
+                    if (dsAuditor != null && dsAuditor.Tables.Count > 0 && dsAuditor.Tables[0].Rows.Count > 0)
+                    {
+                        <h2 class="bg-dark pl-sm-2">Internal Audit Planning Details</h2>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                <thead>
+                                    <tr class="bg-brown">
+                                        <th>Division</th>
+                                        <th>Department</th>
+                                        @*<th>Team</th>*@
+                                        <th>Location</th>
+                                        <th>Audit Scheduled Date</th>
+                                        <th>Auditor(s)</th>
+                                        <th>Auditee(s)</th>
+                                        <th>CheckList</th>
+                                        <th>Status</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < dsAuditor.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <tr>
+                                            <td>
+
+                                                <input type='hidden' id='Audit_Id@(i)' name="Audit_Id@(i)" value='@dsAuditor.Tables[0].Rows[i]["Audit_Id"].ToString()' />
+                                                <input type='hidden' id='Plan_Id@(i)' name="Plan_Id@(i)" value='@dsAuditor.Tables[0].Rows[i]["Plan_Id"].ToString()' />
+                                                @obj.GetMultiCompanyBranchNameById(dsAuditor.Tables[0].Rows[i]["branch"].ToString())
+                                            </td>
+                                            <td>
+                                                @obj.GetMultiDeptNameById(dsAuditor.Tables[0].Rows[i]["dept_name"].ToString())
+                                            </td>
+                                            @*<td>
+                                                @obj.GetTeamNameByID(dsAuditor.Tables[0].Rows[i]["team"].ToString())
+                                            </td>*@
+                                            <td>
+                                                @obj.GetDivisionLocationById(dsAuditor.Tables[0].Rows[i]["location"].ToString())
+                                            </td>
+                                            <td>
+                                                @if (dsAuditor.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditor.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                                {
+                                                    frm_time = dsAuditor.Tables[0].Rows[i]["fromtime"].ToString();
+                                                    to_time = dsAuditor.Tables[0].Rows[i]["totime"].ToString();
+                                                    auditdate = @Convert.ToDateTime(dsAuditor.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy") + "  " + frm_time + " - " + to_time;
+                                                }
+                                                @auditdate
+                                            </td>
+                                            <td>
+                                                @obj.GetMultiHrEmpNameById(dsAuditor.Tables[0].Rows[i]["auditors"].ToString())
+                                            </td>
+                                            <td>
+                                                @obj.GetMultiHrEmpNameById(dsAuditor.Tables[0].Rows[i]["auditee_team"].ToString())
+                                            </td>
+                                            <td>
+                                                @obj.GetChecklistBychecklistId(dsAuditor.Tables[0].Rows[i]["checklist"].ToString())
+                                            </td>
+                                            <td>
+                                                @if (ViewBag.AuditorStatus != null)
+                                                {
+                                                    foreach (var item in ViewBag.AuditorStatus)
+                                                    {
+                                                        <input type="radio" name="apprv_status@(i)" id="apprv_status@(i)" data-name='@item.Value' value='@item.Key' onclick="ssetType(@i)" required />@item.Value
+                                                    }
+                                                }
+                                            </td>
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments@(i)" name="comments@(i)"></textarea>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    }
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        //----zzz
+
+
+$(document).ready(function () {
+
+          @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+
+        var audit_type = document.getElementById("audit_type").value;
+        if (audit_type == "Management System Audit") {
+
+            document.getElementById("id1").style.display = "block";
+
+        }
+        else {
+
+            document.getElementById("id2").style.display = "block";
+
+        }
+
+        function setType() {
+            var radioValue = $("input[name='apprv_status']:checked").data('name');
+            if (radioValue == "Accept") {
+                document.getElementById("comments").required = false;
+             
+            }
+            else {
+                document.getElementById("comments").required = true;
+            }
+        }
+        function ssetType(i) {
+            var radioValue = $("input[name='apprv_status"+i+"']:checked").data('name');
+            if (radioValue == "Confirm") {
+                document.getElementById("comments"+i).required = false;
+
+            }
+            else {
+                document.getElementById("comments"+i).required = true;
+            }
+        }
+
+        var table1 = function () {
+
+
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                @*var Delclass= @(obj.GetCurrentUserSession().ChangeMgmt.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };*@
+                var table = $('#table1').DataTable({
+
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table1").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table1').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+
+
+
+
+            };
+
+
+
+
+
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+
+
+    </script>
+
+}

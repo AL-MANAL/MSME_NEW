@@ -1,0 +1,542 @@
+﻿@model ISOStd.Models.AuditProcessModels
+
+@{
+    ViewBag.Title = "AuditPlan";
+}
+
+
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ExternalAuditorAvailabilityList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">External Auditor Availability List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Availabilities </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+}
+
+@using (Html.BeginForm("AuditPlan", "AuditProcess", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Auditor's Availabilities</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            Auditor Name / Number <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Audit_criteria" name="Audit_criteria" required>
+                                    <option value='' hidden>Select</option>
+                                    
+                                </select>
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+
+
+                    
+
+
+                </table>
+
+                <br />
+                @*Audit team Details*@
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Availabilities</legend>
+                    <table class="table table-lg" id="table1">
+
+                        <tbody>
+                            <tr class="row">
+                                <th class="col-xs-2 col-md-2" style="font-weight: bold;">Date</th>
+                                <td class="col">
+                                    <input class="form-control" type='date' id='AuditDate' name="AuditDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <span class="field-validation-error"><span id="AuditDate-message" style="display: none;">Please Scheduled Date.</span></span>
+                                </td>
+
+
+
+                                <th class="col-xs-2 col-md-2" style="font-weight: bold;">From Time</th>
+                                <td class="col">
+
+                                    @*<p>*@
+                                    Hr: @Html.DropDownList("FromPlanTimeInHour", new SelectList(ViewBag.PlanTimeInHour, "PlanTimeInHour"), new { @class = "form-control" })
+                                    Min: @Html.DropDownList("FromPlanTimeInMin", new SelectList(ViewBag.PlanTimeInMin, "PlanTimeInMin"), new { @class = "form-control" })
+                                    @*</p>*@
+                                    <span class="field-validation-error"><span id="FromPlanTimeInHour-message" style="display: none;">Please select From Time .</span></span>
+                                </td>
+
+
+                                <th class="col-xs-2 col-md-2" style="font-weight: bold;">To Time</th>
+                                <td class="col">
+
+                                    @*<p>*@
+                                    Hr: @Html.DropDownList("ToPlanTimeInHour", new SelectList(ViewBag.PlanTimeInHour, "PlanTimeInHour"), new { @class = "form-control" })
+                                    Min: @Html.DropDownList("ToPlanTimeInMin", new SelectList(ViewBag.PlanTimeInMin, "PlanTimeInMin"), new { @class = "form-control" })
+                                    @*</p>*@
+                                    <span class="field-validation-error"><span id="ToPlanTimeInHour-message" style="display: none;">Please select To Time .</span></span>
+                                </td>
+                                <td class="col">
+                                    <img src='@Url.Content("~/images/icon_add.png")' onclick='AddAuditTeamDetails()' style='cursor:pointer; padding-right: 5px;' />Add
+                                </td>
+                            </tr>
+
+
+
+                            
+
+                        </tbody>
+                    </table>
+                </fieldset>
+
+            </div>
+
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "ExternalAuditorAvailabilityList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" ><i class="icon-checkmark3 mr-2"></i> Save Details</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+
+        function CalJustify() {
+            var Invest_need = document.getElementById("invest_need").value;
+
+            if (Invest_need.toLowerCase() == "no") {
+                //document.getElementById("justify").disabled = false;
+                document.getElementById("justifyrow").style.display = "none";
+            }
+            else {
+                //document.getElementById("justify").disabled = true;
+                document.getElementById("justifyrow").style.display = "";
+            }
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("AuditDate").value == "") {
+                ssnMessage = $('#AuditDate-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#AuditDate-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("division").value == "") {
+                ssnMessage = $('#division-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#division-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("location").value == "") {
+                ssnMessage = $('#location-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#location-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("dept").value == "") {
+                ssnMessage = $('#dept-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#dept-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("ToPlanTimeInHour").value == "") {
+                ssnMessage = $('#ToPlanTimeInHour-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ToPlanTimeInHour-message');
+                ssnMessage.hide();
+            }
+
+
+
+            if (document.getElementById("FromPlanTimeInHour").value == "") {
+                ssnMessage = $('#FromPlanTimeInHour-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#FromPlanTimeInHour-message');
+                ssnMessage.hide();
+            }
+
+
+
+            if (document.getElementById("internal_audit_team").value == "") {
+                ssnMessage = $('#internal_audit_team-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#internal_audit_team-message');
+                ssnMessage.hide();
+            }
+
+
+
+            if (document.getElementById("Notified_To").value == "") {
+                ssnMessage = $('#Notified_To-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Notified_To-message');
+                ssnMessage.hide();
+            }
+
+
+            if (document.getElementById("checklist").value == "") {
+                ssnMessage = $('#checklist-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#checklist-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+        function AddAuditTeamDetails() {
+
+        if (Validation() == true) {
+
+
+            var cnt = document.getElementById("itemcnt").value;
+
+            document.getElementById("itemcnt").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            var cell4 = row.insertCell(4);
+            var cell5 = row.insertCell(5);
+            var cell6 = row.insertCell(6);
+            var cell7 = row.insertCell(7);
+            var cell8 = row.insertCell(8);
+            var cell9 = row.insertCell(9);
+
+
+
+            var division = $('#division').val();
+
+            var location = $('#location').val();
+            var dept = $('#dept').val();
+            var internal_audit_team = $('#internal_audit_team').val();
+            var Notified_To = $('#Notified_To').val();
+            var checklist = $('#checklist').val();
+
+
+
+            var divisionText = $("#division option:selected").text();
+            var locationText = $("#location option:selected").text();
+
+            var internal_audit_teamText = $("#internal_audit_team option:selected").toArray().map(item => item.text).join();
+            var Notified_ToText = $("#Notified_To option:selected").toArray().map(item => item.text).join();
+
+            var checklistText = $("#checklist option:selected").text();
+            var deptText = $("#dept option:selected").text();
+
+
+
+            if (checklist == 'Select' ) {
+                checklist = '';
+            }
+
+            var ToPlanTimeInHour = $('#ToPlanTimeInHour').val();
+            if (ToPlanTimeInHour == null) {
+                ToPlanTimeInHour = 0;
+            }
+
+            var ToPlanTimeInMin = $('#ToPlanTimeInMin').val();
+            if (ToPlanTimeInMin == null) {
+                ToPlanTimeInMin = 0;
+            }
+
+
+
+            var FromPlanTimeInHour = $('#FromPlanTimeInHour').val();
+            if (FromPlanTimeInHour == null) {
+                FromPlanTimeInHour = 0;
+            }
+
+            var FromPlanTimeInMin = $('#FromPlanTimeInMin').val();
+            if (FromPlanTimeInMin == null) {
+                FromPlanTimeInMin = 0;
+            }
+            var AuditDate = reformatDate($("#AuditDate").val());
+
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell1.innerHTML = "<input type='hidden' id='AuditDate" + cnt + "' name='AuditDate" + cnt + "' value='" + AuditDate + "'>" + AuditDate;
+            cell2.innerHTML = "<input type='hidden' id='division" + cnt + "' name='division" + cnt + "' value='" + division + "'>" + divisionText;
+            cell3.innerHTML = "<input type='hidden' id='location" + cnt + "' name='location" + cnt + "' value='" + location + "'>" + locationText;
+            cell4.innerHTML = "<input type='hidden' id='dept" + cnt + "' name='dept" + cnt + "' value='" + dept + "'>" + deptText;
+            cell5.innerHTML = "<input type='hidden' id='FromPlanTimeInHour" + cnt + "' name='FromPlanTimeInHour" + cnt + "' value='" + FromPlanTimeInHour + ":" + FromPlanTimeInMin + "'>" + FromPlanTimeInHour + ":" + FromPlanTimeInMin;
+            cell6.innerHTML = "<input type='hidden' id='ToPlanTimeInHour" + cnt + "' name='ToPlanTimeInHour" + cnt + "' value='" + ToPlanTimeInHour + ":" + ToPlanTimeInMin + "'>" + ToPlanTimeInHour + ":" + ToPlanTimeInMin;
+
+            cell7.innerHTML = "<input type='hidden' id='internal_audit_team" + cnt + "' name='internal_audit_team" + cnt + "' value='" + internal_audit_team + "'>" + internal_audit_teamText;
+            cell8.innerHTML = "<input type='hidden' id='Notified_To" + cnt + "' name='Notified_To" + cnt + "' value='" + Notified_To + "'>" + Notified_ToText;
+            cell9.innerHTML = "<input type='hidden' id='checklist" + cnt + "' name='checklist" + cnt + "' value='" + checklist + "'>" + checklistText;
+
+
+
+            cnt++;
+            document.getElementById("itemcnt").value = cnt;
+
+            document.getElementById("hidden card").classList.remove(hideClass);
+            document.getElementById("hidden card").classList.add(showClass);
+            document.getElementById("btnCreate").style.display = "block";
+            ResetControl();
+            }
+
+        }
+
+        function ResetControl () {
+            //$("#injury_type").val('').trigger("chosen:updated");
+            //$("#division").val('').trigger('change');
+            //$("#location").val('').trigger('change');
+            //$("#dept").val('').trigger('change');
+            $("#Notified_To").val('').trigger('change');
+            $("#checklist").val('').trigger('change');
+            $("#internal_audit_team").val('').trigger('change');
+
+            $("#FromPlanTimeInHour").val('').trigger('change');
+            $("#FromPlanTimeInMin").val('').trigger('change');
+            $("#ToPlanTimeInHour").val('').trigger('change');
+            $("#ToPlanTimeInMin").val('').trigger('change');
+
+
+            document.getElementById("AuditDate").value = '@DateTime.Now.ToString("yyyy-MM-dd")';
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcnt").value;
+            cnt--;
+
+            document.getElementById("itemcnt").value = cnt;
+
+            if (cnt == "0") {
+
+                //document.getElementById("btnCreate").classList.add(hideClass);
+                //document.getElementById("btnCreate").classList.remove(showClass);
+                document.getElementById("hidden card").classList.remove(showClass);
+                document.getElementById("hidden card").classList.add(hideClass);
+                document.getElementById("btnCreate").style.display = "none";
+            }
+
+        }
+
+        function reformatDate(dateStr) {
+            dArr = dateStr.split("-");  // ex input 2010-01-18
+            return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+
+
+        function GetEmpList() {
+
+            var dept = $("#dept").val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetEmpBydept", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'dept': dept },
+                success: function (result) {
+                    $("#Notified_To").children('option').remove();
+
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Notified_To").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+
+                        });
+                        $("#Notified_To").trigger('change');
+                        return;
+                    }
+                    else {
+                        bootbox.alert({
+                            title: 'Employee List',
+                            message: 'No Employee exists for this Department.'
+                        });
+                    }
+                }
+            });
+        }
+
+
+
+           function GetDeptList() {
+            var selectedValues = [];
+          $("#division :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#dept").children('option').remove();
+
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#dept").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+
+                                                            $("#dept").trigger('change');
+
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });
+        }
+
+
+        function GetLocList(selectedValues) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#location").children('option').remove();
+                    $("#location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+
+                        });
+                        $("#location").trigger('change');
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });
+        }
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

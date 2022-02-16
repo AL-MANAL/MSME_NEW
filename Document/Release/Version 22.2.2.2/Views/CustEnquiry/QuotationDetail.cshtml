@@ -1,0 +1,242 @@
+﻿@model ISOStd.Models.QuotationModels
+@using System.Data
+@{
+
+    ViewBag.Title = "QuotationDetail";
+
+    ISOStd.Models.QuotationModels obj = new ISOStd.Models.QuotationModels();
+    DataSet objQuot = new DataSet();
+
+    if (ViewBag.CustQuot != null)
+    {
+        objQuot = ViewBag.CustQuot;
+    }
+
+
+    decimal GT = obj.FunGrandTot(Model.sum, Model.vat);
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Quotation Detail</span>
+</div>
+<br />
+
+<div>
+    @Html.ActionLink("Edit", "QuotationEdit", new { id_quotation = Model.id_quotation }, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+    @Html.ActionLink("Back to List", "QuotationList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+
+    @using (Html.BeginForm("QuotationPrint", "CustEnquiry", FormMethod.Post, new { id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" id="id_quotation" name="id_quotation" value="@Model.id_quotation" />
+
+        <div  style="float:right; padding-right: 100px;">
+            <button type="submit" class="btn btn-success btn-lg" style="width: 85px; height: 33px;background-color: #449d44 !important; padding: 0px;">
+                <span class="glyphicon glyphicon-pdf"></span>Print
+            </button>
+        </div>
+
+    }
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+<fieldset>
+    <legend></legend>
+
+    <div id="content">
+        <table id="tabcontent" align="center">
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.date_quotation)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.date_quotation != null && Model.date_quotation > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.date_quotation.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ref_no)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ref_no)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.to_quotation)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.to_quotation)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.pro_ref)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.pro_ref)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.telephone)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.telephone)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.email)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.email)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.approved_by)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.approved_by)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.upload)
+                    </div>
+                </td>
+
+                <td colspan="3">
+                    <div class="display-field">
+                        @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                        {
+                            foreach (var docs in Model.upload.Trim(',').Split(','))
+                            {
+                                <p style="margin: 0px;">
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        @*@System.IO.Path.GetFileName(docs)*@preview
+                                    </a>
+                                </p>
+                            }
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.sum)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.sum)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.vat)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.vat)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Grand Total
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @GT
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</fieldset>
+
+<div style="max-width: 80%; padding-left: 120px;">
+    @if (objQuot != null && objQuot.Tables.Count > 0 && objQuot.Tables[0].Rows.Count > 0)
+    {
+        <div id="Items">
+            <div class="editor-label">
+                <label for="Details" style="background-color: #4cc4dd; width: 100%; color: white; ">Quotation Price Details</label>
+            </div>
+            <table id="team-list">
+                <tr>
+                    <th style="font-size: 14px; font-weight: bold;">Sl No.</th>
+                    <th style="font-size: 14px; font-weight: bold;">Description</th>
+                    <th style="font-size: 14px; font-weight: bold;">Quantity</th>
+                    <th style="font-size: 14px; font-weight: bold;">Price</th>
+                    <th style="font-size: 14px; font-weight: bold;">Total</th>
+                </tr>
+                @for (int i = 0, j = 0; i < objQuot.Tables[0].Rows.Count; i++)
+                {
+                    j = j + 1;
+                    <tr>
+                        <td style="width: 70px; min-width: 70px; max-width: 70px;">
+                            @j
+                        </td>
+                        <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                            @(objQuot.Tables[0].Rows[i]["description"].ToString())
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @(objQuot.Tables[0].Rows[i]["qty"].ToString())
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @(objQuot.Tables[0].Rows[i]["price"].ToString())
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @objQuot.Tables[0].Rows[i]["total"].ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+</div>
+
+
+
+
+

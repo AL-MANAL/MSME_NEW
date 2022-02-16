@@ -1,0 +1,428 @@
+﻿@model ISOStd.Models.InspctionQuestionModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+                <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("InspectionList", "Inspection", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Inspection List</span>
+                    </a>
+
+
+                    <span class="breadcrumb-item active"> Add Inspection Ratings</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+    <div class="row">
+        <div class="col-md-6">
+
+            <!-- Basic layout-->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">Add Inspection Ratings</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    @using (Html.BeginForm("AddInspectionRatings", "Inspection", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+
+                        <div class="container-fluid">
+                            <table class="table table-lg">
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            @Html.LabelFor(m => m.Category)
+
+                                        </td>
+                                        <td>
+
+                                            <select class="select-fixed-single" data-fouc id="Category" name="Category" onchange="GetRatings()" required>
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.Category != null && ViewBag.Category_Id != null)
+                                                {
+                                                    foreach (var item in ViewBag.Category)
+                                                    {
+                                                        if (item.Value == ViewBag.Category_Id)
+                                                        {
+                                                            <option value="@item.Value" selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+
+                                                else if (ViewBag.Category != null)
+                                                {
+                                                    foreach (var item in ViewBag.Category)
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(model => model.inspection_rating)
+                                        </td>
+                                        <td>
+                                            <textarea class="form-control elastic maxlength-badge-position" maxlength="25" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" id="inspection_rating" name="inspection_rating" required></textarea>
+                                            @Html.ValidationMessageFor(model => model.inspection_rating)
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="submit" class="btn bg-indigo-400">Submit<i class="icon-paperplane ml-2"></i></button>
+                            @Html.ActionLink("Back to List", "InspectionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                        </div>
+                    }
+                </div>
+            </div>
+            <!-- /basic layout -->
+
+        </div>
+
+        <div class="col-md-6">
+
+            <!-- Basic layout-->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">Inspection Ratings</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+
+                    <div class="container-fluid">
+
+
+                        @using (Html.BeginForm("AddInspectionRatings", "Inspection", FormMethod.Post, new { id = "form2", name = "form2" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+
+                         
+
+                               
+                                    <input type="hidden" name="Category_Id" id="Category_Id" value="@ViewBag.Category_Id" />
+                                    <input type="hidden" name="Cat_Id" id="Cat_Id" value="" />
+                                    <table id="tblMeetingList" class="table table-lg">
+
+                                        <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                            <th>Ratings</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        @if (ViewBag.CategoryRatings != null)
+                                        {
+
+                                            int index = 2;
+                                            foreach (var item in ViewBag.CategoryRatings)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <textarea class="form-control elastic maxlength-badge-position" maxlength="25" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" id="inspection_rating @item.Value" name="inspection_rating @item.Value"> @item.Text</textarea>
+                                                    </td>
+                                                    <td>
+
+
+
+
+
+                                                        <span title="Update Inspection Rating"
+                                                              onclick="UpdateRatings(@item.Value)" style="cursor:pointer;" class="badge badge-info">Edit</span>
+
+                                                        <span class="badge badge-danger" title="Delete Inspection Rating"
+                                                              onclick="DeleteQuestion(@item.Value)" style="cursor:pointer;">Delete</span>
+                                                    </td>
+
+                                                </tr>
+                                                index++;
+                                            }
+                                        }
+                                    </table>
+
+
+                                    }
+                                </div>
+
+                      </div>
+                    </div>
+                    <!-- /basic layout -->
+
+                    </div>
+            </div>
+
+
+
+            @section Scripts {
+                <script type="text/javascript">
+
+
+                    
+         //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+
+
+         function DeleteQuestion(id_inspection_rating) {
+             var Category = document.getElementById("Category_Id").value;
+
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Record?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                         jQuery.ajax({
+                   
+                         url: '@Url.Action("InspectionRatingDelete1", "Inspection")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'id_inspection_rating': id_inspection_rating, 'Category': Category },
+                         success: function (data) {
+                             var Category = document.getElementById("Category_Id").value;
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                                '?sCategory=' + Category;
+                             }
+                         });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+         }
+
+
+         function UpdateRatings(id_inspection_rating) {
+
+             var Ratings = document.getElementById("inspection_rating " + id_inspection_rating).value;
+
+             jQuery.ajax({
+                 url: '@Url.Action("InspectionRatingUpdate", "Inspection")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_inspection_rating': id_inspection_rating, 'inspection_rating': Ratings },
+                 success: function (result) {
+                     var Category = document.getElementById("Category").value;
+
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname
+                         +
+                         '?sCategory=' + Category;
+
+                     //window.location.href =
+                     //    window.location.protocol + "//" +
+                     //    window.location.host +
+                     //    window.location.pathname +
+                     //    createQueryString(queryString);
+
+                 }
+             });
+         }
+
+
+         function GetRatings() {
+             var Category = $('#Category').val();
+             document.getElementById("Cat_Id").value = Category;
+             if (Category != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("GetRatings", "Inspection")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'Category': Category },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             var thTitleRow = table.insertRow();
+                           
+                          
+
+                           
+                           
+
+
+                             var theaderRow = table.insertRow();
+
+                             theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                             //var cellth2 = theaderRow.insertCell(2);
+
+
+
+                             cellth0.innerHTML = "<th>Ratings</th>";
+                             cellth1.innerHTML = "<th>Action</th>";
+                             //cellth2.innerHTML = "<th>Action</th>";
+
+                             table.rows[1].cells[0].style = "color:#0099ff";
+                             table.rows[1].cells[1].style = "color:#0099ff";
+                             //table.rows[1].cells[2].style = "color:#0099ff";
+
+                             var list = result;
+                             for (var i = 0; i < result.length; i++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+
+                                 var Id = result[i].Value;
+
+                                 cell0.innerHTML = " <textarea class='form-control elastic maxlength-badge-position' maxlength = '25' placeholder = 'Textarea' style = 'overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows = '4' cols = '4' id='inspection_rating " + Id + "' name='inspection_rating " + Id + "'>" + result[i].Text + "</textarea>";
+                                 @*cell1.innerHTML = "<img src='@Url.Content("~/Images/updateIcon_small.png")') style='cursor: pointer;' title='Update Rating' onclick='UpdateRatings(" + Id + ")'/>"
+                                  + "<a href='@Url.Action("InspectionRatingDelete", "Inspection")?id_inspection_rating=" + Id + "&Category=" + Category
+                                     + "' title='Delete Rating'> <img src='@Url.Content("~/Images/delete.png")') title='Delete Rating'/></a>";*@
+
+
+                                 cell1.innerHTML = "<span class='badge badge-info' style='cursor: pointer;' title='Delete Rating' onclick='UpdateRatings(" + Id + ")'>Edit</span>"
+                                     + " <span class='badge badge-danger' onclick='DeleteQuestion(" + Id + ")' style='cursor:pointer;' title='Delete Question'/>Delete</span>";
+
+
+                                 autosize($('.elastic'));
+                                 $('.maxlength-badge-position').maxlength({
+                                     alwaysShow: true,
+                                     placement: 'top'
+                                 });
+                             }
+                         }
+                         else {
+                             document.getElementById("tblMeetingList").style.display = "none";
+                             //bootbox.alert({
+                             //    title: 'No Data Exist',
+                             //    message: 'No Item exists, please add Items and then try again'
+                             //});
+                             bootbox.dialog({
+                                 title: 'No Data Exist',
+                                 message: 'No Item exists, please add Items and then try again',
+                             });
+
+                             window.setTimeout(function () {
+                                 bootbox.hideAll();
+                             }, 2000);
+                         }
+
+                     }
+                 });
+             }
+         }
+
+
+                </script>
+                @Scripts.Render("~/bundles/jqueryval")
+
+            }

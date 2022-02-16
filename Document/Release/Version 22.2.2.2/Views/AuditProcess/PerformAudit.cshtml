@@ -1,0 +1,588 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@{
+    ViewBag.Title = "AuditDetails";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    //string Questions = ViewBag.Question;
+
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditProcessList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Audit List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Audits Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+@using (Html.BeginForm("PerformAudit", "AuditProcess", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="checklistId" name="checklistId" value="@Model.checklistId" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">
+                Audit Details
+            </h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card-header bg-white header-elements-sm-inline">
+                <div class="header-elements">
+
+                    @Html.ActionLink("Back to List", "AuditProcessList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <input type="hidden" id="Audit_Id" class="form-control" name="Audit_Id" value="@Model.Audit_Id">
+
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <thead></thead>
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.division)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="division" class="form-control" name="division" value="@Model.division" readonly>
+                            </td>
+
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.dept)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="dept" class="form-control" name="dept" value="@Model.dept" readonly>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.team)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="team" class="form-control" name="team" value="@Model.team" readonly>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.location)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="location" class="form-control" name="location" value="@Model.location" readonly>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Audit_no)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="Audit_no" class="form-control" name="Audit_no" value="@Model.Audit_no" readonly>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.AuditDate)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.AuditDate != null && Model.AuditDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.AuditDate.ToString("dd/MM/yyyy"))
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Audit_criteria)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="Audit_criteria" class="form-control" name="Audit_criteria" value="@Model.Audit_criteria" readonly>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.checklist)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="checklist" class="form-control" name="checklist" value="@Model.checklist" readonly>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.PlannedBy)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="PlannedBy" class="form-control" name="PlannedBy" value="@Model.PlannedBy" readonly>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Department Head
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="dept_head" class="form-control" name="dept_head" value="@Model.dept_head" readonly>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Notified_To)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="Notified_To" class="form-control" name="Notified_To" value="@Model.Notified_To" readonly>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.internal_audit_team)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <input type="text" id="internal_audit_team" class="form-control" name="internal_audit_team" value="@Model.internal_audit_team" readonly>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ToPlanTimeInHour)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.ToPlanTimeInHour)
+                                </p>
+                            </td>
+
+
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.FromPlanTimeInHour)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.FromPlanTimeInHour)
+                                </p>
+                            </td>
+                        </tr>
+</table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div @*style="overflow-x:auto;"*@>
+                <table class="table table-lg table-responsive">
+                    <thead>
+
+                        <tr class="row flex-row flex-nowrap">
+                            <th class="col-1">
+                                Sl.No
+                            </th>
+                            <th class="col-3">
+                                What is checked?
+                            </th>
+                            <th class="col-3">
+                                Finding Details
+                            </th>
+
+                            <th class="col-3">
+                                Details of Evidence
+                            </th>
+                            <th class="col-3">
+                                Finding Category
+                            </th>
+                            <th class="col-3">
+                                Why it is Non Conformance / Potential Non Conformance?
+                            </th>
+                            <th class="col-3">
+                                NC Number (If finding category Nonconformance or observation)
+                            </th>
+                            <th class="col-3">
+                                Upload documents
+                            </th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.Question != null)
+                        {
+                            int iSrno = 0, itmctn = 0;
+                            foreach (var item in ViewBag.Question)
+                            {
+                                //if (Questions.Contains(item.Value))
+                                //{
+                                iSrno = iSrno + 1;
+                                itmctn = itmctn + 1;
+                                <tr class="row flex-row flex-nowrap">
+                                    <td class="col-1">
+                                        @iSrno
+                                    </td>
+                                    <td class="col-3">
+                                        @item.Text
+                                        <input type="hidden" id="Audit_Elements @item.Value" name="Audit_Elements @item.Value" value="@item.Value" />
+                                    </td>
+
+                                    <td class="col-3">
+
+                                        <input class="form-control" type="text" id="Details @itmctn" name="Details @itmctn" />
+                                    </td>
+
+                                    <td class="col-3">
+
+                                        <input class="form-control" type="text" id="Evidence @itmctn" name="Evidence @itmctn" />
+                                    </td>
+
+                                    <td class="col-3">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="Category @itmctn" onchange="GetTotalNumber(@itmctn)" name="Category @itmctn">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.FindingCategory != null)
+                                            {
+                                                foreach (var item2 in ViewBag.FindingCategory)
+                                                {
+                                                    <option value='@item2.Value'>@item2.Value</option>
+                                                }
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="col-3">
+                                        <input class="form-control" type="text" id="Conformance @itmctn" name="Conformance @itmctn" />
+                                    </td>
+                                    <td class="col-3">
+                                        <input class="form-control" type="text" id="Non-comformance @itmctn" name="Non-comformance @itmctn" />
+                                    </td>
+                                    <td class="col-3">
+                                        <input class="form-control" type="file" name="evidence_upload @itmctn" id="evidence_upload @itmctn" onchange="FileFormatValidation(this,@itmctn)" accept=".pdf,.xls,.xlsx,.doc,.docx" />
+                                    </td>
+                                </tr>
+                                //}
+                            }
+
+                            <tr class="row flex-row flex-nowrap">
+                                <td>
+                                    <input type="hidden" id="itmctn" name="itmctn" value="@itmctn" />
+                                </td>
+                            </tr>
+
+
+                            if (itmctn == 0)
+                            {
+                                <tr class="row">
+                                    <td>
+                                        <h3 class="text-danger">No Questions Found</h3>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+                <br>
+                <div class="form-group row">
+                    <label class="col-lg-2 col-form-label">Auditee Team<text style="color:red">*</text></label>
+                    <div class="col-lg-3">
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditee_team" name="auditee_team" multiple required>
+                            @if (ViewBag.AuditeeTeam != null)
+                            {
+                                foreach (var item in ViewBag.AuditeeTeam)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <label class="col-lg-2 col-form-label">Audit Status<text style="color:red">*</text></label>
+                    <div class="col-lg-3">
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="Audit_Status" name="Audit_Status" required>
+                            <option value='In progress' selected>In progress</option>
+                            <option value='Completed'>Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Total Number of Non Conformance:</label>
+                    <div class="col-lg-1">
+                        <input type="text" class="form-control" name="totnonconfarmance" id="totnonconfarmance" value="0" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Total Number of Major Non Conformances:</label>
+                    <div class="col-lg-1">
+                        <input type="text" id="Major_Non_Conformances" name="Major_Non_Conformances" class="form-control" value="0" readonly>
+                    </div>
+
+                    <label class="col-lg-3 col-form-label">Total Number of Minor Non Conformances:</label>
+                    <div class="col-lg-1">
+                        <input type="text" id="Minor_Non_Conformances" name="Minor_Non_Conformances" class="form-control" value="0" readonly>
+                    </div>
+
+                    <label class="col-lg-3 col-form-label">Total Number of Potential Non Conformance:</label>
+                    <div class="col-lg-1">
+                        <input type="text" id="Potential_Non_Conformances" name="Potential_Non_Conformances" class="form-control" value="0" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Total Number of Conformance:</label>
+                    <div class="col-lg-1">
+                        <input type="text" class="form-control" name="TOtal_Conformances" id="TOtal_Conformances" value="0" readonly>
+                    </div>
+
+                    <label class="col-lg-3 col-form-label">Total Number of Note-worthy findings:</label>
+                    <div class="col-lg-1">
+                        <input type="text" id="Note_Worth_Findings" name="Note_Worth_Findings" class="form-control" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+        </div>
+
+    </div>
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <table id="team-list" style="width: 100%">
+            <tr>
+                <th>Evidence</th>
+            </tr>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+        var TOtal_Conformances = document.getElementById("TOtal_Conformances").value, Major_Non_Conformances = document.getElementById("Major_Non_Conformances").value, Minor_Non_Conformances = document.getElementById("Minor_Non_Conformances").value, Potential_Non_Conformances = document.getElementById("Potential_Non_Conformances").value, Note_Worth_Findings = document.getElementById("Note_Worth_Findings").value;
+        var totnonconfarmance = int.parse(document.getElementById("Major_Non_Conformances").value) + int.parse(document.getElementById("Minor_Non_Conformances").value) + int.parse(document.getElementById("Potential_Non_Conformances").value)
+        //var Total = 1;
+
+        function GetTotalNumber(i) {
+            //Total = parseInt(Minor_Non_Conformances) + parseInt(Major_Non_Conformances) + parseInt(TOtal_Conformances) + parseInt(Potential_Non_Conformances) + parseInt(Note_Worth_Findings);
+
+            if (document.getElementById("Category " + i).value === "Conformance") {
+
+                document.getElementById("TOtal_Conformances").value = TOtal_Conformances;
+                document.getElementById("Non-comformance " + i).value = document.getElementById("Audit_no").value + "-" + document.getElementById("division").value + "-"
+                    + document.getElementById("location").value + "-" + document.getElementById("dept").value + "-NC " + "00" + i;
+
+            }
+            if (document.getElementById("Category " + i).value === "Major Non Conformance") {
+
+                document.getElementById("Major_Non_Conformances").value = Major_Non_Conformances;
+                document.getElementById("Non-comformance " + i).value = document.getElementById("Audit_no").value + "-" + document.getElementById("division").value + "-"
+                    + document.getElementById("location").value + "-" + document.getElementById("dept").value + "-NC " + "00" + i;
+                document.getElementById("totnonconfarmance").value = totnonconfarmance;
+            }
+
+            if (document.getElementById("Category " + i).value === "Minor Non Conformance") {
+
+                document.getElementById("Minor_Non_Conformances").value = Minor_Non_Conformances;
+                document.getElementById("Non-comformance " + i).value = document.getElementById("Audit_no").value + "-" + document.getElementById("division").value + "-"
+                    + document.getElementById("location").value + "-" + document.getElementById("dept").value + "-NC " + "00" + i;
+                document.getElementById("totnonconfarmance").value = totnonconfarmance;
+            }
+
+            if (document.getElementById("Category " + i).value === "Potential Non Conformance") {
+
+                document.getElementById("Potential_Non_Conformances").value = Potential_Non_Conformances;
+                document.getElementById("Non-comformance " + i).value = document.getElementById("Audit_no").value + "-" + document.getElementById("division").value + "-"
+                    + document.getElementById("location").value + "-" + document.getElementById("dept").value + "-PNC " + "00" + i;
+                document.getElementById("totnonconfarmance").value = totnonconfarmance;
+            }
+            if (document.getElementById("Category " + i).value === "Note-worthy finding") {
+
+                document.getElementById("Note_Worth_Findings").value = Note_Worth_Findings;
+                document.getElementById("Non-comformance " + i).value = document.getElementById("Audit_no").value + "-" + document.getElementById("division").value + "-"
+                    + document.getElementById("location").value + "-" + document.getElementById("dept").value + "-PNC " + "00" + i;
+
+            }
+
+            TOtal_Conformances = 0;
+            Minor_Non_Conformances = 0;
+            Major_Non_Conformances = 0;
+            Note_Worth_Findings = 0;
+            Potential_Non_Conformances = 0;
+            totnonconfarmance = 0;
+
+            $('select > option:selected').each(function () {
+                ////stopImmediatePropagation();
+
+                if ($(this).text() != "Select" && $(this).text() != "Completed" && $(this).text() != "In progress") {
+
+                    if ($(this).text() === "Conformance") {
+                        TOtal_Conformances++;
+                    }
+                    if ($(this).text() === "Note-worthy finding") {
+                        Note_Worth_Findings++;
+                    }
+                    if ($(this).text() === "Minor Non Conformance") {
+                        Minor_Non_Conformances++;
+                        totnonconfarmance++;
+                    }
+                    if ($(this).text() === "Major Non Conformance") {
+                        Major_Non_Conformances++;
+                        totnonconfarmance++;
+                    }
+                    if ($(this).text() === "Potential Non Conformance") {
+                        Potential_Non_Conformances++;
+                        totnonconfarmance++;
+                    }
+                }
+            });
+            document.getElementById("Minor_Non_Conformances").value = Minor_Non_Conformances;
+            document.getElementById("Major_Non_Conformances").value = Major_Non_Conformances;
+            document.getElementById("TOtal_Conformances").value = TOtal_Conformances;
+            document.getElementById("Potential_Non_Conformances").value = Potential_Non_Conformances;
+            document.getElementById("Note_Worth_Findings").value = Note_Worth_Findings;
+            document.getElementById("totnonconfarmance").value = totnonconfarmance;
+
+        }
+
+
+            function FileFormatValidation(file, cnt) {
+                 var ext = file.value.split(".").pop().toLowerCase();
+                 if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                     file.value = "";
+                     bootbox.alert({
+                         title: 'File type',
+                         message: 'Invalid file format, please upload only pdf,xls,xlsx,doc,docx format.'
+                     });
+                 }
+                 else {
+                     AddEvidence(cnt)
+                 }
+            }
+
+             function AddEvidence(cnt) {
+                 var table = document.getElementById("team-list");
+                 var row = table.insertRow();
+                 var cell0 = row.insertCell(0);
+                 var n = "evidence_upload" + " " + cnt;
+                 var evidence_upload = document.getElementById(n).value;
+
+                 evidence_uploadServerPath = UploadDocument(cnt);
+                 cell0.innerHTML = "<input type='hidden' id='evidence_upload" + cnt + "' name='evidence_upload" + cnt + "' value='" + evidence_uploadServerPath + "'>" + evidence_upload;
+
+             }
+
+             function UploadDocument(ind) {
+                 var evidence_upload = ($("#evidence_upload " +" "+ ind)).files; //$('#testfile').file;
+
+                 var formData = new FormData();
+                 var totalFiles = document.getElementById("evidence_upload" + " "+ ind).files.length;
+
+                 for (var i = 0; i < totalFiles; i++) {
+                     var file = document.getElementById("evidence_upload" + " " + ind).files[i];
+                     formData.append("evidence_upload", file);
+                 }
+                 jQuery.ajax({
+                     url: '@Url.Action("UploadDocument", "GenerateAuditChecklist")',
+                     type: 'POST',
+                     contentType: false,
+                     processData: false,
+                     data: formData,
+                     success: function (result) {
+                         //document.getElementById("evidence_upload" + " " + ind).value = result;
+                         document.getElementById("evidence_upload" + ind).value = result;
+                         //evidence_uploadServerPath = result;
+                         return result;
+                     }
+                 });
+             }
+    </script>
+}
+
+
+
+

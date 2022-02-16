@@ -1,0 +1,237 @@
+﻿@model ISOStd.Models.BiddingModels
+@using System.Data
+
+@{
+    ViewBag.Title = "BiddingDetails";
+    DataSet dsCommentDetails = ViewBag.CommentDetails;
+    ISOStd.Models.clsGlobal obj=new ISOStd.Models.clsGlobal();
+}
+
+   
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Bidding Details</span>
+</div>
+<br />
+<div>
+        
+         @Html.ActionLink("Back to List", "BiddingList", null, new {@class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+ </div>
+<br />
+<fieldset>
+    <legend>BiddingModels</legend>
+
+    <div>
+        <table style="width: 100%">
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.client)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.client)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                 
+                           @Html.DisplayNameFor(model => model.folderref)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                    
+
+                         @Html.DisplayFor(model => model.folderref)
+                       
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.projectname)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.projectname)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.submission_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                         
+                        @if (Model.submission_date != null && Model.submission_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.submission_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.preparedby)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayNameFor(model => model.preparedby)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.checkedby)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                      @Html.DisplayFor(model => model.checkedby)
+                    </div>
+                </td>
+                
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.proposalref)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.proposalref)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.proposal_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                          @if (Model.proposal_date != null && Model.proposal_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.proposal_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+                
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.proposal_status)
+                    </div>
+                </td>
+               <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.proposal_status)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.approved_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                          @if (Model.approved_date != null && Model.approved_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.approved_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                 <td>
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.upload)
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                        @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                        {
+                            foreach (var docs in Model.upload.Trim(',').Split(','))
+                            {
+                            <p style="margin: 0px;">
+                               
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                 @*@System.IO.Path.GetFileName(docs)*@ preview</a>
+                            </p>
+                              }
+                        }
+                    </div>
+            </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Approvers)
+                    </div>
+                </td>
+               <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Approvers)
+                    </div>
+                </td>
+            </tr>
+           
+            
+        </table>
+    </div>
+</fieldset>
+
+@if (dsCommentDetails != null && dsCommentDetails.Tables.Count > 0 && dsCommentDetails.Tables[0].Rows.Count > 0)
+{
+    <div id="Items">
+        <div class="editor-label">
+            <label for="comment Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Approver Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Approver Name</th>
+                <th>Approval Status</th>
+                 <th>Comments</th>
+                <th>Approved/Rejected Date</th>
+               
+            </tr>
+            @for (int i = 0; i < dsCommentDetails.Tables[0].Rows.Count; i++)
+            {
+                <tr>
+                     <td>
+                      @obj.GetEmpHrNameById(dsCommentDetails.Tables[0].Rows[i]["Approver"].ToString())
+                    </td>
+                    <td>
+                        @dsCommentDetails.Tables[0].Rows[i]["ApproveStatus"].ToString()
+                    </td>
+                     <td>
+                        @dsCommentDetails.Tables[0].Rows[i]["Comments"].ToString()
+                    </td>
+                    <td>
+                         @if (dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString() != null && Convert.ToDateTime(dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                       {
+                              @Convert.ToDateTime(dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()).ToString("dd/MM/yyyy")
+                       }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}

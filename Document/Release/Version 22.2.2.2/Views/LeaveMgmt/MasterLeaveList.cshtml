@@ -1,0 +1,356 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.LeaveMgmtModels>
+
+    @{
+        ViewBag.Title = "MasterLeaveList";
+      
+    }
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Leave Master List</span>
+    </div>
+    <br />
+   
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+  
+  
+        <br />
+
+        <div id="content">
+
+            <table id="leave" style="width:100%">
+
+                <thead>
+                    <tr>
+                         <th style="width:40px;min-width:40px; max-width:100px;">
+                            Action
+                        </th>
+                        <th style="width:40px;min-width:40px; max-width:100px;">
+                            Sl No
+                        </th>
+                        <th style="width:80px;min-width:80px; max-width:80px;">
+                            @Html.DisplayNameFor(model => model.First().emp_no)
+                        </th>
+                       <th style="width:100px;min-width:100px; max-width:100px;">
+                            @Html.DisplayNameFor(model => model.First().emp_firstname)
+                        </th>
+                        <th style="width:100px;min-width:100px; max-width:100px;">
+                            @Html.DisplayNameFor(model => model.First().annual_leave)
+                        </th>
+                        <th style="width:100px;min-width:100px; max-width:100px;">
+                            @Html.DisplayNameFor(model => model.First().sick_leave)
+                        </th>
+                       
+                         <th style="width:100px;min-width:100px; max-width:100px;">
+                            @Html.DisplayNameFor(model => model.First().other_leave)
+                        </th>
+                           <th style="width:100px;min-width:100px; max-width:100px;">
+                            @Html.DisplayNameFor(model => model.First().carry_leave)
+                        </th>
+                        <th style="width:100px;min-width:100px; max-width:100px;">
+                            @Html.DisplayNameFor(model => model.First().bal_annual_leave)
+                        </th>
+                         <th style="width:80px;min-width:80px; max-width:80px;">
+                            @Html.DisplayNameFor(model => model.First().bal_sick_leave)
+                        </th>
+                         <th style="width:80px;min-width:80px; max-width:80px;">
+                            @Html.DisplayNameFor(model => model.First().bal_other_leave)
+                        </th>
+                      
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i = i + 1;
+                           
+                            <tr>
+                                  <td style="width: 5px; min-width: 5px; max-width: 5px;">
+                    <img src="~/Images/plus.png" style="width: 30px;" />
+                    <div style="display: none">
+                        <table>
+                            <thead>
+                                <tr>
+                    <th style="width: 50px; min-width: 50px; max-width: 50px;">
+                        @Html.DisplayNameFor(model => model.First().syear)
+                    </th>
+                    <th style="width: 80px; min-width: 80px; max-width: 80px;">
+                        @Html.DisplayNameFor(model => model.First().fr_date)
+                    </th>
+                    <th style="width: 40px; min-width: 40px; max-width: 40px;">
+                        @Html.DisplayNameFor(model => model.First().to_date)
+                    </th>
+                       <th style="width: 50px; min-width: 50px; max-width: 50px;">
+                        @Html.DisplayNameFor(model => model.First().duration)
+                    </th>
+                      <th style="width: 150px; min-width: 150px; max-width: 150px;">
+                        @Html.DisplayNameFor(model => model.First().reason_leave)
+                    </th>
+                     <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().leave_type)
+                    </th>
+                 
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().approver)
+                    </th>
+                     <th style="width: 80px; min-width: 80px; max-width: 80px;">
+                        @Html.DisplayNameFor(model => model.First().applied_date)
+                    </th>
+                     <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().approved_status)
+                    </th>
+                     <th style="width: 80px; min-width: 80px; max-width: 80px;">
+                        @Html.DisplayNameFor(model => model.First().approved_Date)
+                    </th>
+                     <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().logged_by)
+                    </th>
+                     @if (ViewBag.DeleteFlg != null)
+                     {
+                <th style="width:40px;min-width:40px; max-width:40px;">Delete </th>
+                     }
+                    
+                    </tr>
+                               
+                            </thead>
+                            <tbody>
+
+                                @if (item.leaveTransList.Count > 0)
+                                {
+                                    foreach (var leave in item.leaveTransList)
+                                    {
+                                   <tr>
+                                        <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                            @Html.DisplayFor(modelItem => leave.syear)
+                        </td>
+                         <td style="width: 80px; min-width: 80px; max-width: 80px;">
+
+                            @if (leave.fr_date != null && leave.fr_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(leave.fr_date.ToString("dd/MM/yyyy"))
+                            }
+                        </td>
+                         <td style="width: 80px; min-width: 80px; max-width: 80px;">
+
+                            @if (leave.to_date != null && leave.to_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(leave.to_date.ToString("dd/MM/yyyy"))
+                            }
+                        </td>
+                          <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                            @Html.DisplayFor(modelItem => leave.duration)
+                        </td>
+                          <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @Html.DisplayFor(modelItem => leave.reason_leave)
+                        </td>
+                         <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @Html.DisplayFor(modelItem => leave.leave_type)
+                        </td>
+                        
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @Html.DisplayFor(modelItem => leave.approver)
+                        </td>
+                      <td style="width: 80px; min-width: 80px; max-width: 80px;">
+
+                            @if (leave.applied_date != null && leave.applied_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(leave.applied_date.ToString("dd/MM/yyyy"))
+                            }
+                        </td>
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @Html.DisplayFor(modelItem => leave.approved_status)
+                        </td>
+                       <td style="width: 80px; min-width: 80px; max-width: 80px;">
+
+                            @if (leave.approved_Date != null && leave.approved_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(leave.approved_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </td>
+                       <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @Html.DisplayFor(modelItem => leave.logged_by)
+                        </td>
+                       @if (ViewBag.DeleteFlg != null)
+                       {
+                            <td style="width: 40px; min-width: 40px; max-width: 40px;">
+                                  @if (leave.leave_gen == "N")
+                                  {
+                                <img src="@Url.Content("~/Images/delete.png")" title="Delete Leave" onclick="DeleteItems(@leave.leave_id,@leave.emp_no,@leave.duration)" style="cursor:pointer;" />
+                                  }
+                                      </td>
+                  
+                       }
+                                   
+                    </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="10">
+                                            <div style="text-align: center;">
+                                                <h4 style="color: grey;">No data exists</h4>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                                <td style="width:40px;min-width:40px; max-width:100px;">
+                                   
+                                </td>
+                               <td style="width:80px;min-width:80px; max-width:80px;">
+                                    @Html.DisplayFor(modelItem => item.comp_id)
+                                </td>
+                                <td style="width:100px;min-width:100px; max-width:100px;">
+                                    @Html.DisplayFor(modelItem => item.emp_firstname)
+                                </td>
+                                  <td style="width:100px;min-width:100px; max-width:100px;">
+                                    @Html.DisplayFor(modelItem => item.annual_leave)
+                                </td>
+                                 <td style="width:100px;min-width:100px; max-width:100px;">
+                                    @Html.DisplayFor(modelItem => item.sick_leave)
+                                </td>
+                                
+                                  <td style="width:100px;min-width:100px; max-width:100px;">
+                                    @Html.DisplayFor(modelItem => item.other_leave)
+                                </td>
+                                 <td style="width:100px;min-width:100px; max-width:100px;">
+                                    @Html.DisplayFor(modelItem => item.carry_leave)
+                                </td>
+                               <td style="width:100px;min-width:100px; max-width:100px;">
+                                    @Html.DisplayFor(modelItem => item.bal_annual_leave)
+                                </td>
+                                   <td style="width:80px;min-width:80px; max-width:80px;">
+                                    @Html.DisplayFor(modelItem => item.bal_sick_leave)
+                                </td>
+                                  <td style="width:80px;min-width:80px; max-width:80px;">
+                                    @Html.DisplayFor(modelItem => item.bal_other_leave)
+                                </td>
+                            </tr>
+                        }
+
+                    }
+
+
+
+
+
+                </tbody>
+                 
+
+
+            </table>
+
+
+        </div>
+
+
+<script type="text/javascript" charset="utf8" src="~/Scripts/jquery-3.1.1.js"></script>
+   
+    <script>
+        var $x = jQuery.noConflict();
+        $x(document).ready(function () {
+            // DataTable
+            var t = $x('#leave').DataTable(
+                {
+                    fixedHeader: true,
+                //    dom: 'lBfrtip',
+                //    buttons: [
+                //        'colvis',
+                //        {
+                //            extend: 'excelHtml5',
+                //            title: ''
+                //        },
+                //{
+                //    extend: 'pdfHtml5',
+                //    title: ''
+                //},
+                // {
+                //     extend: 'print',
+                //     title: ''
+                // }
+                //    ],
+                  //  columnDefs: [
+                  //{ "width": "50px", "targets": [1, 2,3,4] }
+               
+                  //  ],
+                    colReorder: true,
+                 "order": [[1, 'asc']]
+                });
+            t.on('order.dt search.dt', function () {
+                t.column(1, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+        });
+
+    </script>
+
+
+        @section scripts {
+
+            @Scripts.Render("~/bundles/jqueryval")
+            <script type="text/javascript">
+                $("body").on("click", "img[src*='plus.png']", function () {
+                    $(this).closest("tr").after("<tr><td colspan='11'>" + $(this).next().html() + "</td></tr>");
+                    $(this).attr("src", "../Images/minus.png");
+                });
+                //Assign Click event to Minus Image.
+                $("body").on("click", "img[src*='minus.png']", function () {
+                    $(this).attr("src", "../Images/plus.png");
+                    $(this).closest("tr").next().remove();
+                });
+
+                function DeleteItems(leave_id, emp_no, duration) {
+                   
+                    jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                        if (r == true) {
+                            jQuery.ajax({
+                                url: '@Url.Action("LeaveDelete", "LeaveMgmt")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'leave_id': leave_id, 'emp_no': emp_no, 'duration': duration },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+                }
+
+             
+            </script>
+
+        }

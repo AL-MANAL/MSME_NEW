@@ -1,0 +1,465 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.EmployeeMasterModels>
+
+@{
+    ViewBag.Title = "";
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ReportList", "Reports", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Report Types</span>
+                    </a>
+                    <span class="breadcrumb-item active">Exit Employees</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Exit Employee List</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="options d-flex flex-fill">
+            @using (Html.BeginForm("ExitEmployeeList", "EmployeeDetails", FormMethod.Post, new { id = "form1", name = "form1" }))
+            {
+                if (ViewBag.Branch != null)
+                {
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                        <option value='' hidden>Division</option>
+                        @if (ViewBag.Branch != null)
+                        {
+                            foreach (var item in ViewBag.Branch)
+                            {
+                                if (item.Value == ViewBag.Branch_name)
+                                {
+                                    <option value='@item.Value' selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="employee">
+            <thead>
+
+                <tr>
+                    <th>
+                        Sl No
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().emp_id)
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Designation)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Gender)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Date_of_exit)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().EmailId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().dept_id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Emp_work_location)
+                    </th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                        <tr>
+                            <td>
+                                @i
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.emp_id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.emp_firstname) @Html.DisplayFor(modelItem => item.emp_middlename) @Html.DisplayFor(modelItem => item.emp_lastname)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Designation)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Gender)
+                            </td>
+                            <td>
+                                @if (item.Date_of_exit != null && item.Date_of_exit > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(item.Date_of_exit.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EmailId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.dept_id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Emp_work_location)
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+                    //----zzz
+                    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                                           @:     text: '@TempData["alertdata"]',
+                                                           @:     type: 'error'
+                                                           @: }).show();
+                                                                                        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                                         @:       text: '@TempData["Successdata"]',
+                                                         @:       type: 'success'
+         @:}).show();
+        }
+                    });
+                    //zzz----
+
+
+
+                    var employee = function () {
+
+
+                        //
+                        // Setup module components
+                        //
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    width: 100,
+                                    targets: []
+                                }],
+
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+                        var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().ExitEmp.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                            var table = $('#employee').DataTable({
+
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                stateSaveParams: function (settings, data) {
+                                    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                        delete data.columns[i].visible;
+                                        delete data.columns[i].search;
+                                    }
+                                },
+
+                                scrollY: '350px',
+                                scrollCollapse: true,
+
+
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'employee Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'employee Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'employee Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'employee Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'employee Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+                            });
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+
+                                    table.columns.adjust().draw();
+                                    $("#employee").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#employee').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#employee").resize();
+
+                            });
+
+                            $('#employee').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#employee").resize();
+
+                            });
+
+                            $('#employee').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#employee").resize();
+
+                            });
+
+
+                            $('#employee').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#employee").resize();
+
+                            });
+
+
+                            $('#employee').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#employee").resize();
+
+                            });
+
+
+                            //.on('order.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+                            //.on('search.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+
+                            //.on('column-visibility.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize();
+                            //})
+
+
+
+                        };
+
+
+
+
+
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        employee.init();
+                    });
+function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("ExitEmployeeListSearch", "EmployeeDetails")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });
+            }
+
+    </script>
+
+}

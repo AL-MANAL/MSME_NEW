@@ -1,0 +1,477 @@
+﻿@model ISOStd.Models.DocumentTrackingModels
+
+@{
+    ViewBag.Title = "DocTrackingEdit";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("DocTrackingList", "DocumentTracking", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Internal Document Status Tracking</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Update Internal Document Status Tracking</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+}
+
+@using (Html.BeginForm("DocTrackingEdit", "DocumentTracking", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Internal Documents Change Request</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <input type="hidden" id="id_document_tracking" name="id_document_tracking" value="@Model.id_document_tracking" />
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.branch)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required @*onchange="GetEmpList()"*@>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Department)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" @*onchange="GetEmpList()"*@ required>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Location)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.doctype)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="doctype" name="doctype" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DocType != null)
+                                    {
+                                        foreach (var item in ViewBag.DocType)
+                                        {
+                                            if (item.Text == Model.doctype)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><label id="doctype-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                                @Html.ValidationMessageFor(model => model.doctype)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.docname)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input type="text" id="docname" name="docname" value="@Model.docname" required class="form-control" />
+                                <span class="field-validation-error"><label id="docname-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                                @Html.ValidationMessageFor(model => model.docname)
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.issue_autority)
+                            </td>
+                            <td class="col">
+                                <input type="text" id="issue_autority" name="issue_autority" value="@Model.issue_autority" class="form-control" />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.NotificationPerson)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="NotificationPerson" name="NotificationPerson" required>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (Array.IndexOf(Model.NotificationPerson.ToString().Split(','), item.Text) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><label id="NotificationPerson-message" class="validation-invalid-label" style="display:none" for="basic">Notification Person field is required.</label> </span>
+                                @Html.ValidationMessageFor(model => model.NotificationPerson)
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.issue_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+
+                                <input type="date" id="issue_date" name="issue_date" value="@Model.issue_date.ToString("yyyy-MM-dd")" class="form-control" required />
+
+                                <span class="field-validation-error"><label id="issue_date-message" class="validation-invalid-label" style="display:none" for="basic">Issue date field is required.</label> </span>
+                                @Html.ValidationMessageFor(model => model.issue_date)
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.exp_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="date" id="exp_date" name="exp_date" value="@Model.exp_date.ToString("yyyy-MM-dd")" onchange="checkDate();" class="form-control" required />
+
+                                <span class="field-validation-error"><label id="exp_date-message" class="validation-invalid-label" style="display:none" for="basic">Expiration date field is required.</label> </span>
+                                @Html.ValidationMessageFor(model => model.exp_date)
+
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.upload)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+                                <input type="file" name="upload" id="upload" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                                       multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                <br />
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+                                    <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                    <span class="form-text text-muted">
+                                        <code>
+                                            (Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    @System.IO.Path.GetFileName(docs)
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+
+                                <span class="field-validation-error"><label id="upload-message" class="validation-invalid-label" style="display:none" for="basic">Notification Person field is required.</label> </span>
+                                @Html.ValidationMessageFor(model => model.upload)
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.NotificationPeriod)
+
+                            </td>
+                            <td class="col">
+                                <div class="form-group form-group-float">
+                                    <select class="form-control select-search select2-hidden-accessible" id="NotificationPeriod" name="NotificationPeriod" data-fouc required>
+                                        @if (ViewBag.NotificationPeriod != null)
+                                        {
+                                            foreach (var data in ViewBag.NotificationPeriod)
+                                            {
+                                                if (data.Key == Model.NotificationPeriod)
+                                                {
+                                                    <option value='@data.Key' selected>@data.Value</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Key'>@data.Value</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group form-group-float">
+                                    <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="@Model.NotificationValue" max="3" />
+
+                                    <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+                                </div>
+                            </td>
+                        </tr>
+</table>
+
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                    @Html.ActionLink("Back to List", "DocTrackingList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                    <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Update" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+
+                 //----zzz
+
+ $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+        {
+
+            @: new Noty({
+            @:     text: '@TempData["alertdata"]',
+            @:     type: 'error'
+            @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+            @:    new Noty({
+            @:       text: '@TempData["Successdata"]',
+            @:       type: 'success'
+            @:   }).show();
+        }
+        });
+
+    //zzz----
+        // Default initialization
+        $('.form-check-input-styled').uniform();
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, xlsx, xls, docx format'
+                });
+            }
+        }
+
+        $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+            });
+
+        function checkDate() {
+            var dt2 = document.getElementById("exp_date").value;
+            var dt1 = document.getElementById("issue_date").value;
+
+            if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                bootbox.alert({
+                    title: 'Issue Date',
+                    message: 'Issue date should not be lesser than the Expiry date.'
+                });
+                $('#issue_date').val("");
+            }
+        }
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+         var svalue = selectedValues.join(",");
+
+            /*GetEmpList();*/
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGDeptListbymultiBranch", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': svalue },
+                success: function (result) {
+                    GetLocList(svalue);
+                    $("#Department").children('option').remove();
+                    $("#Department").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#Department").trigger('change');
+                        return;
+                    }
+                }
+            });
+        }
+
+        function GetLocList(svalue) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGLocListbymultiBranch", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': svalue },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#Location").trigger('change');
+                        return;
+                    }
+                }
+            });
+        }
+
+        function GetEmpList() {
+
+            var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sbvalue = (sbranch.join(","));
+
+            var sDepartment = $.map($("#Department option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sdvalue = (sDepartment.join(","));
+
+            var sLocation= $.map($("#Location option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var slvalue = (sLocation.join(","));
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGEmpListBymulitBDL", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'sDivision': sbvalue, 'sDept': sdvalue, 'sLoc': slvalue},
+                success: function (result) {
+                    $("#NotificationPerson").children('option').remove();
+                    $("#NotificationPerson").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#NotificationPerson").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#NotificationPerson").trigger('change');
+                        return;
+                    }
+                }
+            });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

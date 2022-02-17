@@ -1,0 +1,422 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "SupplierReevalutionPDF";
+
+    ISOStd.Models.SupplierReevalutionModels obj = new ISOStd.Models.SupplierReevalutionModels();
+    if (ViewBag.Supplier != null)
+    {
+        obj = ViewBag.Supplier;
+    }
+
+    DataSet ObjTransList = new DataSet();
+    if (ViewBag.ObjTransList != null)
+    {
+        ObjTransList = ViewBag.ObjTransList;
+    }
+
+    DataSet ObjQuestList = new DataSet();
+    if (ViewBag.ObjQuestList != null)
+    {
+        ObjQuestList = ViewBag.ObjQuestList;
+    }
+    int iSrno = 0;
+
+    ISOStd.Models.SurveyModels objSurvey = new ISOStd.Models.SurveyModels();
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always
+    }
+</STYLE>
+
+@*<div class="bp-header__main">
+        <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+    </div>*@
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+    <div>
+        @*<h1 class="mb-0 text-center">Supplier  Re evaluation Report</h1>*@
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>
+                        Division
+                    </b>
+                </td>
+                <td>
+                    <div>
+                        @obj.branch
+                    </div>
+                </td>
+                <td>
+                    <b>
+                        Department
+                    </b>
+                </td>
+                <td>
+                    <div>
+                        @obj.Department
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <b>
+                        Performance Review Year
+                    </b>
+                </td>
+                <td>
+                    <div>
+                        @obj.perf_review_year
+                    </div>
+                </td>
+                <td>
+                    <b>
+                        Location
+                    </b>
+                </td>
+                <td>
+                    <div>
+                        @obj.Location
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <b>
+                        Supplier Name
+                    </b>
+                </td>
+                <td>
+                    <div>
+                        @obj.supplier
+                    </div>
+                </td>
+                <td>
+                    <b>
+                        Supplier Code
+                    </b>
+                </td>
+                <td>
+                    <div>
+                        @obj.supp_code
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>
+                        Supplier Scope
+                    </b>
+                </td>
+                <td colspan="3">
+                    <div>
+                        @obj.supp_scope
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <br />
+    <br />
+
+
+    @if (ObjQuestList != null && ObjQuestList.Tables.Count > 0 && ObjQuestList.Tables[0].Rows.Count > 0)
+    {
+        <h5 for="Supplier Reevaluation Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">Supplier Reevaluation Details</h5>
+
+        <table class="table table-lg">
+            <tr>
+                <th> Sr. No.</th>
+                <th> Questions</th>
+                <th> Rating</th>
+            </tr>
+            @for (int i = 0; i < ObjQuestList.Tables[0].Rows.Count; i++)
+            {
+                iSrno = iSrno + 1;
+                <tr>
+                    <td>
+                        @iSrno
+                    </td>
+                    <td>
+                        @objSurvey.GetSurveyQuestionNameById(ObjQuestList.Tables[0].Rows[i]["SQId"].ToString()))
+                    </td>
+                    <td>
+                        @objSurvey.GetSurveyRatingNameById(ObjQuestList.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+
+    <table class="table table-lg">
+        <tr>
+            <th>Date</th>
+            <th>Customer Name</th>
+            <th>Compliment</th>
+            <th>Complaint</th>
+            <th>Complaint Ref. No</th>
+        </tr>
+        @if (ObjTransList != null && ObjTransList.Tables.Count > 0 && ObjTransList.Tables[0].Rows.Count > 0)
+        {
+            for (int i = 0; i < ObjTransList.Tables[0].Rows.Count; i++)
+            {
+
+                <tr>
+                    <td>
+                        @if (ObjTransList.Tables[0].Rows[i]["date_reevaluation"] != null && Convert.ToDateTime(ObjTransList.Tables[0].Rows[i]["date_reevaluation"].ToString()) > Convert.ToDateTime("0001/01/01"))
+                        {
+                            @(ObjTransList.Tables[0].Rows[i]["date_reevaluation"])
+                        }
+                    </td>
+                    <td>
+                        @ObjTransList.Tables[0].Rows[i]["cust_name"].ToString()
+                    </td>
+                    <td>
+                        @ObjTransList.Tables[0].Rows[i]["complaints"].ToString()
+                    </td>
+                    <td>
+                        @ObjTransList.Tables[0].Rows[i]["description_complaint"].ToString()
+                    </td>
+                    <td>
+                        @ObjTransList.Tables[0].Rows[i]["ref_no_complaint"].ToString()
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+
+    <br />
+    <br />
+
+    <table class="table table-lg">
+        <tr>
+            REVIEW BY QUALITY & HSE DEPARTMENT
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Verification of certification
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.certification
+                </div>
+            </td>
+            <td>
+                <b>
+                    If others certification, specify
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.certification
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Audit at supplier site required
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.supp_required
+                </div>
+            </td>
+            <td>
+                <b>
+                    If Yes, Auditor Name
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.auditor_name
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Audit Done on
+                </b>
+            </td>
+            <td>
+                <div>
+                    @if (Convert.ToDateTime(obj.audit_date.ToString().ToString()) > Convert.ToDateTime("01/01/0001") && obj.audit_date.ToString() != null)
+                    {
+                        @Convert.ToDateTime(obj.audit_date.ToString("dd/MM/yyyy"));
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Complaints received during this fiscal year related to the above supplier?
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.supp_complaint
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    If yes, was the complaint handled satisfactorily
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.issatisfactory
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Any incident / accident reported during this fiscal year related to the above supplier?
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.anycomplaint
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    If yes, was it handled satisfactorily?
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.ishandled
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    REMARKS / OBSERVATIONS
+                </b>
+            </td>
+            <td colspan="3">
+                <div>
+                    @obj.remark
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    On site visit carried out
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.visited
+                </div>
+            </td>
+            <td>
+                <b>
+                    Date of visit
+                </b>
+            </td>
+            <td>
+                <div>
+                    @if (Convert.ToDateTime(obj.date_visited.ToString()) > Convert.ToDateTime("01/01/0001") && obj.date_visited.ToString() != null)
+                    {
+                        @Convert.ToDateTime(obj.date_visited.ToString("dd/MM/yyyy"));
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Visited by
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.visited_by
+                </div>
+            </td>
+        </tr>
+        <tr>
+            STATUS OF RE-EVALUATION
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Status of Recommendation
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.recommanded
+                </div>
+            </td>
+            <td>
+                <b>
+                    Recommended by
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.recommanded_to
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Status of Approval
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.approved
+                </div>
+            </td>
+            <td>
+                <b>
+                    Approved by
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.approved_to
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+</div>

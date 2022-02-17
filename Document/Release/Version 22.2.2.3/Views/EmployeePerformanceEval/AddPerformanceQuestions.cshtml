@@ -1,0 +1,577 @@
+﻿@model ISOStd.Models.EmpPerformanceElementsModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddPerformanceQuestions";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("EmployeePerformanceEvalList", "EmployeePerformanceEval", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Performance Evalution</span>
+                    </a>
+
+
+                    <span class="breadcrumb-item active"> Add Performance Evalution Questions</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+    <div class="row">
+
+        <div class="col-md-8">
+            <div class="options d-flex flex-fill">
+                @using (Html.BeginForm("AddPerformanceQuestions", "EmployeePerformanceEval", FormMethod.Post, new { id = "form1", name = "form1" }))
+                {
+                    if (ViewBag.Branch != null)
+                    {
+                        <select class="select-fixed-single" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                            <option value='' hidden>Branch</option>
+                            @if (ViewBag.Branch != null)
+                            {
+                                foreach (var item in ViewBag.Branch)
+                                {
+                                    if (item.Value == ViewBag.Branch_name)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    }
+                }
+            </div>
+
+            <!-- Basic layout-->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">Add / Update Performance Evaluation Questions </h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @using (Html.BeginForm("AddPerformanceQuestions", "EmployeePerformanceEval", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        <input type="hidden" id="branch" name="branch" value="@ViewBag.Branch_name" />
+                        <div class="container-fluid">
+                            <table class="table table-lg">
+
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.Section)
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-fixed-single" data-fouc id="Section" name="Section" onchange="GetQuestions()" required>
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.Section != null && ViewBag.Section_Id != null)
+                                                {
+                                                    foreach (var item in ViewBag.Section)
+                                                    {
+                                                        if (item.Value == ViewBag.Section_Id)
+                                                        {
+                                                            <option value="@item.Value" selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+
+                                                else if (ViewBag.Section != null)
+                                                {
+                                                    foreach (var item in ViewBag.Section)
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.eval_period)
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-fixed-single" data-fouc id="eval_period" name="eval_period" onchange="GetQuestions()" required>
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.eval_period != null && ViewBag.eval_period_Id != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_period)
+                                                    {
+                                                        if (item.Value == ViewBag.eval_period_Id)
+                                                        {
+                                                            <option value="@item.Value" selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+
+                                                else if (ViewBag.eval_period != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_period)
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.eval_category)
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-fixed-single" data-fouc id="eval_category" name="eval_category" onchange="GetQuestions()" required>
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.eval_category != null && ViewBag.eval_category_Id != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_category)
+                                                    {
+                                                        if (item.Value == ViewBag.eval_category_Id)
+                                                        {
+                                                            <option value="@item.Value" selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+
+                                                else if (ViewBag.eval_category != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_category)
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(model => model.Questions)
+                                        </td>
+                                        <td>
+                                            <textarea class="form-control elastic maxlength-badge-position" maxlength="500" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" id="Questions" name="Questions" required></textarea>
+                                            @Html.ValidationMessageFor(model => model.Questions)
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="submit" class="btn bg-indigo-400">Submit<i class="icon-paperplane ml-2"></i></button>
+                            @Html.ActionLink("Back to List", "EmployeePerformanceEvalList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+            <!-- /basic layout -->
+
+        </div>
+    </div>
+        <div class="row">
+            <div class="col-md-10">
+
+                <!-- Basic layout-->
+                <div class="card">
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Inspection Questions</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="container-fluid">
+
+                            @using (Html.BeginForm("AddPerformanceQuestions", "EmployeePerformanceEval", FormMethod.Post, new { id = "form2", name = "form2" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary(true)
+
+
+                                <table id="tblMeetingList" class="table table-lg">
+
+                                    <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                        <th class="col">Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    @if (ViewBag.Questions != null)
+                                    {
+
+                                        int index = 2;
+                                        foreach (var item in ViewBag.Questions)
+                                        {
+                                            <tr>
+                                                <td class="col">
+                                                    <textarea class="form-control elastic maxlength-badge-position" maxlength="250" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" id="Questions @item.Value" name="Questions @item.Value"> @item.Text</textarea>
+                                                </td>
+                                                <td>
+                                                    <span title="Update Question"
+                                                          onclick="UpdateQuestion(@item.Value)" style="cursor:pointer;" class="badge badge-info">Edit</span>
+
+                                                    <span class="badge badge-danger" title="Delete Question"
+                                                          onclick="DeleteQuestion(@item.Value)" style="cursor:pointer;">Delete</span>
+                                                </td>
+
+                                            </tr>
+                                            index++;
+                                        }
+                                    }
+                                </table>
+
+
+                            }
+                        </div>
+
+                    </div>
+                </div>
+                <!-- /basic layout -->
+
+            </div>
+        </div>
+
+        @section Scripts {
+            <script type="text/javascript">
+
+         //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+             function DeleteQuestion(SQId) {                 
+
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Record?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                     jQuery.ajax({
+                         url: '@Url.Action("PerformanceQuestionsDelete", "EmployeePerformanceEval")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'SQId': SQId },
+                         success: function (data) {
+                             var Section = document.getElementById("Section").value;
+                             var branch_name = document.getElementById("branch_name").value;
+
+                             //window.location.href =
+                             //    window.location.protocol + "//" +
+                             //    window.location.host +
+                             //    window.location.pathname+                            +
+                             //    '?sSection=' + Section +
+                             //    'branch_name=' + branch_name;
+
+                             var params = {
+                                 sSection: Section,
+                                 branch_name: branch_name
+                             };
+
+                             //// Add new params to the querystring dictionary
+                             queryString = $.param(params);
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                                 //'?sSection=' + Section
+                                 //+ 'branch_name=' + branch_name;
+                                 '?' + queryString;
+                             }
+                         });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+                }
+
+          @*function DeleteQuestion1(SQId) {                 
+
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Record?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                     jQuery.ajax({
+                         url: '@Url.Action("PerformanceQuestionsDelete", "EmployeePerformanceEval")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'SQId': SQId },
+                         success: function (data) {                           
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname;
+                             }
+                         });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+         }*@
+
+
+         function UpdateQuestion(SQId) {
+
+             var Questions = document.getElementById("Questions " + SQId).value;
+
+             jQuery.ajax({
+                 url: '@Url.Action("PerformanceQuestionsUpdate", "EmployeePerformanceEval")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'SQId': SQId, 'Questions': Questions },
+                 success: function (data) {
+
+                     //var Questions = document.getElementById("Questions " + SQId).value;
+                     var Section = document.getElementById("Section").value;
+                     var branch_name = document.getElementById("branch_name").value;
+
+                     var params = {
+                         sSection: Section,
+                         branch_name:branch_name
+                     };
+
+                     //// Add new params to the querystring dictionary
+                     queryString = $.param(params);
+
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname +
+                         //'?sSection=' + Section
+                         //+ 'branch_name=' + branch_name;
+                         '?' + queryString;
+
+                     return true;
+
+                 }
+             });
+         }
+      
+         function GetQuestions() {
+          
+             var Section = $('#Section').val();
+             var eval_period = $('#eval_period').val();
+             var eval_category = $('#eval_category').val();
+             var branch_name = document.getElementById("branch").value;
+             //var branch = document.getElementById("branch").value;
+             if (Section != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("GetPerformanceQuestions", "EmployeePerformanceEval")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'Section': Section, 'branch': branch_name, 'eval_period': eval_period, 'eval_category': eval_category },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {                           
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             var thTitleRow = table.insertRow();
+                             var cellTitle0 = thTitleRow.insertCell(0);                            
+
+
+                             var theaderRow = table.insertRow();
+
+                             theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                            
+                             cellth0.innerHTML = "<th class='col'>Questions</th>";
+                             cellth1.innerHTML = "<th>Action</th>";                          
+
+                             table.rows[1].cells[0].style = "color:#0099ff";
+                             table.rows[1].cells[1].style = "color:#0099ff";
+                           
+                             var list = result;
+                             for (var i = 0; i < result.length; i++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+
+                                 var Id = result[i].Value;
+                                 cell0.innerHTML = "<textarea class='form-control elastic maxlength-badge-position' maxlength = '250' placeholder = 'Textarea' style = 'overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows = '4' cols = '4' id='Questions " + Id + "' name='Questions " + Id + "'>" + result[i].Text + "</textarea>";
+                                 cell1.innerHTML = "<span class='badge badge-info' style='cursor: pointer;' title='Update Question' onclick='UpdateQuestion(" + Id + ")'>Edit</span>"
+                                     + " <span class='badge badge-danger' onclick='DeleteQuestion(" + Id + ")' style='cursor:pointer;' title='Delete Question'/>Delete</span>";
+
+                                 autosize($('.elastic'));
+                                 $('.maxlength-badge-position').maxlength({
+                                     alwaysShow: true,
+                                     placement: 'top'
+                                 });
+                             }
+                         }
+                         else {
+                             document.getElementById("tblMeetingList").style.display = "none";
+                             //bootbox.alert({
+                             //    title: 'No Data Exist',
+                             //    message: 'No Item exists, please add Items and then try again'
+                             //});
+                             bootbox.dialog({
+                                 title: 'No Data Exist',
+                                 message: 'No Item exists, please add Items and then try again',
+                             });
+
+                             window.setTimeout(function () {
+                                 bootbox.hideAll();
+                             }, 2000);
+                         }
+
+                     }
+                 });
+             }
+        }
+
+      
+
+         function getDetails() {
+             var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("AddPerformanceQuestionsSearch", "EmployeePerformanceEval")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });
+            }
+            </script>
+            @Scripts.Render("~/bundles/jqueryval")
+
+        }

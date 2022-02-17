@@ -1,0 +1,539 @@
+﻿@model ISOStd.Models.TrainingsModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "TrainingsDetails";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingsList", "Trainings", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Trainings List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Training Detail</span>
+               </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+           </div>
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                      @using (Html.BeginForm("TrainingsDetails", "Trainings", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <input type="hidden" id="TrainingID" name="TrainingID" value="@Model.TrainingID" />
+                            <button type="submit" class="dropdown-item">
+                                <i class="icon-printer2"></i> Report
+                            </button>
+
+                        </div>
+                    }
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+   </div>
+}
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Equipment Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+       </div>
+    </div>
+
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">
+
+                    @if (Obj.GetCurrentUserSession().TrainingList.Contains("3"))
+                    {
+                        <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("TrainingsEdit", "Trainings", new { TrainingID = Model.TrainingID })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <b><i class="icon-add-to-list"></i></b>Edit
+                        </a>
+                    }
+                    @Html.ActionLink("Back to List", "TrainingsList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+
+   </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tr class="row">
+                    <td class="col" colspan="4">
+                        <div class="editor-label">
+                            Training Request
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Topic)
+                        </p>
+
+                    </td>
+                    <td class="col">
+
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Training_Topic)
+                        </span>
+
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.TopicContent)
+                        </p>
+
+                    </td>
+                    <td class="col">
+                        @Html.Raw(HttpUtility.HtmlDecode(Model.TopicContent))
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.DeptId)
+                        </p>
+
+                    </td>
+                    <td class="col">
+
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.DeptId)
+                        </span>
+
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Attendees)
+                        </p>
+
+                    </td>
+                    <td class="col">
+
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Attendees)
+                        </span>
+
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Traning_BeforeDate)
+                        </p>
+
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Traning_BeforeDate > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Traning_BeforeDate.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Reasonfor_Training)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Reasonfor_Training)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Requested_By)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Training_Requested_By)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.ApprovedBy)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.ApprovedBy)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.RequestStatus)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.RequestStatus)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col" colspan="4">
+                        <div class="editor-label">
+                            Training Plan Details
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Planned_Date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Training_Planned_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Training_Planned_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Expected_Duration)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Expected_Duration)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Start_Date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Training_Start_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Training_Start_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Expected_Date_Completion)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Expected_Date_Completion > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Expected_Date_Completion.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Sourceof_Training)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Sourceof_Training)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Trainer_Name)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Trainer_Name)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Venue)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Venue)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col" colspan="4">
+                        <div class="editor-label">
+                            Training Details
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Cert_Status)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Training_Cert_Status)
+                        </span>
+                    </td>
+                    @if (Obj.GetCurrentUserSession().TrainingList.Contains("4"))
+                    {
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Training_Attendance)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Training_Attendance != "")
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Training_Attendance})' target="_blank">Preview</a>
+                                    </span>
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </span>
+                        </td>
+                    }
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Reasons_for_Not_Completed)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Reasons_for_Not_Completed)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_ReSchedule_Date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Training_ReSchedule_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Training_ReSchedule_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Actual_Date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Training_Actual_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Training_Actual_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Actual_Completion_Date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Training_Actual_Completion_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Training_Actual_Completion_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Effect_Eval_Method)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Training_Effect_Eval_Method)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Effect_Eval_Plan_Date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Training_Effect_Eval_Plan_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Training_Effect_Eval_Plan_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                @if (Obj.GetCurrentUserSession().TrainingList.Contains("4"))
+                {
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Training_Effect_Eval_Record_Ref)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Training_Effect_Eval_Record_Ref != "")
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Training_Effect_Eval_Record_Ref})' target="_blank">Preview</a>
+                                    </span>
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Course_Material)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Course_Material != "")
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Course_Material})' target="_blank">Preview</a>
+                                    </span>
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                }
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Training_Status)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Training_Status)
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+
+
+                 </div>
+            
+
+       </div>
+    </div>
+
+
+
+
+
+
+  @section scripts {
+            <script>
+                //----zzz
+
+
+                $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                @:}).show();
+                                                                         }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+        @:}).show();
+                                                                }
+                });
+
+</script>
+
+
+        }

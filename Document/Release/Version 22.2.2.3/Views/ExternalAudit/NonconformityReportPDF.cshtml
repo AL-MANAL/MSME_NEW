@@ -1,0 +1,381 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ISOStd.Models.AuditLogModels objModel = new ISOStd.Models.AuditLogModels();
+    if (ViewBag.Audit != null)
+    {
+        objModel = ViewBag.Audit;
+    }
+
+    DataSet dsAction = ViewBag.ImAction;
+    DataSet dsCA = ViewBag.CA;
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+<style type="text/css">
+    .page {
+        page-break-before: always !important;
+    }
+
+    * {
+        overflow: visible !important;
+    }
+
+    .page-breaker {
+        display: block;
+        clear: both;
+        page-break-after: always;
+    }
+
+    .page_break_inside_avoid {
+        page-break-inside: avoid !important;
+    }
+</style>
+
+<div class="container">
+    <div class="page_break_inside_avoid">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td colspan="4" style="text-align:center"><h4>Section I</h4></td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Audit No</h4></td>
+                    <td><h4>@objModel.Audit_no</h4></td>
+                    <td class="bg-blue-800"><h4>Finding No</h4></td>
+                    <td><h4>@objModel.nc_no</h4></td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Audit Start Date</h4></td>
+                    <td>
+                        <h4>
+                            @if (objModel.audit_start_date != null && objModel.audit_start_date > Convert.ToDateTime("01/01/0001"))
+                            {
+
+                                @Html.Label(objModel.audit_start_date.ToString("dd/MM/yyyy"))
+
+                            }
+                        </h4>
+                    </td>
+                    <td class="bg-blue-800"><h4>Corrective Action Agreed Date</h4></td>
+                    <td>
+                        <h4>
+                            @if (objModel.corrective_agreed_date != null && objModel.corrective_agreed_date > Convert.ToDateTime("01/01/0001"))
+                            {
+
+                                @Html.Label(objModel.corrective_agreed_date.ToString("dd/MM/yyyy"))
+
+                            }
+                        </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Audit Type</h4></td>
+                    <td><h4>@objModel.audit_type</h4></td>
+                    <td class="bg-blue-800"><h4>Audit Criteria</h4></td>
+                    <td><h4>@objModel.Audit_criteria</h4></td>
+
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Entity Name</h4></td>
+                    <td colspan="3"><h4>@objModel.entity_name</h4></td>
+               
+                </tr>
+              
+                <tr>
+                    <td class="bg-blue-800"><h4>Finding Detail</h4></td>
+                    <td><h4>@objModel.finding_details</h4></td>
+                    <td class="bg-blue-800"><h4>NC Category</h4></td>
+                    <td><h4>@objModel.finding_category</h4></td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Why finding is categorized as NC/PNC?</h4></td>
+                    <td colspan="3"><h4>@objModel.why_finding</h4></td>
+                   
+                </tr>
+              
+            
+                <tr>
+                    <td colspan="4" style="text-align:center"><h4>Section II</h4></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><h4>II - 1 Risk due to reported NC</h4></td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Risk due to NC</h4></td>
+                    <td colspan="3"><h4>@objModel.risk_nc</h4></td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Risk level</h4></td>
+                    <td colspan="3"><h4>@objModel.risk_level</h4></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page_break_inside_avoid">
+        <table class="table  table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="3"><h4>II-2 Immediate Actions Taken</h4></th>
+                </tr>
+                <tr class="bg-blue-800">
+                    <th><h4>Details of actions taken</h4></th>
+                    <th><h4>Person Responsible</h4></th>
+                    <th><h4>Action Completed On</h4></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (dsAction != null && dsAction.Tables.Count > 0 && dsAction.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsAction.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <h4> @dsAction.Tables[0].Rows[i]["disp_action"].ToString()</h4>
+                            </td>
+                            <td>
+                                <h4> @Obj.GetMultiHrEmpNameById(dsAction.Tables[0].Rows[i]["disp_resp_person"].ToString())</h4>
+                            </td>
+                            <td>
+                                <h4>
+                                    @if (dsAction.Tables[0].Rows[i]["disp_complete_date"].ToString() != null && dsAction.Tables[0].Rows[i]["disp_complete_date"].ToString() != "")
+                                    {
+                                        @Html.Label(Convert.ToDateTime(dsAction.Tables[0].Rows[i]["disp_complete_date"].ToString()).ToString("dd/MM/yyyy"))
+                                    }
+
+                                </h4>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td class="bg-blue-800"><h4>Is immediate action solved the NC</h4></td>
+                    <td><h4>@objModel.disp_action_taken</h4></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page_break_inside_avoid">
+        <table class="table table-bordered">
+            <tbody>
+
+
+                <tr>
+                    <td colspan="4"><h4>II-3 Root Cause Analysis (RCA)</h4></td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Results of RCA</h4></td>
+                    <td><h4>@objModel.rca_details</h4></td>
+                    <td class="bg-blue-800"><h4>Techniques Adopted</h4></td>
+                    <td><h4>@objModel.rca_technique</h4></td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>RCA completed on</h4></td>
+                    <td colspan="3">
+                        <h4>
+                            @if (objModel.rca_reporteddate != null && objModel.rca_reporteddate > Convert.ToDateTime("01/01/0001"))
+                            {
+
+                                @Html.Label(objModel.rca_reporteddate.ToString("dd/MM/yyyy"))
+
+                            }
+                        </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800"><h4>Need of Corrective Action?</h4></td>
+                    <td><h4>@objModel.rca_action</h4></td>
+                    <td class="bg-blue-800"><h4>If no, specify the reasons</h4></td>
+                    <td><h4>@objModel.rca_justify</h4></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page_break_inside_avoid">
+        <table class="table  table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="3"><h4>II-4 Corrective Action either to prevent or eliminate the root causes</h4></th>
+                </tr>
+                <tr class="bg-blue-800">
+                    <th><h4>Corrective Action</h4></th>
+                    <th><h4>Personnel Responsible</h4></th>
+                    <th><h4>Target Date</h4></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (dsCA != null && dsCA.Tables.Count > 0 && dsCA.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsCA.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <h4> @dsCA.Tables[0].Rows[i]["ca_ca"].ToString()</h4>
+                            </td>
+                            <td>
+                                <h4> @Obj.GetMultiHrEmpNameById(dsCA.Tables[0].Rows[i]["ca_resp_person"].ToString())</h4>
+                            </td>
+                            <td>
+                                <h4>
+                                    @if (dsCA.Tables[0].Rows[i]["ca_target_date"].ToString() != null && dsCA.Tables[0].Rows[i]["ca_target_date"].ToString() != "")
+                                    {
+                                        @Html.Label(Convert.ToDateTime(dsCA.Tables[0].Rows[i]["ca_target_date"].ToString()).ToString("dd/MM/yyyy"))
+                                    }
+
+                                </h4>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page_break_inside_avoid">
+        <table class="table table-bordered">
+
+
+            <tr>
+                <td class="bg-blue-800"><h4>Proposed by</h4></td>
+                <td colspan="3"><h4>@objModel.ca_proposed_by</h4></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="page_break_inside_avoid">
+        <table class="table table-bordered">
+
+
+
+            <tr>
+                <td colspan="4" style="text-align:center"><h4>Section III</h4></td>
+            </tr>
+
+            <tr>
+                <td class="bg-blue-800">
+                    <h4>Verified by</h4>
+                </td>
+                <td><h4>@objModel.v_verifiedto</h4></td>
+                <td class="bg-blue-800"><h4>Verified On</h4></td>
+                <td>
+                    <h4>
+                        @if (objModel.v_verified_date != null && objModel.v_verified_date > Convert.ToDateTime("01/01/0001"))
+                        {
+
+                            @Html.Label(objModel.v_verified_date.ToString("dd/MM/yyyy hh:mm:ss"))
+
+                        }
+                    </h4>
+                </td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Were actions taken effective to solve the NC reported?</h4></td>
+                <td><h4>@objModel.disp_action_taken</h4></td>
+                <td class="bg-blue-800"><h4>Brief Explanation</h4></td>
+                <td><h4>@objModel.disp_explain</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Was RCA process performed effectively?</h4></td>
+                <td><h4>@objModel.v_rca</h4></td>
+                <td class="bg-blue-800"><h4>Brief Explanation</h4></td>
+                <td><h4>@objModel.v_rca_explain</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Were there similar discrepancies either observed or detected from the date of implementing corrective action?</h4></td>
+                <td><h4>@objModel.v_discrepancies</h4></td>
+                <td class="bg-blue-800"><h4>Brief Explanation</h4></td>
+                <td><h4>@objModel.v_discrep_explain</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Is proposed corrective action implemented effectively?</h4></td>
+                <td><h4>@objModel.v_implement</h4></td>
+                <td class="bg-blue-800"><h4>Brief Explanation</h4></td>
+                <td><h4>@objModel.v_implement_explain</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Is proposed corrective action effective to eliminate root causes of the NC reported?</h4></td>
+                <td colspan="3"><h4>@objModel.v_eleminate_root_cause</h4></td>
+
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Is identified Risk reduced to acceptable level?</h4></td>
+                <td><h4>@objModel.v_risk_reduce</h4></td>
+                <td class="bg-blue-800"><h4>If Risk not reduced, specify the reasons</h4></td>
+                <td><h4>@objModel.v_risk_reduce_reason</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Any document amended or developed?</h4></td>
+                <td><h4>@objModel.v_document_amended</h4></td>
+                <td class="bg-blue-800"><h4>Any process amended or developed?</h4></td>
+                <td><h4>@objModel.v_process_amended</h4></td>
+
+            </tr>
+        </table>
+    </div>
+    @if (objModel.v_document_amended == "Yes")
+    {
+        <div class="page_break_inside_avoid">
+            <table class="table table-bordered">
+                <tr>
+                    <td><h4>Doc Ref</h4></td>
+                    <td><h4>Doc Name</h4></td>
+                    <td>
+                        <h4>Doc Date</h4>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td><h4>@objModel.v_amend_docref</h4></td>
+                    <td><h4>@objModel.v_amend_docname</h4></td>
+                    <td>
+                        <h4>
+                            @if (objModel.v_amend_docdate != null && objModel.v_amend_docdate > Convert.ToDateTime("01/01/0001"))
+                            {
+
+                                @Html.Label(objModel.v_amend_docdate.ToString("dd/MM/yyyy"))
+
+                            }
+                        </h4>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    }
+    <div class="page_break_inside_avoid">
+        <table class="table table-bordered">
+            <tr>
+                <td class="bg-blue-800"><h4>NCR Status</h4></td>
+                <td><h4>@objModel.v_status</h4></td>
+                <td class="bg-blue-800"><h4>NCR Closed Date</h4></td>
+                <td>
+                    <h4>
+                        @if (objModel.v_closed_date != null && objModel.v_closed_date > Convert.ToDateTime("01/01/0001"))
+                        {
+
+                            @Html.Label(objModel.v_closed_date.ToString("dd/MM/yyyy"))
+
+                        }
+                    </h4>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td class="bg-blue-800"><h4>If open, specify the reasons</h4></td>
+                <td colspan="3"><h4>@objModel.v_ncr_reason</h4></td>
+
+
+            </tr>
+
+        </table>
+    </div>
+</div>

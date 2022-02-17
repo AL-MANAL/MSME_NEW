@@ -1,0 +1,137 @@
+﻿@model ISOStd.Models.SupplierPerformanceModels
+@using System.Data;
+
+@{
+    Layout = null;
+
+    DataSet dsItems = new DataSet();
+    if (ViewBag.dsItems != null)
+    {
+        dsItems = ViewBag.dsItems;
+    }
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor"> </span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("SupplierPerformanceList", "SupplierPerformance", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div style="max-width: 90%; padding-left: 30px;">
+
+
+        @if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+        {
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+
+                <tr>
+                    <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;"> List</td>
+                </tr>
+                <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold; font-size: 14px; height: 30px;">
+                    <th style="width: 70px; min-width: 70px; max-width: 70px;text-align: center;">Parameter</th>
+                    <th style="text-align: center;">Weightage</th>
+                    @*<th style="width: 60px; min-width: 60px; max-width: 60px;">Action</th>*@
+                </tr>
+                @for (int item = 0; item < dsItems.Tables[0].Rows.Count; item++)
+                {
+                    <tr>
+                        <td style="width: 150px;min-width: 70px;">
+                            @dsItems.Tables[0].Rows[item]["item_desc"].ToString()
+                        </td>
+                        <td>
+                            @dsItems.Tables[0].Rows[item]["item_fulldesc"].ToString()
+                        </td>
+                    </tr>
+                }
+               
+            </table>
+            <div> <b>Decision / Action based on total rating: Passing rate is 85%.</b></div>
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <tr>
+                    <td><b>1- Very Poor (&lt;65)</b>
+
+                    </td>
+
+
+                    <td><b>2 - Poor (65-75)</b>
+
+                    </td>
+                    <td><b>3- Fair (75-85)</b>
+
+                    </td>
+
+
+                    <td><b>4- Good (85-95)</b>
+                    </td>
+
+
+                    <td><b>5- Very Good (&gt;95)</b>
+                    </td></tr>
+                <tr>
+                    <td>
+                        Recommend for
+                        disqualification; look
+                        for alternative
+                    </td>
+                    <td>
+                        Recommend for
+                        disqualification; look
+                        for alternative
+                    </td>
+                    <td>
+                        Feedback
+                        improvement areas;
+                        consider
+                        alternatives
+                    </td>
+                    <td>
+
+                        Retain in the list of
+                        approved service
+                        providers
+                    </td>
+
+                    <td>
+
+                        Retain in the list of
+                        approved service
+                        providers
+                    </td>
+
+                </tr>
+
+
+            </table>
+        }
+
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

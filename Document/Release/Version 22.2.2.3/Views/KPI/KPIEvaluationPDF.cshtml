@@ -1,0 +1,128 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ISOStd.Models.KPIModels objModel = new ISOStd.Models.KPIModels();
+    if (ViewBag.KPI != null)
+    {
+        objModel = ViewBag.KPI;
+    }
+    DataSet dsMI = ViewBag.MIList;
+    DataSet dsCause = ViewBag.objList;
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+<div class="container">
+
+    <table class="table  table-bordered">
+        <tbody>
+            <tr>
+                <td colspan="4" style="text-align:center"><h4>KPI Evaluation Report</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>KPI Established On</h4></td>
+                <td>
+                    <h4>
+                        @if (objModel.established_date != null && objModel.established_date > Convert.ToDateTime("01/01/0001"))
+                        {
+
+                            @Html.Label(objModel.established_date.ToString("dd/MM/yyyy"))
+
+                        }
+                    </h4>
+                </td>
+                <td class="bg-blue-800"><h4>KPI Number</h4></td>
+                <td>
+                    <h4>
+                        @objModel.kpi_ref_no
+                    </h4>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Proposed By</h4></td>
+                <td><h4>@objModel.branch</h4></td>
+                <td><h4>@objModel.group_name</h4></td>              
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Process/Performance Indicator</h4></td>
+                <td><h4>@objModel.process_indicator</h4></td>
+                <td class="bg-blue-800"><h4>KPI Level</h4></td>
+                <td><h4>@objModel.kpi_level</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800"><h4>Process to be monitored</h4></td>
+                <td><h4>@objModel.process_monitor</h4></td>
+
+            </tr>
+
+
+        </tbody>
+    </table>
+</div>
+<br />
+@if (dsMI != null && dsMI.Tables.Count > 0 && dsMI.Tables[0].Rows.Count > 0)
+{
+
+    <div>
+        <table class="table  table-bordered">
+            <thead>
+
+                <tr class="bg-blue-800">
+
+                    <th><h4>MI No</h4></th>
+                    <th><h4>Measurable Indicator</h4></th>
+                    <th><h4>Expected Value & Unit</h4></th>
+                    <th><h4>Evaluated On</h4></th>
+                    <th><h4>Method of Evaluation</h4></th>
+                    <th><h4>Source of Data to Evaluate</h4></th>
+                    <th><h4>Achived Value</h4></th>
+                    <th><h4>KPI Status</h4></th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsMI.Tables[0].Rows.Count; i++)
+                {
+                    <tr>
+
+                        <td>
+                            <h4> @dsMI.Tables[0].Rows[i]["kpi_ref_no"].ToString()</h4>
+                        </td>
+                        <td>
+                            <h4> @dsMI.Tables[0].Rows[i]["measurable_indicator"].ToString()</h4>
+                        </td>
+                        <td>
+                            <h4> @dsMI.Tables[0].Rows[i]["expected_value"].ToString()/@dsMI.Tables[0].Rows[i]["expected_value_unit"].ToString()</h4>
+                        </td>
+                   
+                        <td>
+                            <h4>
+                                @if (dsMI.Tables[0].Rows[i]["evaluation_date"].ToString() != null && dsMI.Tables[0].Rows[i]["evaluation_date"].ToString() != "")
+                                {
+                                    @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["evaluation_date"].ToString()).ToString("dd/MM/yyyy"))
+                                } 
+                               
+                            </h4>
+                        </td>
+
+
+                        <td>
+                            <h4>@(dsMI.Tables[0].Rows[i]["method_evaluation"].ToString())</h4>
+                        </td>
+                        <td>
+                            <h4> @dsMI.Tables[0].Rows[i]["source_evaluate"].ToString()</h4>
+                        </td>
+                        <td>
+                            <h4>@(dsMI.Tables[0].Rows[i]["value_achieved"].ToString())</h4>
+                        </td>
+                        <td>
+                            <h4>@Obj.GetKPIEvaluationStatusById(dsMI.Tables[0].Rows[i]["kpi_status"].ToString())</h4>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+}
+

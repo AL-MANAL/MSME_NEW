@@ -1,0 +1,2431 @@
+﻿@using System.Data;
+@using ISOStd.Models;
+@{
+    /**/
+
+    /**/
+
+    /**/
+
+    ViewBag.Title = "ListPendingForApproval";
+
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.LeaveManagementModels objLeave = new ISOStd.Models.LeaveManagementModels();
+    ISOStd.Models.RiskRegisterActivityModels objRisk = new ISOStd.Models.RiskRegisterActivityModels();
+    ISOStd.Models.RiskRegisterActivityEvaluationModels objRiskEvl = new ISOStd.Models.RiskRegisterActivityEvaluationModels();
+    ISOStd.Models.PortalModels objPoralMdl = new ISOStd.Models.PortalModels();
+
+    DataSet dsTraining = new DataSet();
+    DataSet dsMgmtDocument = new DataSet();
+    DataSet dsObjectives = new DataSet();
+    DataSet dslegalregister = new DataSet();
+    DataSet dsDocChanges = new DataSet();
+    DataSet dsManagement = new DataSet();
+    DataSet dsProject = new DataSet();
+    DataSet dsBidding = new DataSet();
+    DataSet dsLeave = new DataSet();
+    DataSet dsLeaveList = new DataSet();
+    DataSet dsSupplier = new DataSet();
+    DataSet dsRisk = new DataSet();
+    DataSet dsHRRRisk = new DataSet();
+    //DataSet dsAudit = new DataSet();
+    DataSet dsAnnexure = new DataSet();
+    DataSet dsWorkPermit = new DataSet();
+    DataSet dsSViolation = new DataSet();
+    DataSet dsJD = new DataSet();
+    DataSet dsSuppReevalation = new DataSet();
+    DataSet dsPortalAuthorization = new DataSet();
+    //DataSet dsAuditProcessdepthead = new DataSet();
+    //DataSet dsAuditProcess = new DataSet();
+    DataSet dsOFI = new DataSet();
+    DataSet dsOFIChekedby = new DataSet();
+    DataSet dsNC = new DataSet();
+    DataSet dsDCRequest = new DataSet();
+
+
+    if (ViewBag.dsNC != null)
+    {
+        dsNC = ViewBag.dsNC;
+    }
+    if (ViewBag.dsOFI != null)
+    {
+        dsOFI = ViewBag.dsOFI;
+    }
+    if (ViewBag.dsOFIChekedby != null)
+    {
+        dsOFIChekedby = ViewBag.dsOFIChekedby;
+    }
+    //if (ViewBag.dsAudit != null)
+    //{
+    //    dsAudit = ViewBag.dsAudit;
+    //}
+    if (ViewBag.dsMgmtDocument != null)
+    {
+        dsMgmtDocument = ViewBag.dsMgmtDocument;
+    }
+    if (ViewBag.dsTraining != null)
+    {
+        dsTraining = ViewBag.dsTraining;
+    }
+    if (ViewBag.dsObjectives != null)
+    {
+        dsObjectives = ViewBag.dsObjectives;
+    }
+    if (ViewBag.dslegalregister != null)
+    {
+        dslegalregister = ViewBag.dslegalregister;
+    }
+    if (ViewBag.dsDocChangeRequest != null)
+    {
+        dsDocChanges = ViewBag.dsDocChangeRequest;
+    }
+    if (ViewBag.dsChangeManagement != null)
+    {
+        dsManagement = ViewBag.dsChangeManagement;
+    }
+    if (ViewBag.dsProject != null)
+    {
+        dsProject = ViewBag.dsProject;
+    }
+    if (ViewBag.dsBidding != null)
+    {
+        dsBidding = ViewBag.dsBidding;
+    }
+    if (ViewBag.dsLeave != null)
+    {
+        dsLeave = ViewBag.dsLeave;
+    }
+    if (ViewBag.dsLeaveList != null)
+    {
+        dsLeaveList = ViewBag.dsLeaveList;
+    }
+    if (ViewBag.dsSupplier != null)
+    {
+        dsSupplier = ViewBag.dsSupplier;
+    }
+    if (ViewBag.dsRiskActivity != null)
+    {
+        dsRisk = ViewBag.dsRiskActivity;
+    }
+    if (ViewBag.dsRiskHRRActivity != null)
+    {
+        dsHRRRisk = ViewBag.dsRiskHRRActivity;
+    }
+    if (ViewBag.dsAnnexure != null)
+    {
+        dsAnnexure = ViewBag.dsAnnexure;
+    }
+    if (ViewBag.dsWorkPermit != null)
+    {
+        dsWorkPermit = ViewBag.dsWorkPermit;
+    }
+    if (ViewBag.dsSViolation != null)
+    {
+        dsSViolation = ViewBag.dsSViolation;
+    }
+    if (ViewBag.dsJD != null)
+    {
+        dsJD = ViewBag.dsJD;
+    }
+
+    if (ViewBag.dsSuppReevaluation != null)
+    {
+        dsSuppReevalation = ViewBag.dsSuppReevaluation;
+    }
+
+    if (ViewBag.dsPortalAuthorization != null)
+    {
+        dsPortalAuthorization = ViewBag.dsPortalAuthorization;
+    }
+
+    //if (ViewBag.dsAuditProcessdepthead != null)
+    //{
+    //    dsAuditProcessdepthead = ViewBag.dsAuditProcessdepthead;
+    //}
+
+    //if (ViewBag.dsAuditProcess != null)
+    //{
+    //    dsAuditProcess = ViewBag.dsAuditProcess;
+    //}
+
+    if (ViewBag.dsDCRequest != null)
+    {
+        dsDCRequest = ViewBag.dsDCRequest;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <span class="breadcrumb-item active">List of items Pending for Approval</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (dsPortalAuthorization != null && dsPortalAuthorization.Tables.Count > 0 && dsPortalAuthorization.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Portal Authorization List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>Access No</th>
+                    <th>Access Date</th>
+                    <th>Portal Category</th>
+                    <th>Sub-Cr No</th>
+                    <th>Nominated Employee</th>
+                    <th>Recommended By</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsPortalAuthorization.Tables[0].Rows.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @*<a href="#" data-toggle="ProtalAuthpopover" data-trigger="hover" id="@dsPortalAuthorization.Tables[0].Rows[i]["id_authorization"].ToString()">@dsPortalAuthorization.Tables[0].Rows[i]["access_no"].ToString()</a>*@
+                            @dsPortalAuthorization.Tables[0].Rows[i]["access_no"].ToString()
+                        </td>
+                        <td>
+                            @if (dsPortalAuthorization.Tables[0].Rows[i]["access_date"].ToString() != "" && dsPortalAuthorization.Tables[0].Rows[i]["access_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsPortalAuthorization.Tables[0].Rows[i]["access_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsPortalAuthorization.Tables[0].Rows[i]["portal_category"].ToString())
+                        </td>
+                        <td>
+                            @objPoralMdl.GetSUBCRNoById(dsPortalAuthorization.Tables[0].Rows[i]["id_portal_master"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsPortalAuthorization.Tables[0].Rows[i]["nominated_emp"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsPortalAuthorization.Tables[0].Rows[i]["recommended_by"].ToString())
+                        </td>
+                        <td>
+                            <a href='@Url.Action("PortalAuthorizationApprove", "Portal", new { id_authorization = dsPortalAuthorization.Tables[0].Rows[i]["id_authorization"].ToString() })' title="Details">
+                                <span class="badge badge-info">Details</span>
+                            </a>
+                        </td>
+                        @*<td style="width:70px">
+                                @if (dsPortalAuthorization.Tables[0].Rows[i]["apporved_status"].ToString() == "0")
+                                {
+                                    <a href='@Url.Action("ApproveAuthRecommend", "Portal", new { id_authorization = dsPortalAuthorization.Tables[0].Rows[i]["id_authorization"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                        <span class="badge badge-info">Approve</span>
+                                    </a>
+                                }
+                                else if (dsPortalAuthorization.Tables[0].Rows[i]["apporved_status"].ToString() == "1")
+                                {
+                                    <a href='@Url.Action("ApproveAuthRecommend", "Portal", new { id_authorization = dsPortalAuthorization.Tables[0].Rows[i]["id_authorization"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                        <span class="badge badge-info">Approve</span>
+                                    </a>
+                                }
+                                else if (dsPortalAuthorization.Tables[0].Rows[i]["apporved_status"].ToString() == "2")
+                                {
+                                    <a href='@Url.Action("ApproveAuthRecommend", "Portal", new { id_authorization = dsPortalAuthorization.Tables[0].Rows[i]["id_authorization"].ToString(), iStatus = 3, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                        <span class="badge badge-info">Approve</span>
+                                    </a>
+                                }
+                                else if (dsPortalAuthorization.Tables[0].Rows[i]["apporved_status"].ToString() == "3")
+                                {
+                                    <a href='@Url.Action("ApproveAuthRecommend", "Portal", new { id_authorization = dsPortalAuthorization.Tables[0].Rows[i]["id_authorization"].ToString(), iStatus = 5, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                        <span class="badge badge-info">Approve</span>
+                                    </a>
+                                }
+                                <a href='@Url.Action("ApproveAuthRecommend", "Portal", new { id_authorization = dsPortalAuthorization.Tables[0].Rows[i]["id_authorization"].ToString(), iStatus = 4, PendingFlg = "true" })' title="Reject" style="color:red;">
+                                        <span class="badge badge-danger">Reject</span>
+                                </a>
+                            </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsSuppReevalation != null && dsSuppReevalation.Tables.Count > 0 && dsSuppReevalation.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Supplier Reevaluation List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>Division</th>
+                    <th>Supplier</th>
+                    <th>Prepared By</th>
+                    <th>Recommender</th>
+                    <th>Approver</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsSuppReevalation.Tables[0].Rows.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <a href="#" data-toggle="docpopover" data-trigger="hover" id="@dsSuppReevalation.Tables[0].Rows[i]["id_reevaluation"].ToString()">@obj.GetMultiCompanyBranchNameById(dsSuppReevalation.Tables[0].Rows[i]["branch"].ToString())</a>
+                        </td>
+                        <td>
+                            @obj.GetSupplierNameById(dsSuppReevalation.Tables[0].Rows[i]["supplier"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsSuppReevalation.Tables[0].Rows[i]["logged_by"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsSuppReevalation.Tables[0].Rows[i]["recommanded_to"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsSuppReevalation.Tables[0].Rows[i]["approved_to"].ToString())
+                        </td>
+                        <td style="width:70px">
+                            <a href='@Url.Action("SupplierReevalutionApprove", "SupplierReevalution", new { id_reevaluation = dsSuppReevalation.Tables[0].Rows[i]["id_reevaluation"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("SupplierReevalutionApprove", "SupplierReevalution", new { id_reevaluation = dsSuppReevalation.Tables[0].Rows[i]["id_reevaluation"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsJD != null && dsJD.Tables.Count > 0 && dsJD.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Job Description List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>Position Id</th>
+                    <th>Department</th>
+
+                    <th>Reports to</th>
+                    <th>Supervises</th>
+                    <th>Report</th>
+
+                    <th>Status</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsJD.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @obj.GetRolesNameById(dsJD.Tables[0].Rows[i]["role_id"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDeptNameById(dsJD.Tables[0].Rows[i]["deptid"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetRolesNameById(dsJD.Tables[0].Rows[i]["report_to"].ToString())
+                        </td>
+
+                        <td>
+                            @dsJD.Tables[0].Rows[i]["supervises"].ToString()
+                        </td>
+
+                        <td>
+                            @if (dsJD.Tables[0].Rows[i]["jd_report"].ToString() != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsJD.Tables[0].Rows[i]["jd_report"].ToString() })' target="_blank">Preview</a>
+                            }
+                        </td>
+
+                        <td style="width:70px">
+                            <a href='@Url.Action("JDApproveReject", "Role", new { JD_comment = "xxxx", id_role_jd = dsJD.Tables[0].Rows[i]["id_role_jd"].ToString(), iStatus = 1, PendingFlg = "true", Document = dsJD.Tables[0].Rows[i]["jd_report"].ToString() })' id="lnk11 @dsJD.Tables[0].Rows[i]["id_role_jd"].ToString()" onclick="JDApprove(@dsJD.Tables[0].Rows[i]["id_role_jd"].ToString())" title="Approve" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("JDApproveReject", "Role", new { JD_comment = "xxxx", id_role_jd = dsJD.Tables[0].Rows[i]["id_role_jd"].ToString(), iStatus = 2, PendingFlg = "true", Document = dsJD.Tables[0].Rows[i]["jd_report"].ToString() })' id="lnk10 @dsJD.Tables[0].Rows[i]["id_role_jd"].ToString()" onclick="JDReject(@dsJD.Tables[0].Rows[i]["id_role_jd"].ToString())" title="Reject" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                        <td>
+
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="JD_comment@(dsJD.Tables[0].Rows[i]["id_role_jd"].ToString())"></textarea>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsSViolation != null && dsSViolation.Tables.Count > 0 && dsSViolation.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Safety Violation Log List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>Report No</th>
+                    <th>Voilation Type</th>
+                    <th>Department</th>
+                    <th>Supervisor</th>
+                    <th>Issued By</th>
+                    <th>Reported By</th>
+                    <th>Approver</th>
+                    <th>Document</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsSViolation.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            <a href="#" data-toggle="docpopover" data-trigger="hover" id="@dsSViolation.Tables[0].Rows[i]["ViolationLog_Id"].ToString()">@dsSViolation.Tables[0].Rows[i]["Report_No"].ToString()</a>
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsSViolation.Tables[0].Rows[i]["VoilationType"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDeptNameById(dsSViolation.Tables[0].Rows[i]["Dept"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsSViolation.Tables[0].Rows[i]["Supervisor"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsSViolation.Tables[0].Rows[i]["IssuedBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsSViolation.Tables[0].Rows[i]["UnsafeAct_ReportedBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsSViolation.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                        </td>
+                        <td>
+                            @if (dsSViolation.Tables[0].Rows[i]["Upload_Report"].ToString() != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsSViolation.Tables[0].Rows[i]["Upload_Report"].ToString() })' target="_blank">Preview</a>
+                            }
+                        </td>
+                        <td>
+                            <a href='@Url.Action("SafetyViolationApproveReject", "SafetyViolationLog", new { ViolationLog_Id = dsSViolation.Tables[0].Rows[i]["ViolationLog_Id"].ToString(), iStatus = 1, PendingFlg = "true" , Document = dsSViolation.Tables[0].Rows[i]["Upload_Report"].ToString()})' title="Approve Safety Violation" style="color:green;">Approve</a>
+                            <a href='@Url.Action("SafetyViolationApproveReject", "SafetyViolationLog", new { ViolationLog_Id = dsSViolation.Tables[0].Rows[i]["ViolationLog_Id"].ToString(), iStatus = 2, PendingFlg = "true", Document = dsSViolation.Tables[0].Rows[i]["Upload_Report"].ToString() })' title="Reject Safety Violation" style="color:red;">Reject</a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@if (dsAnnexure != null && dsAnnexure.Tables.Count > 0 && dsAnnexure.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Annexure List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>
+                        Doc. Ref.
+                    </th>
+                    <th>
+                        Doc. Name
+                    </th>
+                    <th>
+                        Issue No
+                    </th>
+                    <th>Rev No</th>
+                    <th>Prepared By</th>
+                    <th>Approved By</th>
+                    <th>
+                        Document
+                    </th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (int i = 0; i < dsAnnexure.Tables[0].Rows.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @dsAnnexure.Tables[0].Rows[i]["DocRef"].ToString()
+                        </td>
+                        <td>
+                            @dsAnnexure.Tables[0].Rows[i]["DocName"].ToString()
+                        </td>
+
+                        <td>
+                            @(dsAnnexure.Tables[0].Rows[i]["IssueNo"].ToString())
+                        </td>
+                        <td>
+                            @(dsAnnexure.Tables[0].Rows[i]["RevNo"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsAnnexure.Tables[0].Rows[i]["PreparedBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsAnnexure.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                        </td>
+                        <td>
+                            @if (dsAnnexure.Tables[0].Rows[i]["DocUploadPath"].ToString() != "")
+                            {
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsAnnexure.Tables[0].Rows[i]["DocUploadPath"].ToString() })' target="_blank">Preview</a>
+                                </span>
+                            }
+                            else
+                            {
+
+                                <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                            }
+                        </td>
+                        <td>
+                            <a href='@Url.Action("AnnexureApproval", "MgmtDocuments", new { idAnnexure = dsAnnexure.Tables[0].Rows[i]["idAnnexure"].ToString(), DocName = dsAnnexure.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsAnnexure.Tables[0].Rows[i]["DocRef"].ToString(), PendingFlg = "true", Document = dsAnnexure.Tables[0].Rows[i]["DocUploadPath"].ToString() })' title="Review document details" style="color:red;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@*@if (dsAudit != null && dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
+    {
+        <h1 class="bg-dark pl-sm-2">Internal Audit List</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                <thead>
+                    <tr class="bg-brown">
+
+                        <th>Audit No</th>
+                        <th>Audit Date</th>
+                        <th>Audit Criteria</th>
+                        <th>Audit Location</th>
+                        <th>Prepared By</th>
+                        <th>Approved By</th>
+                        <th>Document</th>
+                        <th>Status</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsAudit.Tables[0].Rows.Count; i++)
+                    {
+
+                        <tr>
+                            <td>
+                                <a href="#" data-toggle="Auditpopover" data-trigger="hover" id="@dsAudit.Tables[0].Rows[i]["AuditID"].ToString()">@(dsAudit.Tables[0].Rows[i]["AuditNum"].ToString())</a>
+                            </td>
+                            <td>
+                                @if (dsAudit.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAudit.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                {
+                                    @Convert.ToDateTime(dsAudit.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @obj.GetIsoStdDescriptionById(dsAudit.Tables[0].Rows[i]["AuditCriteria"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetCompanyBranchNameById(dsAudit.Tables[0].Rows[i]["AuditLocation"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetEmpHrNameById(dsAudit.Tables[0].Rows[i]["Audit_Prepared_by"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetEmpHrNameById(dsAudit.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                            </td>
+                            <td>
+                                @if (dsAudit.Tables[0].Rows[i]["upload"].ToString() != "")
+                                {
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsAudit.Tables[0].Rows[i]["upload"].ToString() })' target="_blank">Preview</a>
+                                }
+                            </td>
+                            <td>
+                                <a href='@Url.Action("AuditApproveReject", "Audit", new { AuditID = dsAudit.Tables[0].Rows[i]["AuditID"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("AuditApproveReject", "Audit", new { AuditID = dsAudit.Tables[0].Rows[i]["AuditID"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reschedule" style="color:red;">
+                                    <span class="badge badge-info">Reschedule</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }*@
+
+@*--------------- Audit Process(Internal Audit Plan) Dept Head-----------------*@
+@*@if (dsAuditProcessdepthead != null && dsAuditProcessdepthead.Tables.Count > 0 && dsAuditProcessdepthead.Tables[0].Rows.Count > 0)
+        {
+            <h1 class="bg-dark pl-sm-2">Internal Audit Plan List (Dept Head)</h1>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover datatable-responsive">
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Audit No</th>
+                            <th>Audit Date</th>
+                            <th>Division</th>
+                            <th>Department</th>
+                            <th>Location</th>
+                            <th>CheckList</th>
+                            <th>Planned By</th>
+                            <th>Notified To</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < dsAuditProcessdepthead.Tables[0].Rows.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                 @(dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_no"].ToString())
+                            </td>
+                            <td>
+                                @if (dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                {
+                                    @Convert.ToDateTime(dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @obj.GetMultiCompanyBranchNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["division"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiDeptNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["dept"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetDivisionLocationById(dsAuditProcessdepthead.Tables[0].Rows[i]["location"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetChecklistBychecklistId(dsAuditProcessdepthead.Tables[0].Rows[i]["checklist"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["PlannedBy"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["Notified_To"].ToString())
+                            </td>
+                            <td>
+                                <a href='@Url.Action("AuditProcessApproveDeptHead", "AuditProcess", new { Audit_Id = dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("AuditProcessApproveDeptHead", "AuditProcess", new { Audit_Id = dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject" style="color:red;">
+                                    <span class="badge badge-danger">Reject</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }*@
+@*--------------- Audit Process(Internal Audit Plan)-----------------*@
+@* @if (dsAuditProcess != null && dsAuditProcess.Tables.Count > 0 && dsAuditProcess.Tables[0].Rows.Count > 0)
+    {
+        <h1 class="bg-dark pl-sm-2">Internal Audit Plan List</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover datatable-responsive">
+                <thead>
+                    <tr class="bg-brown">
+                        <th>Audit No</th>
+                        <th>Audit Date</th>
+                        <th>Division</th>
+                        <th>Department</th>
+                        <th>Location</th>
+                        <th>CheckList</th>
+                        <th>Planned By</th>
+                        <th>Notified To</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsAuditProcess.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @(dsAuditProcess.Tables[0].Rows[i]["Audit_no"].ToString())
+                            </td>
+                            <td>
+                                @if (dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                {
+                                    @Convert.ToDateTime(dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @obj.GetMultiCompanyBranchNameById(dsAuditProcess.Tables[0].Rows[i]["division"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiDeptNameById(dsAuditProcess.Tables[0].Rows[i]["dept"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetDivisionLocationById(dsAuditProcess.Tables[0].Rows[i]["location"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetChecklistBychecklistId(dsAuditProcess.Tables[0].Rows[i]["checklist"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcess.Tables[0].Rows[i]["PlannedBy"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcess.Tables[0].Rows[i]["Notified_To"].ToString())
+                            </td>
+                            <td>
+                                <a href='@Url.Action("AuditProcessApprove", "AuditProcess", new { Audit_Id = dsAuditProcess.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("AuditProcessApprove", "AuditProcess", new { Audit_Id = dsAuditProcess.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject" style="color:red;">
+                                    <span class="badge badge-danger">Reject</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }*@
+
+@if (dsMgmtDocument != null && dsMgmtDocument.Tables.Count > 0 && dsMgmtDocument.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Management Documents List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>
+                        Doc. Ref.
+                    </th>
+                    <th>
+                        Doc. Name
+                    </th>
+                    <th>
+                        Doc. Type
+                    </th>
+                    <th>ISO Standards</th>
+                    <th>Prepared By</th>
+                    <th>Reviewed By</th>
+                    <th>Approver</th>
+                    <th>
+                        Document
+                    </th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsMgmtDocument.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+
+
+                        <td>
+                            <a href="#" data-toggle="docpopover" data-trigger="hover" id="@dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString()">@dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString()</a>
+                        </td>
+                        <td>
+                            @dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString()
+                        </td>
+                        <td>
+                            @obj.GetDocumentTypebyId(dsMgmtDocument.Tables[0].Rows[i]["Doctype"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetIsoStdNameById(dsMgmtDocument.Tables[0].Rows[i]["ISOStds"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsMgmtDocument.Tables[0].Rows[i]["PreparedBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsMgmtDocument.Tables[0].Rows[i]["ReviewedBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsMgmtDocument.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                        </td>
+                        <td>
+                            @if (dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() })' target="_blank">Preview</a>
+                            }
+                        </td>
+                        <td>
+                            <a href='@Url.Action("MgmtDocumentsApproveReject", "MgmtDocuments", new { idMgmt = dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString(), iStatus = 1, PendingFlg = "true" , DocName = dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString(), Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString()})' title="Approve Mgmt Documents" style="color:green;">Approve</a>
+                            <a href='@Url.Action("MgmtDocumentsApproveReject", "MgmtDocuments", new { idMgmt = dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString(), iStatus = 2, PendingFlg = "true", DocName = dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString(), Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() })' title="Reject Mgmt Documents" style="color:red;">Reject</a>
+                        </td>
+                        @*<td>
+                                <a href='@Url.Action("MgmtDocumentsApprove", "MgmtDocuments", new { idMgmt = dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString(), iStatus = 1, PendingFlg = "true", DocName = dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString(), Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() })' title="Approve Mgmt Documents" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("MgmtDocumentsApprove", "MgmtDocuments", new { idMgmt = dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString(), iStatus = 2, PendingFlg = "true", DocName = dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString(), Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() })' title="Reject Mgmt Documents" style="color:red;">
+                                    <span class="badge badge-danger">Reject</span>
+                                </a>
+                            </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsTraining != null && dsTraining.Tables.Count > 0 && dsTraining.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Training List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>Topic</th>
+                    <th>Department</th>
+                    <th>Attendees</th>
+                    <th>Training Start Date</th>
+                    <th>Training End Date</th>
+                    <th>Justification for Training</th>
+                    <th>Training Requested By</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsTraining.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            <a href="#" data-toggle="trainingpopover" data-trigger="hover" id="@dsTraining.Tables[0].Rows[i]["TrainingID"].ToString()">@*@obj.GetDropdownitemById*@ @(dsTraining.Tables[0].Rows[i]["Training_Topic"].ToString())</a>
+                        </td>
+                        <td>
+                            @obj.GetMultiDeptNameById(dsTraining.Tables[0].Rows[i]["DeptId"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsTraining.Tables[0].Rows[i]["Attendees"].ToString())
+                        </td>
+                        <td>
+                            @if (dsTraining.Tables[0].Rows[i]["Training_Start_Date"].ToString() != "" && dsTraining.Tables[0].Rows[i]["Training_Start_Date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsTraining.Tables[0].Rows[i]["Training_Start_Date"].ToString()).ToString("dd/MM/yyyy HH:mm:ss")
+                            }
+                        </td>
+                        <td>
+                            @if (dsTraining.Tables[0].Rows[i]["Expected_Date_Completion"].ToString() != "" && dsTraining.Tables[0].Rows[i]["Expected_Date_Completion"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsTraining.Tables[0].Rows[i]["Expected_Date_Completion"].ToString()).ToString("dd/MM/yyyy HH:mm:ss")
+                            }
+                        </td>
+                        <td>
+                            @dsTraining.Tables[0].Rows[i]["Reasonfor_Training"].ToString()
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsTraining.Tables[0].Rows[i]["Training_Requested_By"].ToString())
+                        </td>
+                        <td>
+                            @*<a href='@Url.Action("TrainingsApproveReject", "Trainings", new { TrainingID = dsTraining.Tables[0].Rows[i]["TrainingID"].ToString(), ApprovedBy = dsTraining.Tables[0].Rows[i]["ApprovedBy"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve Training" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("TrainingsApproveReject", "Trainings", new { TrainingID = dsTraining.Tables[0].Rows[i]["TrainingID"].ToString(), ApprovedBy = dsTraining.Tables[0].Rows[i]["ApprovedBy"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject Training" style="color:red;">
+                                    <span class="badge badge-danger">Reject</span>
+                                </a>*@
+                            <a href='@Url.Action("TrainingEventsApproveReject", "TrainingEvents", new { TrainingID = dsTraining.Tables[0].Rows[i]["TrainingID"].ToString(), ApprovedBy = dsTraining.Tables[0].Rows[i]["ApprovedBy"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve Training" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("TrainingEventsApproveReject", "TrainingEvents", new { TrainingID = dsTraining.Tables[0].Rows[i]["TrainingID"].ToString(), ApprovedBy = dsTraining.Tables[0].Rows[i]["ApprovedBy"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject Training" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@if (dsObjectives != null && dsObjectives.Tables.Count > 0 && dsObjectives.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Objectives List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    @*<th>Obj Reference</th>*@
+                    <th>Department</th>
+                    @* <th>Freq of Evaluation</th>*@
+                    <th>Approved By</th>
+                    <th>Mgmt System Std(s)</th>
+                    <th>Established by</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsObjectives.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        @*<td>
+                                <a href="#" data-toggle="objectivepopover" data-trigger="hover" id="@dsObjectives.Tables[0].Rows[i]["Objectives_Id"].ToString()">@dsObjectives.Tables[0].Rows[i]["Obj_Ref"].ToString()</a>
+                            </td>*@
+                        <td>
+                            <a href="#" data-toggle="objectivepopover" data-trigger="hover" id="@dsObjectives.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString()"> @obj.GetDeptNameById(dsObjectives.Tables[0].Rows[i]["Dept"].ToString())</a>
+                        </td>
+                        @* <td>
+                                @obj.GetDropdownitemById(dsObjectives.Tables[0].Rows[i]["Freq_of_Eval"].ToString())
+                            </td>*@
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsObjectives.Tables[0].Rows[i]["Approved_By"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetIsoStdNameById(dsObjectives.Tables[0].Rows[i]["Audit_Criteria"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsObjectives.Tables[0].Rows[i]["Estld_by"].ToString())
+                        </td>
+                        <td>
+                            <a href='@Url.Action("ObjectivesApprove", "Objectives", new { ObjectivesTrans_Id = dsObjectives.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve Objective details" style="color:red;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("ObjectivesApprove", "Objectives", new { ObjectivesTrans_Id = dsObjectives.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject Objective details" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dslegalregister != null && dslegalregister.Tables.Count > 0 && dslegalregister.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Legal Register List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>Law Number </th>
+                    <th>Law Title  </th>
+                    <th>Origin of Requirements</th>
+                    <th>Freq of Evaluation</th>
+                    <th>Active Status</th>
+
+                    <th>Initial Development Date</th>
+
+                    <th>Updated By</th>
+
+                    <th>Updated Date</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dslegalregister.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            <a href='@Url.Action("LegalRegisterList", "LegalRegister", new { LegalRequirement_Id = dslegalregister.Tables[0].Rows[i]["LegalRequirement_Id"].ToString() })'
+                               title="Law  details" target="_blank">@dslegalregister.Tables[0].Rows[i]["lawNo"].ToString()</a>
+                        </td>
+                        <td>
+                            @dslegalregister.Tables[0].Rows[i]["lawTitle"].ToString()
+                        </td>
+                        <td>
+                            @dslegalregister.Tables[0].Rows[i]["origin_of_requirement"].ToString()
+                        </td>
+                        <td>
+                            @dslegalregister.Tables[0].Rows[i]["frequency_of_evaluation"].ToString()
+                        </td>
+
+                        <td>
+                            @dslegalregister.Tables[0].Rows[i]["activeStatus"].ToString()
+                        </td>
+                        <td>
+                            @dslegalregister.Tables[0].Rows[i]["initialdevelopmentdate"].ToString()
+                        </td>
+                        <td>
+                            @dslegalregister.Tables[0].Rows[i]["updatedByName"].ToString()
+                        </td>
+                        <td>
+                            @dslegalregister.Tables[0].Rows[i]["updatedOn"].ToString()
+                        </td>
+
+
+                        <td>
+                            <a href='@Url.Action("LegalRegisterApprove", "LegalRegister", new { LegalRequirement_Id = dslegalregister.Tables[0].Rows[i]["LegalRequirement_Id"].ToString(), PendingFlg = "true" })' title="Approve Legal Register details" style="color:red;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@if (dsDCRequest != null && dsDCRequest.Tables.Count > 0 && dsDCRequest.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Document Create Request List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>DCR NO:</th>
+                    <th>Requested Date</th>
+                    <th>Prepared By</th>
+                    <th>Checked By</th>
+                    <th>Upload</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsDCRequest.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @dsDCRequest.Tables[0].Rows[i]["dcr_no"].ToString()
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(dsDCRequest.Tables[0].Rows[i]["date_request"].ToString()).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsDCRequest.Tables[0].Rows[i]["logged_by"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsDCRequest.Tables[0].Rows[i]["checkedby"].ToString())
+                        </td>
+                        <td>
+                            @if (dsDCRequest.Tables[0].Rows[i]["upload"].ToString() != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsDCRequest.Tables[0].Rows[i]["upload"].ToString() })' target="_blank">Preview</a>
+                            }
+                        </td>
+                        <td>
+                            @obj.GetCompanyBranchNameById(dsDCRequest.Tables[0].Rows[i]["division"].ToString())
+                        </td>
+                        <td>
+                            @dsDCRequest.Tables[0].Rows[i]["doc_status"].ToString()
+                        </td>
+                        <td>
+                            <a href='@Url.Action("DCRApporveDetails", "DocumentCreateRequest", new { id_doc_request = dsDCRequest.Tables[0].Rows[i]["id_doc_request"].ToString()})' title="Details Document Create Request" style="color:blue;">
+                                <span class="badge badge-info">Details</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsDocChanges != null && dsDocChanges.Tables.Count > 0 && dsDocChanges.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Document Revise Request List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>
+                        Document Ref
+                    </th>
+                    <th>
+                        Document Name
+                    </th>
+                    <th>
+                        Changes Requested
+                    </th>
+                    <th>
+                        Requested By
+                    </th>
+                    <th>Document</th>
+                    <th>Requested Date</th>
+                    <th>Status</th>
+                    <th>Comments</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsDocChanges.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            <a href="#" data-toggle="DocChangepopover" data-trigger="hover" id="@dsDocChanges.Tables[0].Rows[i]["Id"].ToString()">@obj.GetDocRefByID(dsDocChanges.Tables[0].Rows[i]["DocRef"].ToString())</a>
+                        </td>
+                        <td>
+                            @obj.GetDocNameByID(dsDocChanges.Tables[0].Rows[i]["DocName"].ToString())
+                        </td>
+                        <td>
+                            @Html.Raw(HttpUtility.HtmlDecode(dsDocChanges.Tables[0].Rows[i]["Changes"].ToString()))
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsDocChanges.Tables[0].Rows[i]["RequestedBy"].ToString())
+                        </td>
+                        <td>
+                            @if (dsDocChanges.Tables[0].Rows[i]["upload"].ToString() != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsDocChanges.Tables[0].Rows[i]["upload"].ToString() })' target="_blank">Preview</a>
+                            }
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(dsDocChanges.Tables[0].Rows[i]["ChangeRequestDate"].ToString()).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            <a href='@Url.Action("DocumentChangesApproveReject", "DocumentChangeRequest", new { Doccomments = "xxxx", DocID = dsDocChanges.Tables[0].Rows[i]["Id"].ToString(), iStatus = 1, PendingFlg = "true" })' id="lnk1 @dsDocChanges.Tables[0].Rows[i]["Id"].ToString()" onclick="DocChangeApprove(@dsDocChanges.Tables[0].Rows[i]["Id"].ToString())" title="Approve Document Changes" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("DocumentChangesApproveReject", "DocumentChangeRequest", new { Doccomments = "xxxx", DocID = dsDocChanges.Tables[0].Rows[i]["Id"].ToString(), iStatus = 2, PendingFlg = "true" })' id="lnk @dsDocChanges.Tables[0].Rows[i]["Id"].ToString()" onclick="DocChangeReject(@dsDocChanges.Tables[0].Rows[i]["Id"].ToString())" title="Reject Document Changes" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                        <td>
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Doccomments@(dsDocChanges.Tables[0].Rows[i]["Id"].ToString())" required></textarea>
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsManagement != null && dsManagement.Tables.Count > 0 && dsManagement.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Change Management Request List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>
+                        Change initiated date
+                    </th>
+                    <th>
+                        Requested By
+                    </th>
+                    <th>
+                        Change in
+                    </th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsManagement.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+
+                            <a href="#" data-toggle="ChangeMgmtpopover" data-trigger="hover" id="@dsManagement.Tables[0].Rows[i]["IdMgmt"].ToString()">@Convert.ToDateTime(dsManagement.Tables[0].Rows[i]["ChangeInitiatedDate"].ToString()).ToString("dd/MM/yyyy")</a>
+
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsManagement.Tables[0].Rows[i]["ChangeRequestedBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsManagement.Tables[0].Rows[i]["ChangeIn"].ToString())
+                        </td>
+                        <td>
+                            <a href='@Url.Action("ChangeManagementApproveReject", "ChangeManagement", new { IdMgmt = dsManagement.Tables[0].Rows[i]["IdMgmt"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve change management" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("ChangeManagementApproveReject", "ChangeManagement", new { IdMgmt = dsManagement.Tables[0].Rows[i]["IdMgmt"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject change management" style="color:green;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsProject != null && dsProject.Tables.Count > 0 && dsProject.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Project Design Review</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>
+                        Project No
+                    </th>
+                    <th>
+                        Project Name
+                    </th>
+                    <th>
+                        Reviewed By
+                    </th>
+                    <th>
+                        Dicipline
+                    </th>
+                    <th>
+                        DrawingNumber
+                    </th>
+                    <th>Drawings</th>
+                    <th>Status</th>
+                    <th>
+                        Comments
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsProject.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @dsProject.Tables[0].Rows[i]["ProjectNo"].ToString()
+                        </td>
+                        <td>
+                            @dsProject.Tables[0].Rows[i]["ProjectName"].ToString()
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsProject.Tables[0].Rows[i]["ReviewedBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsProject.Tables[0].Rows[i]["Dicipline"].ToString())
+                        </td>
+                        <td>
+                            @dsProject.Tables[0].Rows[i]["DrawingNumber"].ToString()
+                        </td>
+                        <td>
+                            @if (dsProject.Tables[0].Rows[i]["Upload"].ToString() != null && dsProject.Tables[0].Rows[i]["Upload"].ToString() != "" && dsProject.Tables[0].Rows[i]["Upload"].ToString().Length > 0)
+                            {
+                                foreach (var docs in dsProject.Tables[0].Rows[i]["Upload"].ToString().Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            @*@System.IO.Path.GetFileName(docs)*@preview
+                                        </a>
+                                    </p>
+                                }
+                            }
+                        </td>
+                        <td>
+                            <a href='@Url.Action("ProjectDesignApprove", "ProjectMgmt", new { ProjDesgncomments = "xxxx", sid_projectdesign = dsProject.Tables[0].Rows[i]["id_projectdesign"].ToString(), sid_projectmgmt = dsProject.Tables[0].Rows[i]["id_projectmgmt"].ToString(), iStatus = 1, PendingFlg = "true" })' id="lnk2 @dsProject.Tables[0].Rows[i]["id_projectmgmt"].ToString()" onclick="ProjectApprove(@dsProject.Tables[0].Rows[i]["id_projectmgmt"].ToString())" title="Approve Design" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+
+                        </td>
+                        <td>
+
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="ProjDesgncomments @dsProject.Tables[0].Rows[i]["id_projectmgmt"].ToString()" required></textarea>
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsBidding != null && dsBidding.Tables.Count > 0 && dsBidding.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Bidding Documents List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>
+                        Update
+                    </th>
+                    <th>
+                        Client
+                    </th>
+                    <th>
+                        Preview
+                    </th>
+                    <th>
+                        Folder Ref
+                    </th>
+                    <th>
+                        Project Name
+                    </th>
+                    <th>
+                        Submission Date
+                    </th>
+                    <th>Prepared By</th>
+                    <th>
+                        Proposal Ref
+                    </th>
+                    <th>Proposal Date</th>
+                    <th>Status</th>
+                    <th>
+                        Comments
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsBidding.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td style="width: 60px; min-width: 60px; max-width: 60px;">
+                            <a href='@Url.Action("BiddingEdit", "Bidding", new { id_bidding = dsBidding.Tables[0].Rows[i]["id_bidding"].ToString() })' title="Update Detail" onclick="HyperLinkProgressIconFunction()">
+                                <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                            </a>
+                        </td>
+                        <td>
+                            @dsBidding.Tables[0].Rows[i]["client"].ToString()
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @if (dsBidding.Tables[0].Rows[i]["upload"].ToString() != null && dsBidding.Tables[0].Rows[i]["upload"].ToString() != "" && dsBidding.Tables[0].Rows[i]["upload"].ToString().Length > 0)
+                                {
+                                    foreach (var docs in dsBidding.Tables[0].Rows[i]["upload"].ToString().Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                @*@System.IO.Path.GetFileName(docs)*@preview
+                                            </a>
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            @dsBidding.Tables[0].Rows[i]["folderref"].ToString()
+                        </td>
+                        <td>
+                            @dsBidding.Tables[0].Rows[i]["projectname"].ToString()
+                        </td>
+                        <td>
+                            @if (dsBidding.Tables[0].Rows[i]["submission_date"].ToString() != "" && dsBidding.Tables[0].Rows[i]["submission_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsBidding.Tables[0].Rows[i]["submission_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsBidding.Tables[0].Rows[i]["preparedby"].ToString())
+                        </td>
+                        <td>
+                            @dsBidding.Tables[0].Rows[i]["proposalref"].ToString()
+                        </td>
+                        <td>
+                            @if (dsBidding.Tables[0].Rows[i]["proposal_date"].ToString() != "" && dsBidding.Tables[0].Rows[i]["proposal_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsBidding.Tables[0].Rows[i]["proposal_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            <a href='@Url.Action("BiddingApprove", "Bidding", new { biddingcomments = "xxxx", id_bidding = dsBidding.Tables[0].Rows[i]["id_bidding"].ToString(), iStatus = 1 })' id="lnk5 @dsBidding.Tables[0].Rows[i]["id_bidding"].ToString()" onclick="Bidding(@dsBidding.Tables[0].Rows[i]["id_bidding"].ToString())" title="Approve document details" style="color:red;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                        </td>
+                        <td>
+
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="biddingcomments@(dsBidding.Tables[0].Rows[i]["id_bidding"].ToString())" required></textarea>
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsLeave != null && dsLeave.Tables.Count > 0 && dsLeave.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Leave Request for approval</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>
+                        Emp No
+                    </th>
+                    <th>
+                        Emp Name
+                    </th>
+                    <th>
+                        From Date
+                    </th>
+                    <th>
+                        To Date
+                    </th>
+                    <th>Duration</th>
+                    <th>Applied On</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>
+                        Comments
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsLeave.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @dsLeave.Tables[0].Rows[i]["emp_no"].ToString()
+                        </td>
+                        <td>
+                            @objLeave.GetEmpHrNameById(dsLeave.Tables[0].Rows[i]["emp_no"].ToString())
+                        </td>
+                        <td>
+                            @if (dsLeave.Tables[0].Rows[i]["fr_date"].ToString() != "" && dsLeave.Tables[0].Rows[i]["fr_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsLeave.Tables[0].Rows[i]["fr_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (dsLeave.Tables[0].Rows[i]["to_date"].ToString() != "" && dsLeave.Tables[0].Rows[i]["to_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsLeave.Tables[0].Rows[i]["to_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @dsLeave.Tables[0].Rows[i]["duration"].ToString()
+                        </td>
+                        <td>
+                            @if (dsLeave.Tables[0].Rows[i]["applied_date"].ToString() != "" && dsLeave.Tables[0].Rows[i]["applied_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsLeave.Tables[0].Rows[i]["applied_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @dsLeave.Tables[0].Rows[i]["reason_leave"].ToString()
+                        </td>
+                        <td>
+                            <a href='@Url.Action("LeaveApproveReject", "LeaveManagement", new { Leavecomments = "xxxx", leave_id = dsLeave.Tables[0].Rows[i]["leave_id"].ToString(), duration = dsLeave.Tables[0].Rows[i]["duration"].ToString(), iStatus = 1, PendingFlg = "true" })' id="lnk3 @dsLeave.Tables[0].Rows[i]["leave_id"].ToString()" onclick="LeaveApprove(@dsLeave.Tables[0].Rows[i]["leave_id"].ToString())" title="Approve Leave" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("LeaveApproveReject", "LeaveManagement", new { Leavecomments = "xxxx", leave_id = dsLeave.Tables[0].Rows[i]["leave_id"].ToString(), duration = dsLeave.Tables[0].Rows[i]["duration"].ToString(), iStatus = 2, PendingFlg = "true" })' id="lnk4 @dsLeave.Tables[0].Rows[i]["leave_id"].ToString()" onclick="LeaveReject(@dsLeave.Tables[0].Rows[i]["leave_id"].ToString())" title="Reject Leave" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                        <td>
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Leavecomments @dsLeave.Tables[0].Rows[i]["leave_id"].ToString()" required></textarea>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsLeaveList != null && dsLeaveList.Tables.Count > 0 && dsLeaveList.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Leave Request for approval</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>Emp No</th>
+                    <th>Emp Name</th>
+                    <th>Balance Annual Leave</th>
+                    <th>Balance Sick Leave</th>
+                    <th>Balance other Leave</th>
+                    <th>
+                        Leave Type
+                    </th>
+                    <th>
+                        From Date
+                    </th>
+                    <th>
+                        To Date
+                    </th>
+                    <th>Leave Duration</th>
+                    <th>Applied On</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>
+                        Comments
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsLeaveList.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @obj.GetEmpIDByEmpNo(dsLeaveList.Tables[0].Rows[i]["emp_no"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsLeaveList.Tables[0].Rows[i]["emp_no"].ToString())
+                        </td>
+                        <td>
+                            @dsLeaveList.Tables[0].Rows[i]["bal_annual_leave"].ToString()
+                        </td>
+
+                        <td>
+                            @dsLeaveList.Tables[0].Rows[i]["bal_sick_leave"].ToString()
+                        </td>
+
+                        <td>
+                            @dsLeaveList.Tables[0].Rows[i]["bal_other_leave"].ToString()
+                        </td>
+                        <td>
+                            @(dsLeaveList.Tables[0].Rows[i]["leave_type"].ToString())
+                        </td>
+                        <td>
+                            @if (dsLeaveList.Tables[0].Rows[i]["fr_date"].ToString() != "" && dsLeaveList.Tables[0].Rows[i]["fr_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsLeaveList.Tables[0].Rows[i]["fr_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (dsLeaveList.Tables[0].Rows[i]["to_date"].ToString() != "" && dsLeaveList.Tables[0].Rows[i]["to_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsLeaveList.Tables[0].Rows[i]["to_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @dsLeaveList.Tables[0].Rows[i]["duration"].ToString()
+                        </td>
+                        <td>
+                            @if (dsLeaveList.Tables[0].Rows[i]["applied_date"].ToString() != "" && dsLeaveList.Tables[0].Rows[i]["applied_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsLeaveList.Tables[0].Rows[i]["applied_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @dsLeaveList.Tables[0].Rows[i]["reason_leave"].ToString()
+                        </td>
+                        <td>
+                            <a href='@Url.Action("LeaveApproveReject", "LeaveMgmt", new { Leavecomments = "xxxx", leave_id = dsLeaveList.Tables[0].Rows[i]["leave_id"].ToString(), duration = dsLeaveList.Tables[0].Rows[i]["duration"].ToString(), emp_no = dsLeaveList.Tables[0].Rows[i]["emp_no"].ToString(),leave_type =(dsLeaveList.Tables[0].Rows[i]["leave_type"].ToString()), iStatus = 1, PendingFlg = "true" })' id="lnk6 @dsLeaveList.Tables[0].Rows[i]["leave_id"].ToString()" onclick="LeaveApproves(@dsLeaveList.Tables[0].Rows[i]["leave_id"].ToString())" title="Approve Leave" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("LeaveApproveReject", "LeaveMgmt", new { Leavecomments = "xxxx", leave_id = dsLeaveList.Tables[0].Rows[i]["leave_id"].ToString(), duration = dsLeaveList.Tables[0].Rows[i]["duration"].ToString(), emp_no = dsLeaveList.Tables[0].Rows[i]["emp_no"].ToString(),leave_type =(dsLeaveList.Tables[0].Rows[i]["leave_type"].ToString()), iStatus = 2, PendingFlg = "true" })' id="lnk7 @dsLeaveList.Tables[0].Rows[i]["leave_id"].ToString()" onclick="LeaveRejects(@dsLeaveList.Tables[0].Rows[i]["leave_id"].ToString())" title="Reject Leave" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                        <td>
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="NewLeavecomments @dsLeaveList.Tables[0].Rows[i]["leave_id"].ToString()" required></textarea>
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsSupplier != null && dsSupplier.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Supplier Approval List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>
+                        Supplier Code
+                    </th>
+                    <th>
+                        Supplier Name
+                    </th>
+                    <th>
+                        City
+                    </th>
+                    <th>
+                        Contact Person
+                    </th>
+                    <th>Contact No</th>
+                    <th>
+                        Address
+                    </th>
+                    <th>Scope of Supply</th>
+                    <th>Approval Criteria</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsSupplier.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            <a href="#" data-toggle="supplierpopover" data-trigger="hover" id="@dsSupplier.Tables[0].Rows[i]["SupplierID"].ToString()">@dsSupplier.Tables[0].Rows[i]["SupplierCode"].ToString()</a>
+                        </td>
+                        <td>
+                            @dsSupplier.Tables[0].Rows[i]["SupplierName"].ToString()
+                        </td>
+                        <td>
+                            @dsSupplier.Tables[0].Rows[i]["City"].ToString()
+                        </td>
+                        <td>
+                            @dsSupplier.Tables[0].Rows[i]["ContactPerson"].ToString()
+                        </td>
+                        <td>
+                            @dsSupplier.Tables[0].Rows[i]["ContactNo"].ToString()
+                        </td>
+                        <td>
+                            @dsSupplier.Tables[0].Rows[i]["Address"].ToString()
+                        </td>
+                        <td>
+                            @dsSupplier.Tables[0].Rows[i]["SupplyScope"].ToString()
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsSupplier.Tables[0].Rows[i]["ApprovalCriteria"].ToString())
+                        </td>
+
+                        <td>
+                            <a href='@Url.Action("SupplierApprove", "Supplier", new { SupplierID = dsSupplier.Tables[0].Rows[i]["SupplierID"].ToString(), iStatus = 1 })' title="Approve Supplier" style="color:red;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsRisk != null && dsRisk.Tables.Count > 0 && dsRisk.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Risk Activity for Approve</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>
+                        Activity
+                    </th>
+                    <th>
+                        Severity
+                    </th>
+                    <th>
+                        Probability
+                    </th>
+                    <th>
+                        Evaluation Date
+                    </th>
+                    <th>
+                        ReEvaluation Date
+                    </th>
+                    <th>
+                        Preparer
+                    </th>
+                    <th>
+                        Reviewer
+                    </th>
+                    <th>
+                        Approver
+                    </th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsRisk.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+
+                            <a href="#" data-toggle="Riskpopover" data-trigger="hover" id="@dsRisk.Tables[0].Rows[i]["Reg_Activity_eval_Id"].ToString()">@objRisk.GetRiskAcivityNameById(dsRisk.Tables[0].Rows[i]["Risk_Reg_Activity_Id"].ToString())</a>
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsRisk.Tables[0].Rows[i]["Severity"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsRisk.Tables[0].Rows[i]["Probability"].ToString())
+                        </td>
+                        <td>
+                            @if (dsRisk.Tables[0].Rows[i]["Eval_Date"].ToString() != "" && dsRisk.Tables[0].Rows[i]["Eval_Date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsRisk.Tables[0].Rows[i]["Eval_Date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (dsRisk.Tables[0].Rows[i]["ReEval_Date"].ToString() != "" && dsRisk.Tables[0].Rows[i]["ReEval_Date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsRisk.Tables[0].Rows[i]["ReEval_Date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsRisk.Tables[0].Rows[i]["Action_TakenBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsRisk.Tables[0].Rows[i]["Reviewer_QHSE"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsRisk.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                        </td>
+                        <td>
+                            <a href='@Url.Action("RiskActivityApproved", "RiskRegisterActivity", new { Regeval_Id = dsRisk.Tables[0].Rows[i]["Reg_Activity_eval_Id"].ToString(), PendingFlg = "true" })' title="Review document details" style="color:red;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsHRRRisk != null && dsHRRRisk.Tables.Count > 0 && dsHRRRisk.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Risk Activity for Approve</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>
+                        Activity
+                    </th>
+                    <th>
+                        Severity
+                    </th>
+                    <th>
+                        Probability
+                    </th>
+                    <th>
+                        Exposure
+                    </th>
+                    <th>
+                        Evaluation Date
+                    </th>
+                    <th>
+                        ReEvaluation Date
+                    </th>
+                    <th>
+                        Preparer
+                    </th>
+                    <th>
+                        Reviewer
+                    </th>
+                    <th>
+                        Approver
+                    </th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsHRRRisk.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+
+                            <a href="#" data-toggle="RiskHRRpopover" data-trigger="hover" id="@dsHRRRisk.Tables[0].Rows[i]["risk_hrr_id"].ToString()">@objRisk.GetRiskAcivityNameById(dsHRRRisk.Tables[0].Rows[i]["Risk_Reg_Activity_Id"].ToString())</a>
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsHRRRisk.Tables[0].Rows[i]["Severity"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsHRRRisk.Tables[0].Rows[i]["Probability"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDropdownitemById(dsHRRRisk.Tables[0].Rows[i]["Exposure_id"].ToString())
+                        </td>
+                        <td>
+                            @if (dsHRRRisk.Tables[0].Rows[i]["Eval_Date"].ToString() != "" && dsHRRRisk.Tables[0].Rows[i]["Eval_Date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsHRRRisk.Tables[0].Rows[i]["Eval_Date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (dsHRRRisk.Tables[0].Rows[i]["ReEval_Date"].ToString() != "" && dsHRRRisk.Tables[0].Rows[i]["ReEval_Date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsHRRRisk.Tables[0].Rows[i]["ReEval_Date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsHRRRisk.Tables[0].Rows[i]["Action_TakenBy"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsHRRRisk.Tables[0].Rows[i]["Reviewer_QHSE"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsHRRRisk.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                        </td>
+                        <td>
+                            <a href='@Url.Action("RiskActivityHRRApproved", "RiskRegisterActivity", new { risk_hrr_id = dsHRRRisk.Tables[0].Rows[i]["risk_hrr_id"].ToString(), PendingFlg = "true" })' title="Review document details" style="color:red;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsWorkPermit != null && dsWorkPermit.Tables.Count > 0 && dsWorkPermit.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Access Permit Approval List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+                    <th>Permit No</th>
+                    <th>Permit Requestor</th>
+                    <th>Company</th>
+                    <th>Contact Number</th>
+                    <th>Description</th>
+                    <th>Date Issued</th>
+                    <th>Date Expired</th>
+                    <th>Approved By</th>
+                    <th style="width:70px">Status</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsWorkPermit.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @*<a href="#" data-toggle="WorkPermitpopover" data-trigger="hover" id="@dsWorkPermit.Tables[0].Rows[i]["permitno"].ToString()">@dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString()</a>*@
+                            @dsWorkPermit.Tables[0].Rows[i]["permitno"].ToString()
+                        </td>
+                        <td>
+                            @dsWorkPermit.Tables[0].Rows[i]["requestor"].ToString()
+                        </td>
+                        <td>
+                            @dsWorkPermit.Tables[0].Rows[i]["company"].ToString()
+                        </td>
+                        <td>
+                            @dsWorkPermit.Tables[0].Rows[i]["contactno"].ToString()
+                        </td>
+                        <td>
+                            @Html.Raw(HttpUtility.HtmlDecode(dsWorkPermit.Tables[0].Rows[i]["description"].ToString()))
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(dsWorkPermit.Tables[0].Rows[i]["date_issued"].ToString()).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @if (dsWorkPermit.Tables[0].Rows[i]["date_expired"].ToString() != "" && dsWorkPermit.Tables[0].Rows[i]["date_expired"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsWorkPermit.Tables[0].Rows[i]["date_expired"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsWorkPermit.Tables[0].Rows[i]["approved_by"].ToString())
+                        </td>
+                        <td style="width:70px">
+                            <a href='@Url.Action("AccessPermitApproveReject", "WorkPermit", new { approver_comment = "xxxx", id_access_permit = dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString(), iStatus = 1, PendingFlg = "true" })' id="lnk9 @dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString()" onclick="AccessPermitApprove(@dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString())" title="Approve Access Permit" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("AccessPermitApproveReject", "WorkPermit", new { approver_comment = "xxxx", id_access_permit = dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString(), iStatus = 2, PendingFlg = "true" })' id="lnk8 @dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString()" onclick="AccessPermitReject(@dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString())" title="Reject Access Permit" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                        <td>
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="approver_comment@(dsWorkPermit.Tables[0].Rows[i]["id_access_permit"].ToString())" required></textarea>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsOFI != null && dsOFI.Tables.Count > 0 && dsOFI.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">OFI Approval List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive">
+            <thead>
+                <tr class="bg-brown">
+                    <th>OFI Number</th>
+                    <th>Division</th>
+                    <th>Department</th>
+                    <th>Location</th>
+                    <th>Risk Number</th>
+                    <th>Risk Description</th>
+                    <th>OFI Reported Date</th>
+                    <th>OFI Reported By</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsOFI.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @Html.ActionLink(dsOFI.Tables[0].Rows[i]["ofi_no"].ToString(), "OFIDetails", "OFI", new { id_ofi = dsOFI.Tables[0].Rows[i]["id_ofi"].ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
+                        </td>
+                        <td>
+                            @obj.GetMultiCompanyBranchNameById(dsOFI.Tables[0].Rows[i]["division"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiDeptNameById(dsOFI.Tables[0].Rows[i]["department"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDivisionLocationById(dsOFI.Tables[0].Rows[i]["location"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetRiskRefByRiskId(dsOFI.Tables[0].Rows[i]["risk_no"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetRiskDescriptionByRiskId(dsOFI.Tables[0].Rows[i]["risk_no"].ToString())
+                        </td>
+                        <td>
+                            @if (dsOFI.Tables[0].Rows[i]["reported_date"].ToString() != "" && dsOFI.Tables[0].Rows[i]["reported_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsOFI.Tables[0].Rows[i]["reported_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsOFI.Tables[0].Rows[i]["reportedby"].ToString())
+                        </td>
+                        <td style="width:70px">
+                            <a href='@Url.Action("OFIInitialApprove", "OFI", new { id_ofi = dsOFI.Tables[0].Rows[i]["id_ofi"].ToString(), sStatus = "Approved", PendingFlg = "true" })' title="Approve OFI" style="color:green;">
+                                <span class="badge badge-info">Approve</span>
+                            </a>
+                            <a href='@Url.Action("OFIInitialApprove", "OFI", new { id_ofi = dsOFI.Tables[0].Rows[i]["id_ofi"].ToString(), sStatus = "Rejected", PendingFlg = "true" })' title="Reject OFI" style="color:red;">
+                                <span class="badge badge-danger">Reject</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsOFIChekedby != null && dsOFIChekedby.Tables.Count > 0 && dsOFIChekedby.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">OFI Approval List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive">
+            <thead>
+                <tr class="bg-brown">
+                    <th>OFI Number</th>
+                    <th>Division</th>
+                    <th>Department</th>
+                    <th>Location</th>
+                    <th>Risk Number</th>
+                    <th>Risk Description</th>
+                    <th>OFI Reported Date</th>
+                    <th>OFI Reported By</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsOFIChekedby.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @Html.ActionLink(dsOFIChekedby.Tables[0].Rows[i]["ofi_no"].ToString(), "OFIDetails", "OFI", new { id_ofi = dsOFIChekedby.Tables[0].Rows[i]["id_ofi"].ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
+                        </td>
+                        <td>
+                            @obj.GetMultiCompanyBranchNameById(dsOFIChekedby.Tables[0].Rows[i]["division"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiDeptNameById(dsOFIChekedby.Tables[0].Rows[i]["department"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDivisionLocationById(dsOFIChekedby.Tables[0].Rows[i]["location"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetRiskRefByRiskId(dsOFIChekedby.Tables[0].Rows[i]["risk_no"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetRiskDescriptionByRiskId(dsOFIChekedby.Tables[0].Rows[i]["risk_no"].ToString())
+                        </td>
+                        <td>
+                            @if (dsOFIChekedby.Tables[0].Rows[i]["reported_date"].ToString() != "" && dsOFIChekedby.Tables[0].Rows[i]["reported_date"].ToString() != null)
+                            {
+                                @Convert.ToDateTime(dsOFIChekedby.Tables[0].Rows[i]["reported_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsOFIChekedby.Tables[0].Rows[i]["reportedby"].ToString())
+                        </td>
+                        <td style="width:70px">
+                            <span class="badge badge-info ripple" title="OFI Details"> <a href='@Url.Action("OFIDetails", "OFI", new { id_ofi = dsOFIChekedby.Tables[0].Rows[i]["id_ofi"].ToString()})' style="color:white">Details</a></span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (dsNC != null && dsNC.Tables.Count > 0 && dsNC.Tables[0].Rows.Count > 0)
+{
+    <h1 class="bg-dark pl-sm-2">Nonconformance & Corrective Action List</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+            <thead>
+                <tr class="bg-brown">
+
+                    <th>NCR No.</th>
+                    <th>Division</th>
+                    <th>Department</th>
+                    <th>Location</th>
+                    <th>Reported By</th>
+                    <th>Issued To</th>
+                    <th>Notified To</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsNC.Tables[0].Rows.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @dsNC.Tables[0].Rows[i]["nc_no"].ToString()
+                        </td>
+                        <td>
+                            @obj.GetMultiCompanyBranchNameById(dsNC.Tables[0].Rows[i]["division"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiDeptNameById(dsNC.Tables[0].Rows[i]["department"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDivisionLocationById(dsNC.Tables[0].Rows[i]["location"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetMultiHrEmpNameById(dsNC.Tables[0].Rows[i]["nc_reportedby"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsNC.Tables[0].Rows[i]["nc_issueto"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsNC.Tables[0].Rows[i]["nc_notifiedto"].ToString())
+                        </td>
+                        <td>
+                            <a href='@Url.Action("NCDetails", "NC", new { id_nc = dsNC.Tables[0].Rows[i]["id_nc"].ToString() })' title="Details NC" style="color:blue;">
+                                <span class="badge badge-info">Details</span>
+                            </a>
+                            @*<a href='@Url.Action("NCApproveReject", "NC", new { id_nc = dsNC.Tables[0].Rows[i]["id_nc"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Accept NC" style="color:green;">
+                                    <span class="badge badge-info">Accept</span>
+                                </a>
+                                <a href='@Url.Action("NCApproveReject", "NC", new { id_nc = dsNC.Tables[0].Rows[i]["id_nc"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject NC" style="color:red;">
+                                    <span class="badge badge-danger">Reject</span>
+                                </a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@section Scripts {
+
+    <script>
+
+
+            $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                   @:     text: '@TempData["alertdata"]',
+                                   @:     type: 'error'
+           @:}).show();
+                                }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+        @:    new Noty({
+                                 @:       text: '@TempData["Successdata"]',
+                                 @:       type: 'success'
+         @:}).show();
+                }
+            });
+            $(document).ready(function () {
+
+                $('[data-toggle="docpopover"]').popover({
+
+                    title: setDocData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+                $('[data-toggle="trainingpopover"]').popover({
+
+                    title: setTrainingData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+                $('[data-toggle="objectivepopover"]').popover({
+
+                    title: setObjectiveData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+                $('[data-toggle="DocChangepopover"]').popover({
+
+                    title: setDocChangeData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+                $('[data-toggle="ChangeMgmtpopover"]').popover({
+
+                    title: setChangMgmtData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+                $('[data-toggle="supplierpopover"]').popover({
+
+                    title: setSupplierData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+
+                $('[data-toggle="Riskpopover"]').popover({
+
+                    title: setRiskData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+                $('[data-toggle="RiskHRRpopover"]').popover({
+
+                    title: setData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+                $('[data-toggle="Auditpopover"]').popover({
+
+                    title: setAuditData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+
+                $('[data-toggle="WorkPermitpopover"]').popover({
+
+                    title: setWorkPermitData,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+
+                $('[data-toggle="ProtalAuthpopover"]').popover({
+
+                    title: setPortalAuth,
+                    html: true,
+                    placement: 'right',
+                    container: 'body'
+                });
+
+                 function setPortalAuth(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("PortalAuthorizationInfo", "Portal")',
+                        methos: "post",
+                        async: false,
+                        data: { id: id },
+                        success: function (data) {
+                            set_data = data;
+                        }
+
+                    });
+                    return set_data;
+                }
+
+                function setAuditData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("InternalAuditNumInfo", "Audit")',
+                        methos: "post",
+                        async: false,
+                        data: { id: id },
+                        success: function (data) {
+                            set_data = data;
+                        }
+
+                    });
+                    return set_data;
+                }
+                function setRiskData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("RiskRegisterActivityEvaluationInfo", "RiskRegisterActivity")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+
+                function setData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("RiskRegisterHRRActivityEvalInfo", "RiskRegisterActivity")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+                function setSupplierData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("SupplierInfo", "Supplier")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+                function setChangMgmtData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("ChangeManagementInfo", "ChangeManagement")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+                function setDocChangeData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("DocumentChangeRequestInfo", "DocumentChangeRequest")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+                function setObjectiveData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("ObjectivesInfo", "Objectives")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+                function setTrainingData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("TrainingsInfo", "Trainings")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+                function setDocData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("MgmtDocumentsInfo", "MgmtDocuments")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+
+                function setWorkPermitData(id) {
+                    var set_data = '';
+                    var element = $(this);
+                    var id = element.attr("id");
+                    $.ajax({
+                        url: '@Url.Action("WorkPermitInfo", "WorkPermit")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+            });
+        function DocChangeReject(DocID) {
+            var coments = document.getElementById("Doccomments"+ DocID).value;
+            var fakedUri = document.getElementById("lnk" + " " + DocID).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk" + " " + DocID).href = uri;
+        }
+        function DocChangeApprove(DocID) {
+            var coments = document.getElementById("Doccomments"+ DocID).value;
+            var fakedUri = document.getElementById("lnk1" + " " + DocID).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk1" + " " + DocID).href = uri;
+        }
+        function ProjectApprove(id_projectmgmt) {
+            var coments = document.getElementById("ProjDesgncomments"+ id_projectmgmt).value;
+            var fakedUri = document.getElementById("lnk2" + " " + id_projectmgmt).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk2" + " " + id_projectmgmt).href = uri;
+        }
+
+        function LeaveApprove(leave_id) {
+            var coments = document.getElementById("Leavecomments"+ leave_id).value;
+            var fakedUri = document.getElementById("lnk3" + " " + leave_id).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk3" + " " + leave_id).href = uri;
+        }
+        function LeaveReject(leave_id) {
+            var coments = document.getElementById("Leavecomments"+ leave_id).value;
+            var fakedUri = document.getElementById("lnk4" + " " + leave_id).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk4" + " " + leave_id).href = uri;
+        }
+        function LeaveApproves(leave_id) {
+            var coments = document.getElementById("NewLeavecomments"+ leave_id).value;
+            var fakedUri = document.getElementById("lnk6" + " " + leave_id).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk6" + " " + leave_id).href = uri;
+        }
+        function LeaveRejects(leave_id) {
+            var coments = document.getElementById("NewLeavecomments"+ leave_id).value;
+            var fakedUri = document.getElementById("lnk7" + " " + leave_id).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk7" + " " + leave_id).href = uri;
+        }
+        function Bidding(id_bidding) {
+            var coments = document.getElementById("biddingcomments"+ id_bidding).value;
+            var fakedUri = document.getElementById("lnk5" + " " + id_bidding).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk5" + " " + id_bidding).href = uri;
+        }
+
+        function AccessPermitReject(id_access_permit) {
+            var coments = document.getElementById("approver_comment"+ id_access_permit).value;
+            var fakedUri = document.getElementById("lnk8" + " " + id_access_permit).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk8" + " " + id_access_permit).href = uri;
+        }
+        function AccessPermitApprove(id_access_permit) {
+            var coments = document.getElementById("approver_comment"+ id_access_permit).value;
+            var fakedUri = document.getElementById("lnk9" + " " + id_access_permit).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk9" + " " + id_access_permit).href = uri;
+        }
+        function JDReject(id_role_jd) {
+            var coments = document.getElementById("JD_comment"+ id_role_jd).value;
+            var fakedUri = document.getElementById("lnk10" + " " + id_role_jd).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk10" + " " + id_role_jd).href = uri;
+        }
+        function JDApprove(id_role_jd) {
+            var coments = document.getElementById("JD_comment"+ id_role_jd).value;
+            var fakedUri = document.getElementById("lnk11" + " " + id_role_jd).href;
+            var uri = fakedUri.replace("xxxx", coments);
+            document.getElementById("lnk11" + " " + id_role_jd).href = uri;
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

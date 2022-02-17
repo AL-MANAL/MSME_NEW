@@ -1,0 +1,575 @@
+﻿@model ISOStd.Models.KPIModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+    int icont = 0;
+    ISOStd.Models.KPIModelsList objActnList = new ISOStd.Models.KPIModelsList();
+    if (ViewBag.objAttnList != null)
+    {
+        objActnList = ViewBag.objAttnList;
+        icont = objActnList.KPIMList.Count;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("KPIEvaluationList", "KPI", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Key Performance/Process Indicator</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Action Plan</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddActionPlan", "KPI", FormMethod.Post,
+                                                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Action Plan</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <input type="hidden" id="KPI_Id" name="KPI_Id" value="@Model.KPI_Id" />
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.kpi_ref_no)
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.kpi_ref_no)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.process_monitor)
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.process_monitor)
+                        </td>
+                    </tr>
+                 
+                   
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            Action Details
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Action" name="Action"></textarea>
+                            <span class="field-validation-error"><span id="Action-message" style="display: none;">This field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Action)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            Personnel Responsible
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="PersonResponsible" name="PersonResponsible">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="Person-Responsible-message" style="display: none;">This field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.PersonResponsible)
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            Target Date
+                            <input type="date" id="TargetDate" name="TargetDate" class="form-control" />
+                            <span class="field-validation-error"><span id="Target-date-message" style="display: none;">Target Date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.TargetDate)
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            Remarks
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks"></textarea>
+
+                        </td>
+                        <td class="col-xs-3 col-md-1">
+                            <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAction()" />
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.action_upload)
+                        </td>
+                        <td class="col">
+                            <input type="file" name="action_upload" id="action_upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                            @if (Model.action_upload != null && Model.action_upload != "" && Model.action_upload.Length > 0)
+                            {
+
+                                <span class="form-text text-muted">
+                                    <code>
+                                        (Uncheck in case to remove a uploaded file)
+                                    </code>
+                                </span>
+                                foreach (var docs in Model.action_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                        </span>
+                                    </p>
+                                }
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "KPIEvaluationList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <div class="mt-2 mt-sm-0">
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400 invisible" id="btnCreate" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="card invisible" id="hidden card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Action Plan Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body scrollbar-container">
+            <input type="hidden" id="itemcnt" name="itemcnt" value="@icont" />
+
+            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                        <th>Delete</th>
+                        <th>Action details</th>
+                        <th>Person Responsible</th>
+                        <th>Target Date</th>
+                        <th>Remarks</th>
+                    </tr>
+                    @if (objActnList.KPIMList != null && objActnList.KPIMList.Count > 0)
+                    {
+                        for (int index = 0; index < objActnList.KPIMList.Count; index++)
+                        {
+
+                            <tr>
+                                <td>
+                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+
+                                    <input type='hidden' id='id_kpi_actions@(index)' name="id_kpi_actions@(index)" value='@objActnList.KPIMList[index].id_kpi_actions' />
+                                </td>
+
+                                <td>
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='Action@(index)' name="Action@(index)">@objActnList.KPIMList[index].Action</textarea>
+                                </td>
+                                <td>
+                                    <select class="form-control select-search select2-hidden-accessible" id="PersonResponsible@(index)" name="PersonResponsible@(index)">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                if (item.Value == objActnList.KPIMList[index].PersonResponsible)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                </td>
+                                <td>
+                                    @if (objActnList.KPIMList[index].TargetDate != null && objActnList.KPIMList[index].TargetDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control" type="date" id='TargetDate@(index)' name='TargetDate@(index)' value="@objActnList.KPIMList[index].TargetDate.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="date" id='TargetDate@(index)' name='TargetDate@(index)' />
+                                    }
+                                </td>
+                                <td>
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='remarks@(index)' name="remarks@(index)">@objActnList.KPIMList[index].remarks</textarea>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    <script>
+
+        //var ps = new PerfectScrollbar('#container');
+
+   $(document).ready(function () {
+
+          @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+   });
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+
+        var Action_PlanServerPath = "";
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        var cnt = document.getElementById("itemcnt").value;
+        if (cnt > 0) {
+            document.getElementById("btnCreate").classList.remove(hideClass);
+            document.getElementById("btnCreate").classList.add(showClass);
+            document.getElementById("hidden card").classList.remove(hideClass);
+            document.getElementById("hidden card").classList.add(showClass);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("Action").value == "") {
+                ssnMessage = $('#Action-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Action-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("TargetDate").value == "") {
+                ssnMessage = $('#Target-date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Target-date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("PersonResponsible").value == "") {
+                ssnMessage = $('#Person-Responsible-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Person-Responsible-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+        function AddAction() {
+
+            if (Validation() == true) {
+
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+
+                //cell0.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                //cell1.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                //cell2.style = "width: 150px; min-width: 150px; max-width: 150px;word-wrap:break-word";
+                //cell3.style = "width: 150px; min-width: 150px; max-width: 150px;word-wrap:break-word";
+                //cell4.style = "width: 150px; min-width: 150px; max-width: 150px;word-wrap:break-word";
+                //cell5.style = "width: 150px; min-width: 150px; max-width: 150px;word-wrap:break-word";
+
+                var Action = $('#Action').val();
+                var TargetDate = $('#TargetDate').val();
+                var remarks = $('#remarks').val();
+
+                //var Action_StatusVal = $('#Action_Status').val();
+                //var Action_Status = [];
+                //var Action_StatusText = $.map($("#Action_Status option:selected"), function (el, i) {
+                //    return $(el).text();
+                //});
+
+                var Person_Responsible = $.map($("#PersonResponsible option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var Person_ResponsibleVal = $("#PersonResponsible").val();
+
+
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<textarea id='Action" + cnt + "' name='Action" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + Action + "</textarea>";
+
+
+                cell2.innerHTML = "<select class='select-fixed-single' id='PersonResponsible" + cnt + "' name='PersonResponsible" + cnt + "'><option value='" + Person_ResponsibleVal + "' selected>" + Person_Responsible + "</option>@if (ViewBag.EmpList != null)
+                                                                                                                                                                                                            {
+                                                                                                                                                                                                                foreach (var item in ViewBag.EmpList)
+                                                                                                                                                                                                                { <option value='@item.Value'>@item.Text</option> }
+                                                                                                                                                                                                            }</select>";
+                cell3.innerHTML = "<input type='date' id='TargetDate" + cnt + "' name='TargetDate" + cnt + "' value='" + TargetDate + "' class='form-control'>";
+
+                cell4.innerHTML = "<textarea id='remarks" + cnt + "' name='remarks" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + remarks + "</textarea>";
+
+
+
+
+                @*cell4.innerHTML = "<select class='select-fixed-single' id='Action_Status" + cnt + "' name='Action_Status" + cnt + "'><option value='" + Action_StatusVal + "' selected>" + Action_StatusText + "</option>@if (ViewBag.ActionStatus != null)
+                                                                                                                                                                                              {
+                                                                                                                                                                                                  foreach (var item in ViewBag.ActionStatus)
+                                                                                                                                                                                                  { <option value='@item'>@item</option> }
+                                                                                                                                                                                              }</select>";
+
+
+                 cell5.innerHTML = "<input type='date' id='ActionCompletionDate" + cnt + "' name='ActionCompletionDate" + cnt + "' value='" + ActionCompletionDate + "' class='form-control'>";*@
+
+
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                //reintialisation
+
+                // Badge position
+                $('.maxlength-badge-position').maxlength({
+                    alwaysShow: true,
+                    placement: 'top'
+                });
+                //auto resize
+                autosize($('.elastic'));
+
+
+                $('.select-fixed-single').select2({
+                    minimumResultsForSearch: Infinity,
+                    width: 150
+                });
+                document.getElementById("btnCreate").classList.remove(hideClass);
+                document.getElementById("btnCreate").classList.add(showClass);
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+                ResetControl();
+
+            }
+
+        }
+
+
+        function ResetControl() {
+
+
+            //document.getElementById("ActionCompletionDate").value = "";
+            document.getElementById("TargetDate").value = "";
+            document.getElementById("Action").value = "";
+            document.getElementById("remarks").value = "";
+            $("#PersonResponsible").val('').trigger('change');
+            //$("#Action_Status").val('').trigger('change');
+            var ssnMessage = $('#Action-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Target-date-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Person-Responsible-message');
+            ssnMessage.hide();
+            //ssnMessage = $('#Action-status-message');
+            //ssnMessage.hide();
+
+        }
+
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        //function deleteRow(btn) {
+        //    var row = btn.parentNode.parentNode;
+        //    row.parentNode.removeChild(row);
+        //    var cnt = document.getElementById("itemcnt").value;
+        //    cnt--;
+
+        //    document.getElementById("itemcnt").value = cnt;
+        //    if (cnt == "0") {
+
+        //        document.getElementById("btnCreate").classList.add(hideClass);
+        //        document.getElementById("btnCreate").classList.remove(showClass);
+        //        document.getElementById("hidden card").classList.remove(showClass);
+        //        document.getElementById("hidden card").classList.add(hideClass);
+        //    }
+
+        //}
+
+        //$(function () {
+
+        //    $("#ChangeRequestedBy").chosen();
+        //    $("#ApprovedBy").chosen();
+        //    $("#PersonResponsible").chosen();
+        //    $("#Action_Status").chosen();
+        //    $("#ChangeIn").chosen();
+        //    $("#ChangeType").chosen();
+        //    $("#RiskLevel").chosen();
+        //    $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+        //    $('#TargetDate').datepicker({
+        //        dateFormat: "dd/mm/yy",
+        //        buttonImageOnly: true,
+        //        buttonImage: '../Images/Calender.png',
+        //        showOn: 'both',
+        //        changeMonth: true,
+        //        changeYear: true,
+        //        gotoCurrent: true
+        //    });
+
+        //    $('#ActionCompletionDate').datepicker({
+        //        dateFormat: "dd/mm/yy",
+        //        buttonImageOnly: true,
+        //        buttonImage: '../Images/Calender.png',
+        //        showOn: 'both',
+        //        changeMonth: true,
+        //        changeYear: true,
+        //        gotoCurrent: true
+        //    });
+        //    var cont = document.getElementById("itemcnt").value;
+
+        //    for (var i = 0; i < cont; i++) {
+        //        $("#PersonResponsible" + i).chosen();
+        //    }
+        //    for (var i = 0; i < cont; i++) {
+        //        $("#Action_Status" + i).chosen();
+        //    }
+
+        //    for (var i = 0; i < cont; i++) {
+        //        $('#TargetDate' + i).datepicker({
+        //            dateFormat: "dd/mm/yy",
+        //            buttonImageOnly: true,
+        //            buttonImage: '../Images/Calender.png',
+        //            showOn: 'both',
+        //            changeMonth: true,
+        //            changeYear: true,
+        //            gotoCurrent: true
+        //        });
+        //    }
+
+        //    for (var i = 0; i < cont; i++) {
+        //        $('#ActionCompletionDate' + i).datepicker({
+        //            dateFormat: "dd/mm/yy",
+        //            buttonImageOnly: true,
+        //            buttonImage: '../Images/Calender.png',
+        //            showOn: 'both',
+        //            changeMonth: true,
+        //            changeYear: true,
+        //            gotoCurrent: true
+        //        });
+        //    }
+
+        //    if (cont > 0)
+        //    {
+        //         document.getElementById("btnCreate").style.display = "";
+
+        //    }
+        //});
+
+
+
+        // (function () {
+        //     var cancelEvent = function (evt) {
+        //         evt.cancel();
+        //     };
+
+        //     CKEDITOR.editor.prototype.readOnly = function (isReadOnly) {
+        //         // Turn off contentEditable.
+        //         this.document.$.body.disabled = isReadOnly;
+        //         CKEDITOR.env.ie ? this.document.$.body.contentEditable = !isReadOnly
+        //         : this.document.$.designMode = isReadOnly ? "off" : "on";
+
+        //         // Prevent key handling.
+        //         this[isReadOnly ? 'on' : 'removeListener']('key', cancelEvent, null, null, 0);
+        //         this[isReadOnly ? 'on' : 'removeListener']('selectionChange', cancelEvent, null, null, 0);
+
+        //         // Disable all commands in wysiwyg mode.
+        //         var command,
+        //            commands = this._.commands,
+        //            mode = this.mode;
+
+        //         for (var name in commands) {
+        //             command = commands[name];
+        //             isReadOnly ? command.disable() : command[command.modes[mode] ? 'enable' : 'disable']();
+        //             this[isReadOnly ? 'on' : 'removeListener']('state', cancelEvent, null, null, 0);
+        //         }
+        //     }
+        // })();
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

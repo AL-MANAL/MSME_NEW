@@ -1,0 +1,378 @@
+﻿@model ISOStd.Models.EquipmentDetailModels
+@using System.Data
+
+@{
+  
+}
+
+ <html>
+     <body onload="setCategory()">
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Vehicle Details</span>
+</div>
+<br />
+<div>
+        
+         @Html.ActionLink("Back to List", "EquipmentDetailsList", null, new {@class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+ </div>
+<br />
+<fieldset>
+    <legend>BiddingModels</legend>
+   
+    <div id="div1">
+        <table style="width: 100%"><tr>
+     <th colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Vehicle Details</th>
+                </tr>
+            <tr>
+               
+                <td>
+                    <div class="display-label">
+                 
+                           @Html.DisplayNameFor(model => model.Cat_name)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                    
+
+                         @Html.DisplayFor(model => model.Cat_name)
+                       
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.vehicle_no)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.vehicle_no)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                 
+                           @Html.DisplayNameFor(model => model.vehicle_reg)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                    
+
+                         @Html.DisplayFor(model => model.vehicle_reg)
+                       
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.vehicle_renewal_date)
+                    </div>
+                </td>
+                <td>
+                 <div class="display-field">
+                         
+                        @if (Model.vehicle_renewal_date != null && Model.vehicle_renewal_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.vehicle_renewal_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                 
+                           @Html.DisplayNameFor(model => model.vehicle_renewal_due_date)
+                    </div>
+                </td>
+                <td>
+                   <div class="display-field">
+                    
+                        @if (Model.vehicle_renewal_due_date != null && Model.vehicle_renewal_due_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.vehicle_renewal_due_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+            </tr>
+              
+             <tr>
+                
+                <td>
+                    <div class="display-label">
+                 
+                           @Html.DisplayNameFor(model => model.vehicle_upload)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.vehicle_upload != null && Model.vehicle_upload != "" && Model.vehicle_upload.Length > 0)
+                        {
+                            foreach (var docs in Model.vehicle_upload.Trim(',').Split(','))
+                            {
+                            <p style="margin: 0px;">
+                               
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                 @System.IO.Path.GetFileName(docs)</a>
+                            </p>
+                              }
+                        }
+                    </div>
+                </td>
+                  <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.gpsno)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.gpsno)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.vehicle_model)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.vehicle_model)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.vehicle_make)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.vehicle_make)
+                    </div>
+                </td>
+            </tr>
+           <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.chasis_no)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.chasis_no)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.engine_no)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.engine_no)
+                    </div>
+                </td>
+            </tr>
+           
+            <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.location)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.location)
+                    </div>
+                </td>
+                  <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.status)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.status)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+               <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.vehicle_color)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.vehicle_color)
+                    </div>
+                </td>
+                  <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.plate_type)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.plate_type)
+                    </div>
+                </td>
+            </tr>
+             <tr>
+               <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.driver)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.driver)
+                    </div>
+                </td>
+                  <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.card)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.card)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+               <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.card_no)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.card_no)
+                    </div>
+                </td>
+                  <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.card_expdate)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.card_expdate != null && Model.card_expdate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.vehicle_renewal_due_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ADPC_stickers)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ADPC_stickers)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ADPC_RFID)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ADPC_RFID)
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.star_energy)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.star_energy)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.GCC_drivers)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.GCC_drivers)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.civildefence_card)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.civildefence_card)
+                    </div>
+                </td>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.civildefence_upload)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.civildefence_upload != "")
+                         {
+                              <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.civildefence_upload })' target="_blank">Preview</a>                            
+                         }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.civildefence_expiry)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.civildefence_expiry != null && Model.civildefence_expiry > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.civildefence_expiry.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+  
+</fieldset>
+
+</body>
+ </html>  
+
+@section Scripts {
+    <script>
+      
+         </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

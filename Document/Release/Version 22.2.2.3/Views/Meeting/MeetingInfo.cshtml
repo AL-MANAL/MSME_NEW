@@ -1,0 +1,114 @@
+﻿@model ISOStd.Models.MeetingModels
+@using System.Data;
+@{
+    Layout = null;
+    DataSet dsItems = ViewBag.Itemlist;
+    ISOStd.Models.MeetingModels objmod = new ISOStd.Models.MeetingModels();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Meetings Schedule Info</h4>
+    </div>
+    <div class="card-body">
+        <p>
+            Meeting Details:<code>
+                @Html.DisplayFor(model => model.meeting_type_desc)
+            </code>
+            Meeting Ref:<code>@Html.DisplayFor(model => model.meeting_ref)</code>
+        </p>
+        <p>
+            Meeting Date:
+            @if (Model.meeting_date != null && Model.meeting_date > Convert.ToDateTime("01/01/0001"))
+            {
+                <code>
+                    @Model.meeting_date.ToString("dd/MM/yyyy")
+                </code>
+            }
+            Attendees:<code>@Html.DisplayFor(model => model.AttendeesUser)</code>
+        </p>
+        @if(Model.ext_attendees != null && Model.ext_attendees != "")
+        {
+        <p>
+            External Attendees:<code>@Html.DisplayFor(model => model.ext_attendees)</code>
+            External Attendees Email:<code>@Html.DisplayFor(model => model.ext_email)</code>
+        </p>
+     }
+
+        @if (dsItems != null && dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+        {
+
+
+            <div class="w-100 bg-primary"><h6>Meeting agenda</h6></div>
+
+            <table class="table-xs table-bordered table-striped">
+                <thead class="bg-blue">
+
+
+                    <tr>
+                        <th>Agenda</th>
+                        <th>Item discussed</th>
+                        <th>Action(s) agreed</th>
+                        <th>Due date / period for action</th>
+                        <th>Personnel Responsible</th>
+                        <th>Item Status</th>
+                        <th>Completion date</th>
+                        @*<th>Upload</th>*@
+                        @*<th>Remarks</th>*@
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @objmod.GetMeetingAgendaNameById(dsItems.Tables[0].Rows[i]["Agenda_Id"].ToString())
+                            </td>
+                            <td>
+                                @dsItems.Tables[0].Rows[i]["item_discussed"].ToString()
+                            </td>
+                            <td>
+                                @dsItems.Tables[0].Rows[i]["action_agreed"].ToString()
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(dsItems.Tables[0].Rows[i]["due_date"].ToString()).ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @obj.GetEmpHrNameById(dsItems.Tables[0].Rows[i]["action_owner"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetDropdownitemById(dsItems.Tables[0].Rows[i]["item_status"].ToString())
+                            </td>
+                            <td>
+                                @if (obj.GetDropdownitemById(dsItems.Tables[0].Rows[i]["item_status"].ToString()).ToLower() == "Closed".ToLower())
+                                {
+                                    if (dsItems.Tables[0].Rows[i]["completiondate"].ToString() != "" && dsItems.Tables[0].Rows[i]["completiondate"].ToString() != null)
+                                    {
+                                        @Convert.ToDateTime(dsItems.Tables[0].Rows[i]["completiondate"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+                                }
+                            </td>
+                            @*<td>
+                                @if (dsItems.Tables[0].Rows[i]["upload"].ToString() != "")
+                                {
+                                    <p>Available</p>
+                                }
+                                else
+                                {
+                                    <p>Not Available</p>
+                                }
+                            </td>*@
+                            @*<td>
+                                @dsItems.Tables[0].Rows[i]["remarks"].ToString()
+                            </td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+
+    </div>
+
+</div>

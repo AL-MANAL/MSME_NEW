@@ -1,0 +1,266 @@
+﻿@model ISOStd.Models.DocumentLevelsModels
+@using System.Data;
+
+@{ ViewBag.Title = "DocumentLevelsModels";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+  
+
+    DataSet dsDirectorate = new DataSet();
+
+    if (ViewBag.dsDirectorate != null)
+    {
+        dsDirectorate = ViewBag.dsDirectorate;
+    } 
+  }
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <span class="breadcrumb-item active"> Directorate Code</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Document Directorate Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                @using (Html.BeginForm("AddDirectoratecode", "DocumentLevels", FormMethod.Post, new { id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <div class="container-fluid">
+                        <table class="table table-lg">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Directorate Code
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" id="Type_Desc" name="Type_Desc" required />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Directorate
+                                    </td>
+                                    <td>
+
+                                        <input class="form-control" type="text" id="Type_Details" name="Type_Details" required />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-white ml-auto">
+                        <button type="submit" name="button" id="button" value="Save" class="btn bg-indigo-400 float-right" onclick="ProgressIconFunction('#form1')">Submit<i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                    @Html.ActionLink("Back to List", "AddLevel", "DocumentLevels", new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                }
+
+
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card" id="hidden card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-lg" id="tbl_Agenda">
+                    @if (dsDirectorate.Tables.Count > 0 && dsDirectorate.Tables[0].Rows.Count > 0)
+                    {
+        <tr class="row">
+            <td class="col" colspan="3" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Directorate List</td>
+        </tr>
+                        <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                            <th class="col col-xs-10"> Code </th>
+                            <th class="col col-xs-10">Directorate</th>
+                            <th class="col col-xs-2">Actions</th>
+                        </tr>
+ for (int item = 0; item < dsDirectorate.Tables[0].Rows.Count; item++)
+                        {
+        <tr class="row">
+            <td class="col col-xs-10">             
+                <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id='Type_Desc @dsDirectorate.Tables[0].Rows[item]["id"].ToString()' name='Type_Desc @dsDirectorate.Tables[0].Rows[item]["id"].ToString()'>@dsDirectorate.Tables[0].Rows[item]["BranchCode"].ToString()</textarea>
+            </td>
+            <td class="col col-xs-10">
+                 <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id='Type_Details @dsDirectorate.Tables[0].Rows[item]["id"].ToString()' name='Type_Details @dsDirectorate.Tables[0].Rows[item]["id"].ToString()'>@dsDirectorate.Tables[0].Rows[item]["BranchName"].ToString()</textarea>
+            </td>
+
+            <td class="col col-xs-2">
+
+                <span class='badge badge-info' style='cursor: pointer;' title='Update Document Details' onclick='UpdateDocDetails(@dsDirectorate.Tables[0].Rows[item]["id"].ToString())'>Edit</span>
+                <span class='badge badge-danger' onclick='DeleteDocDetails(@dsDirectorate.Tables[0].Rows[item]["id"].ToString())' style='cursor:pointer;' title='Delete Document Details'>Delete</span>
+
+            </td>
+
+        </tr>
+    }
+}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        @section Scripts {
+            <script type="text/javascript">
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        
+    });     
+
+        function UpdateDocDetails(id_element) {
+
+             var Element = document.getElementById("Type_Desc " + id_element).value;
+             var Element2 = document.getElementById("Type_Details " + id_element).value;
+
+             jQuery.ajax({
+                 url: '@Url.Action("DocDirectorateUpdate", "DocumentLevels")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_element': id_element, 'Type_Desc': Element, 'Type_Details': Element2 },
+                 success: function (result) {
+                     bootbox.alert({
+                         title: 'Document Level',
+                         message: 'Your Document Directorate has been updated.'
+                     });
+                 }
+             });
+         }
+
+        function DeleteDocDetails(id_element) {         
+
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Record?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                     jQuery.ajax({
+                         url: '@Url.Action("DirectorateDelete", "DocumentLevels")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'id_element': id_element },
+                         success: function (data) {
+
+                          
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname;
+                             
+                         }
+                     });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+                 }
+             });
+         }
+            </script>
+            @Scripts.Render("~/bundles/jqueryval")
+
+        }

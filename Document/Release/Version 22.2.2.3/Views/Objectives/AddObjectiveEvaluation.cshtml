@@ -1,0 +1,738 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.ObjectivesModels>
+
+@{
+    ViewBag.Title = "AddObjectiveEvaluation";
+    DateTime dtTodate = Convert.ToDateTime(ViewBag.Obj_Estld_On);
+    string visi = "";
+    dtTodate = dtTodate.AddDays(1);
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    if(ViewBag.Visible != null)
+    {
+        visi=ViewBag.Visible;
+    }
+    var currentmonth = DateTime.Now.Month;
+    var currentyear = DateTime.Now.Year;
+
+    int itemcnt1 = 0;
+    string[] NotifiedtoArray = new string[0];
+    if (ViewBag.NotifiedtoArray != null)
+    {
+        NotifiedtoArray = ViewBag.NotifiedtoArray;
+        itemcnt1 = NotifiedtoArray.Length;
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("ObjectivesList", "Objectives", new { Objectives_Id = ViewBag.Objectives_Id,View=ViewBag.View } )'>
+                        <span class="breadcrumb-item"> Objectives</span>
+                    </a>
+                    <span class="breadcrumb-item active">Objective Evaluation</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                <thead>
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>
+                            Evaluation Period
+                        </th>
+                        <th>
+                            Evaluation Date
+                        </th>
+                        <th>
+                            Measured Value
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        @*<th>
+                                Trend
+                            </th>
+                            <th>
+                                NCR_Ref
+                            </th>
+                            <th>
+                                Status_Obj_Eval
+                            </th>
+                            <th class="not-export-column">
+                               Evidence
+                            </th>*@
+                        <th data-priority="2" class="text-center not-export-column">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    { int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i++;
+                            <tr>
+                                <td> @i.ToString()</td>
+                                <td>
+                                    @item.FromPeriod.ToString("dd/MM/yyyy")
+                                    -
+                                    @item.ToPeriod.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @if (item.Obj_Eval_On > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                @item.Obj_Eval_On.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Obj_Achieved_Val)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Status_Obj_Eval)
+                                </td>                               
+                                <td>                                  
+                                    @*@if ((item.FromPeriod.Month <= currentmonth) && (item.ToPeriod.Month >= currentmonth) && (currentyear == item.FromPeriod.Year || currentyear == item.ToPeriod.Year))
+                                    {*@
+                                        <div id="divspan" onclick="GetEditDetails(@item.ObjectivesEval_Id,@item.ObjectivesTrans_Id,@ViewBag.View)"><span class="badge badge-info" title="Edit Objective Evaluation details">Edit</span></div>
+                                    @*}*@
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("AddObjectiveEvaluation", "Objectives", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+                                        @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card" id="div2" style="display:none">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Evaluation</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@ViewBag.ObjectivesTrans_Id" />
+                @*//<input type="hidden" id="Obj_Estld_On" name="Obj_Estld_On" value="@ViewBag.Obj_Estld_On" />
+        //    <input type="hidden" id="Target_Date" name="Target_Date" value="@ViewBag.Target_Date" />
+        //    <input type="hidden" id="ToDate" name="ToDate" value="@dtTodate" />*@
+                <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+                <input type="hidden" id="ObjectivesEval_Id" name="ObjectivesEval_Id" value="@ViewBag.ObjectivesEval_Id" />
+
+                <table class="table table-lg" id="tabcontent">
+                    <thead></thead>
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Evaluation Date<text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                @if (ViewBag.Obj_Eval_On > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Obj_Eval_On" name="Obj_Eval_On" value="@ViewBag.Obj_Eval_On.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Obj_Eval_On" name="Obj_Eval_On" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Evaluation From Period<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @if (ViewBag.FromPeriod > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="FromPeriod" name="FromPeriod" value="@ViewBag.FromPeriod.ToString("yyyy-MM-dd")" required disabled />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="FromPeriod" name="FromPeriod" required />
+                                }
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Evaluation To Period<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @if (ViewBag.ToPeriod > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="ToPeriod" name="ToPeriod" value="@ViewBag.ToPeriod.ToString("yyyy-MM-dd")" required disabled />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="ToPeriod" name="ToPeriod" required />
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Source of Data<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Source_data" name="Source_data" Value="@ViewBag.Source_data" required />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Upload
+                            </td>
+                            <td class="col">
+                                <input type="file" name="Evidence" id="Evidence" title="Objective Evidence" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*"
+                                       class="bootstrap-uploader" data-fouc />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Method of Evaluation<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Method_eval" name="Method_eval" Value="@ViewBag.Method_eval" required />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Measured Value<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Obj_Achieved_Val" name="Obj_Achieved_Val" Value="@ViewBag.Obj_Achieved_Val" required />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Objective Status for the period<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Trend" name="Trend" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Evaluation != null && ViewBag.Trend != null)
+                                    {
+                                        foreach (var item in ViewBag.Evaluation)
+                                        {
+                                            if (item.Value == ViewBag.Trend)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Overall Objective Status<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Status_Obj_Eval" name="Status_Obj_Eval" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EvalStatus != null && ViewBag.Status_Obj_Eval != null)
+                                    {
+                                        foreach (var item in ViewBag.EvalStatus)
+                                        {
+                                            if (item.Value == ViewBag.Status_Obj_Eval)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Remarks<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <textarea class="form-control" id="Remark" name="Remark">@ViewBag.Remark</textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                Notified To<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Notified_to" name="Notified_to" multiple onchange="GetNotifiedByDetails()">
+                                    @*<option value='' hidden>Select</option>*@
+                                   @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="card is-visible" id="hidden card1">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.NotifiedtoArray != null && NotifiedtoArray != null && NotifiedtoArray.Length > 0)
+                                {
+                                    for (int index = 0; index < NotifiedtoArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='nempno @index' name="nempno @index" value='@NotifiedtoArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempid @index' name="nempid @index" readonly>@Obj.GetEmpIDByEmpNo(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempname @index' name="nempname @index" readonly>@Obj.GetEmpHrNameById(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@Obj.GetHrEmpEmailIdById(NotifiedtoArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table  class="table table-lg">
+                    <tr class="row">
+                        <td>
+                            <a href='@Url.Action("AddNC", "NC", new { objective_Id = @ViewBag.Objectives_Id})' title="Raise NCR " target="_blank">
+                                <span class="badge badge-info">Raise NCR</span>
+                            </a>
+                        </td>
+                    </tr>                   
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ObjectivesDetails", new { ObjectivesTrans_Id = ViewBag.ObjectivesTrans_Id, Objectives_Id = ViewBag.Objectives_Id, ViewBag.View }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript">
+        $(document).ready(function () {
+            var vDisplay = @(visi.Contains("Visible") ? "true" : "false");
+            if (vDisplay) {
+                document.getElementById("div2").style.display = "block";
+            }
+        });
+                @*function checkDate() {
+                    var dt1 = document.getElementById("FromPeriod").value;
+                    var dt2 = document.getElementById("ToPeriod").value;
+                    if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+                        bootbox.alert({
+                            title: 'To Date',
+                            message: 'To date cannot be before From date.'
+                        });
+                        $('#ToPeriod').val("");
+                    }
+                }
+
+                function checkNCR() {
+                        var Eval_Status = $('#Status_Obj_Eval :selected').text();
+
+                    if (Eval_Status.toLowerCase() == "not achieved") {
+                         $('#NCR_Ref').prop('disabled', false).prop('required',true).trigger('change');
+                            jQuery.ajax({
+                                url: '@Url.Action("FunGetNCRNumberList", "Objectives")',
+                                type: 'POST',
+                                dataType: "json",
+                               // data: { 'branch': values },
+                                success: function (result) {
+                                 //   $('#Dept').children('option').remove();
+                                  //  $("#Dept").trigger('change');
+                                    if (result != null && result.length > 0) {
+                                        $.each(result, function (index, item) {
+                                            $("#NCR_Ref").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                            $("#NCR_Ref").trigger('change');
+                                        });
+                                        return;
+                                    }
+                                    else {
+                                        bootbox.alert({
+                                            title: 'NCR_Ref List',
+                                            message: 'NCR_Ref does not exits'
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                        $("#NCR_Ref").val('').trigger('change');
+                        $('#NCR_Ref').prop('disabled', true).trigger('change');
+                        $('#NCR_Ref').prop('required', false).trigger('change');
+                        }
+        }*@
+    function FileFormatValidation(file) {
+        var ext = file.value.split(".").pop().toLowerCase();
+        if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+            file.value = "";
+            bootbox.alert({
+                title: 'File type',
+                message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+            });
+        }
+    }
+
+                var table1 = function () {
+              var ShowEdit = @(Obj.GetCurrentUserSession().Objectives.Contains("3") ? "true" : "false");
+              var ShowDownld = @(Obj.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+
+                        //
+                        // Setup module components
+                        //
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    width: 100,
+                                    //targets: [7,8,]
+
+                                //}, {
+                                //        'targets': [7],
+                                //        'visible': ShowDownld
+                                //    }, {
+                                //        'targets': [8],
+                                //        'visible': ShowEdit
+                                   }],
+
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+                            var table = $('#table1').DataTable({
+
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                stateSaveParams: function (settings, data) {
+                                    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                        delete data.columns[i].visible;
+                                        delete data.columns[i].search;
+                                    }
+                                },
+                                scrollY: '350px',
+                                scrollCollapse: true,
+
+
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Objective Evaluation Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass,  //className: 'btn btn-light',
+                                            title: 'Objective Evaluation Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass, //className: 'btn btn-light',
+                                            title: 'Objective Evaluation Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass, //className: 'btn btn-light',
+                                            title: 'Objective Evaluation Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass, //className: 'btn btn-light',
+                                            title: 'Objective Evaluation Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+                            });
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+                                setTimeout(function () {
+                                    table.columns.adjust().draw();
+                                    $("#table1").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#table1').on('page.dt', function () {
+                                $("#table1").resize();
+                            });
+
+                            $('#table1').on('column-visibility.dt', function () {
+                                $("#table1").resize();
+                            });
+
+                            //$('#table1').on('order.dt', function () {
+                            //    $("#table1").resize();
+                            //});
+
+
+                            $('#table1').on('responsive-display.dt', function () {
+                                $("#table1").resize();
+                            });
+
+
+                            $('#table1').on('responsive-resize.dt', function () {
+                                $("#table1").resize();
+                            });
+
+                        };
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        table1.init();
+                    });
+
+        function GetEditDetails(ObjectivesEval_Id, ObjectivesTrans_Id, sView) {
+            //document.getElementById("divspan").attr("disabled", "disabled");
+            //document.getElementById("div2").style.display = "block";
+
+            var params = {
+                ObjectivesTrans_Id: ObjectivesTrans_Id,
+                View: sView,
+                ObjectivesEval_Id: ObjectivesEval_Id
+            };
+            queryString = $.param(params);
+
+            window.location.href =
+                window.location.protocol + "//" +
+                window.location.host +
+                window.location.pathname +
+                '?' + queryString;
+        }
+
+
+             function GetNotifiedByDetails() {
+                 var Notified_to = $('#Notified_to option:selected').val();
+                 if (Notified_to != "" && Notified_to != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': Notified_to },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("notifiedtodiv").classList.remove(hideClass);
+                            //document.getElementById("notifiedtodiv").classList.add(showClass);
+
+                            //   document.getElementById("notifiedtodiv").style.display = 'block';
+                            var nempno = $('#Notified_to option:Selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != null) {
+                                var cnt = document.getElementById("itemcnt1").value;
+
+                                document.getElementById("itemcnt1").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list1");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt1").value = cnt;
+
+                                //document.getElementById("hidden card1").classList.remove(hideClass);
+                                //document.getElementById("hidden card1").classList.add(showClass);
+                                //document.getElementById("hidden card1").style.display = "block";
+
+                                $("#Notified_to").val('').trigger('change');
+                           }
+                        }
+                    }
+                });
+            }
+    }
+
+
+    function deleteRow(btn) {
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+
+</script>
+}

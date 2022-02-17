@@ -1,0 +1,209 @@
+﻿@using System.Data;
+@{
+    //Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "KPI Report";
+
+    DataSet dsKPI=new DataSet();
+
+    if(ViewBag.dsKPIList != null)
+    {
+        dsKPI=ViewBag.dsKPIList;
+    }
+
+    string fromdateValue = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"), toDateValue = DateTime.Now.ToString("yyyy-MM-dd");
+    if (ViewBag.fromdateValue != null)
+    {
+        fromdateValue = ViewBag.fromdateValue;
+    }
+
+    if (ViewBag.toDateValue != null)
+    {
+        toDateValue = ViewBag.toDateValue;
+    }
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ReportList", "Reports", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Reports </span>
+                    </a>
+                    <span class="breadcrumb-item active">KPI Report</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    @if (Obj.GetCurrentUserSession().Rept.Contains("4"))
+                    {
+                        using (Html.BeginForm("KPIReport", "Reports", FormMethod.Post, new { id = "form1", name = "form1" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+
+                            <div class="breadcrumb-elements-item dropdown p-0">
+                                <input type="hidden" id="FromDate" name="FromDate" value="@fromdateValue" />
+                                <input type="hidden" id="ToDate" name="ToDate" value="@toDateValue" />
+                                <button type="submit" class="dropdown-item" name="command" id="command">
+                                    <i class="icon-printer2"></i> Report
+                                </button>
+
+                            </div>
+                        }
+                }
+
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("KPIReport", "Reports", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<div class="card">
+
+ 	   <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">KPI Report</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+ 	   <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">
+                      From
+                </div>
+ 		<div class="col-md-3">
+                     <input class="form-control" type="date" id="FromDate" name="FromDate" value="@fromdateValue" required /><input type="hidden" id="FromDateval" name="FromDateval" value="@fromdateValue" />
+                </div>
+ 		<div class="col-md-2">
+                       To
+                </div>
+		<div class="col-md-3">
+                    <input class="form-control" type="date" id="ToDate" name="ToDate" value="@toDateValue" required /><input type="hidden" id="toDateValue" name="toDateValue" value="@toDateValue" />
+                </div>
+                <div class="col-md-3">
+                       <button type="submit" id="Generate" name="command" value="Generate"  class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Generate</button>
+                    </div>
+            </div>          
+            </div>
+ 	   <div class="card-body">
+ @if (dsKPI != null && dsKPI.Tables.Count > 0 && dsKPI.Tables[0].Rows.Count > 0)
+    {
+ <div class="card">
+                <table class="table table-lg">
+                  
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            <div id="logo" style="padding-left: 30px;">
+                                <img src="@Url.Content(dsKPI.Tables[0].Rows[0]["logo"].ToString())" style="width: 150px;height: 100px;" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4 text-center font-weight-bold font-size-lg">
+                            <span>@dsKPI.Tables[0].Rows[0]["CompanyName"].ToString()</span>
+                            <br />
+                            <span>OBJECTIVES REPORT</span>
+                        </td>
+                    </tr>                     
+                </table>
+            </div>
+  <div class="table-responsive">
+                <table class="table table-lg table-bordered">
+                    <thead>
+                      
+                    <tr class="bg-blue font-weight-bold">
+                <th>Sl No</th>
+                <th>KPI Ref</th>
+                <th>Person Responsible‎</th>
+                <th>Freq of Eval</th>               
+                <th>Dept Name‎‎</th>               
+                <th>Established On‎‎</th>
+                <th>Process Indicator</th>
+                <th>Measurable Value</th>
+                <th>Monitoring Mechanism</th>
+                <th>Measured Value</th>     
+                <th>Evaluation Status‎‎</th>
+                <th>Evaluated On</th>
+                <th>NCRRef</th>             
+                    </tr>
+                    </thead>
+
+                    @for (int i = 0, j = 1; i < dsKPI.Tables[0].Rows.Count; i++, j++)
+                    {
+                      <tbody>
+                        <tr>
+                            <td>@j</td>
+            
+                <td>@dsKPI.Tables[0].Rows[i]["KPI_Ref"].ToString()</td>
+                <td>@dsKPI.Tables[0].Rows[i]["Person_Responsible"].ToString()</td>             
+                <td>@dsKPI.Tables[0].Rows[i]["Freq_of_Eval"].ToString()</td>
+                <td>@dsKPI.Tables[0].Rows[i]["DeptName"].ToString()</td>
+                              <td>
+                     @if (dsKPI.Tables[0].Rows[i]["EstablishedOn"].ToString() != "" && dsKPI.Tables[0].Rows[i]["EstablishedOn"].ToString() != null)
+                         {
+                         @Convert.ToDateTime(dsKPI.Tables[0].Rows[i]["EstablishedOn"].ToString()).ToString("dd/MM/yyyy")
+                         }
+                 </td>   
+                <td>@dsKPI.Tables[0].Rows[i]["Process_Indicator"].ToString()</td>
+                <td>@dsKPI.Tables[0].Rows[i]["Measurable_Value"].ToString()</td>
+                <td>@dsKPI.Tables[0].Rows[i]["Monitoring_Mechanism"].ToString()</td>
+                <td>@dsKPI.Tables[0].Rows[i]["Measured_Value"].ToString()</td>
+                <td>@dsKPI.Tables[0].Rows[i]["Eval_Status"].ToString()</td>
+               <td>
+                     @if (dsKPI.Tables[0].Rows[i]["Eval_On"].ToString() != "" && dsKPI.Tables[0].Rows[i]["Eval_On"].ToString() != null)
+                         {
+                         @Convert.ToDateTime(dsKPI.Tables[0].Rows[i]["Eval_On"].ToString()).ToString("dd/MM/yyyy")
+                         }
+                 </td>       
+                <td>@dsKPI.Tables[0].Rows[i]["NCRRef"].ToString()</td>
+                @*<td>@dsKPI.Tables[0].Rows[i]["Approved_Status"].ToString()</td>*@
+
+                        </tr>
+                          </tbody>
+                    }
+                </table>
+              </div>
+}
+	   </div>
+</div>
+    
+}
+@section Scripts {
+    <script>
+      
+    </script>
+}

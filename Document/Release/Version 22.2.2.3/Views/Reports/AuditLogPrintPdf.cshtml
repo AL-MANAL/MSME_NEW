@@ -1,0 +1,170 @@
+﻿@using System.Data;
+@{
+
+    ViewBag.Title = "Audit Log Report";
+
+    DataSet dsAuditLog = new DataSet();
+    string AuditCriteria = "";
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.InternalAuditModels objAudit = new ISOStd.Models.InternalAuditModels();
+
+    if (ViewBag.dsAuditLogReport != null)
+    {
+        dsAuditLog = ViewBag.dsAuditLogReport;
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+
+
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+
+
+    <div>
+        @if (dsAuditLog.Tables.Count > 0 && dsAuditLog.Tables[0].Rows.Count > 0)
+        {
+
+
+            <div>
+                <table class="table table-lg table-bordered">
+
+                    <tr class="row">
+                        @*<td class="font-size-lg font-weight-bold">
+                            Audit Number
+
+                        </td>
+                        <td class="font-size-lg">
+                            @dsAuditLog.Tables[0].Rows[0]["auditnum"].ToString()
+
+                        </td>*@
+                        <td class="font-size-lg font-weight-bold">
+                            Audit date
+
+                        </td>
+                        <td class="font-size-lg">
+
+                            @if (dsAuditLog.Tables[0].Rows[0]["auditdate"].ToString() != "")
+                            {
+                                @Convert.ToDateTime(dsAuditLog.Tables[0].Rows[0]["auditdate"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="font-size-lg font-weight-bold">
+                            Audit Location
+                        </td>
+                        <td class="font-size-lg">
+                            @dsAuditLog.Tables[0].Rows[0]["auditlocation"].ToString()
+                        </td>
+                        <td class="font-size-lg font-weight-bold">
+                            Audit Criteria
+                        </td>
+                        <td class="font-size-lg">
+                            @obj.GetISONameById(dsAuditLog.Tables[0].Rows[0]["auditcriteria"].ToString())
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="font-size-lg font-weight-bold">
+                            Auditor
+                        </td>
+                        <td class="font-size-lg">
+                            @obj.GetMultiHrEmpNameById(dsAuditLog.Tables[0].Rows[0]["Auditor"].ToString())
+                        </td>
+                        <td class="font-size-lg font-weight-bold">
+                            Auditee
+                        </td>
+                        <td class="font-size-lg">
+                            @obj.GetMultiHrEmpNameById(dsAuditLog.Tables[0].Rows[0]["Auditee"].ToString())
+                        </td>
+                    </tr>
+
+                </table>
+
+            </div>
+            <div>
+                <table class="table table-lg table-bordered">
+                    <thead>
+                        <tr class="bg-blue font-weight-bold">
+                            <td>Sl No</td>
+                            <td>Department</td>
+                            <td>Activity Details</td>
+                            <td>Findings</td>
+                            <td>Category</td>
+                        </tr>
+                    </thead>
+
+                    @for (int i = 0, j = 1; i < dsAuditLog.Tables[1].Rows.Count; i++, j++)
+                    {
+                        <tbody>
+                            <tr class="row">
+                                <td>@j</td>
+                                <td>@dsAuditLog.Tables[1].Rows[i]["DeptAudited"].ToString()</td>
+                                <td>@Html.Raw(dsAuditLog.Tables[1].Rows[i]["Activity"].ToString())</td>
+                                <td>@Html.Raw(dsAuditLog.Tables[1].Rows[i]["NCRDESC"].ToString())</td>
+                                <td>@obj.GetAuditFindingCategoryNameById(dsAuditLog.Tables[1].Rows[i]["Findingcategory"].ToString())</td>
+
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            </div>
+            <br />
+            <div>
+                <table class="table table-lg table-bordered">
+                    <thead>
+                        <tr class="bg-blue font-weight-bold">
+                            <td colspan="3">Prepared By</td>
+                            <td colspan="3">Reviewed By</td>
+                        </tr>
+                        <tr class="bg-blue font-weight-bold">
+                            <th>Name</th>
+                            <th>Position‎‎</th>
+                            <th>Signature‎‎</th>
+                            <th>Name</th>
+                            <th>Position‎‎</th>
+                            <th>Signature‎‎</th>
+                        </tr>
+                    </thead>
+                    @for (int i = 0; i < dsAuditLog.Tables[0].Rows.Count; i++)
+                    {
+                        <tr class="row">
+                            <td>@obj.GetEmpHrNameById(dsAuditLog.Tables[0].Rows[i]["preparer"].ToString())</td>
+                            <td>@obj.GetEmpDesignationByHrEmpId(dsAuditLog.Tables[0].Rows[i]["preparer"].ToString())</td>
+                            <td></td>
+                            <td>@obj.GetEmpHrNameById(dsAuditLog.Tables[0].Rows[i]["Approver"].ToString())</td>
+                            <td>@obj.GetEmpDesignationByHrEmpId(dsAuditLog.Tables[0].Rows[i]["Approver"].ToString())</td>
+                            <td></td>
+                        </tr>
+                    }
+                </table>
+            </div>
+
+
+
+        }
+
+    </div>
+
+
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script>
+      
+    </script>
+}

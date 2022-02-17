@@ -1,0 +1,275 @@
+﻿@model ISOStd.Models.InternalAuditModels
+
+@{
+    ViewBag.Title = "AddInternalAuditDetails";
+}
+
+
+
+
+@section featured {
+
+
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("InternalAuditNumDetails", "Audit", new { AuditTransID = ViewBag.AuditTransID, AuditNum = ViewBag.AuditNum, AuditID = ViewBag.AuditID } )'>
+                        <span class="breadcrumb-item"> Internal Audit Details</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Internal Audit Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+
+
+@using (Html.BeginForm("AddInternalAuditDetails", "Audit", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+
+    <input type="hidden" id="AuditTransID" name="AuditTransID" value="@ViewBag.AuditTransID" />
+    <input type="hidden" id="AuditNum" name="AuditNum" value="@ViewBag.AuditNum" />
+    <input type="hidden" id="AuditID" name="AuditID" value="@ViewBag.AuditID" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Internal Audit Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+
+
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                AuditNum
+
+                            </td>
+                            <td class="col">
+
+                                <input disabled class="form-control" type="text" id="AuditNum" name="AuditNum" value="@ViewBag.AuditNum" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                Department
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="DeptID" name="DeptID" value="@ViewBag.DeptID" style="background-color:#efefe6" disabled />
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                Auditee(s)
+
+                            </td>
+                            <td class="col">
+
+                                <textarea class="form-control" id="Auditee" name="Auditee" disabled>@ViewBag.Auditee</textarea>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                Auditor(s)
+
+                            </td>
+                            <td class="col">
+
+                                <textarea class="form-control" id="Auditor" name="Auditor" disabled>@ViewBag.Auditor</textarea>
+
+                            </td>
+                        </tr>
+                        @*<tr>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ISOstandardID)<text style="color:red;">*</text>
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    <select class="chosen-select" id="ISOstandardID" name="ISOstandardID" onchange="GetISOClauses()" required="" multiple style="height: 100px;">
+                        @if (ViewBag.IsoStdList != null)
+                        {
+                            foreach (var data in ViewBag.IsoStdList)
+                            {
+                                if (Model.ISOstandardID.Contains(data.Text))
+                                {
+                                    <option value='@data.Value' selected>@data.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@data.Value'>@data.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ISO_standard_clause)<text style="color:red;">*</text>
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    <select class="chosen-select" id="ISO_standard_clause" name="ISO_standard_clause" style="height: 200px; width: 300px;" multiple required>
+                        @if (ViewBag.AppClauses != null)
+                        {
+                            foreach (var data in ViewBag.AppClauses)
+                            {
+                                if (Array.IndexOf(Model.ISO_standard_clause.ToString().Split(','), data.Value) >= 0)
+                                {
+                                    <option value='@data.Value' selected>@data.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@data.Value'>@data.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+
+                </div>
+            </td>
+        </tr>*@
+
+                        <tr class="row">
+                            <td class="col" colspan="4">
+
+                                <b>@Html.DisplayNameFor(model => model.AuditDetails)</b>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col" colspan="4">
+
+
+                                @Html.TextAreaFor(model => model.AuditDetails, new { @id = "editor-full", @rows = "4", @cols = "4" })
+
+
+                            </td>
+                        </tr>
+</table>
+
+
+
+
+            </div>
+
+        </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                @Html.ActionLink("Back to List", "InternalAuditNumDetails", new { AuditTransID = ViewBag.AuditTransID, AuditNum = ViewBag.AuditNum, AuditID = ViewBag.AuditID },  new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Update" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+            }
+
+
+
+            @section Scripts {
+                <script>
+
+                    //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+                    // Full featured editor
+                    // ------------------------------
+
+                    // Setup
+                    CKEDITOR.replace('editor-full', {
+                        height: 400,
+                        extraPlugins: 'forms'
+                    });
+
+                </script>
+
+                @Scripts.Render("~/bundles/jqueryval")
+
+            }
+

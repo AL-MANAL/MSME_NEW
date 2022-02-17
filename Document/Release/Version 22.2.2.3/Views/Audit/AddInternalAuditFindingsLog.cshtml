@@ -1,0 +1,829 @@
+﻿@model ISOStd.Models.InternalAuditFindingsLog
+
+@{
+    ViewBag.Title = "AddInternalAuditFindingsLog";
+}
+
+
+
+@section featured {
+
+
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("InternalAuditNumDetails", "Audit",  new { AuditID = ViewBag.AuditID, AuditTransID = ViewBag.AuditTransID,  AuditNum=ViewBag.AuditNum } )'>
+                        <span class="breadcrumb-item"> Internal Audit Details</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Internal Audit Finding</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+@using (Html.BeginForm("AddInternalAuditFindingsLog", "Audit", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+        <input type="hidden" id="AuditTransID" name="AuditTransID" value="@ViewBag.AuditTransID" />
+        <input type="hidden" id="AuditNum" name="AuditNum" value="@ViewBag.AuditNum" />
+        <input type="hidden" id="AuditId" name="AuditId" value="@ViewBag.AuditId" />
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Internal Audit Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+
+                    <table class="table table-lg">
+
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.AuditNum)
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="AuditNum" name="AuditNum" value="@ViewBag.AuditNum" disabled />
+
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    Department
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="DeptID" name="DeptID" value="@ViewBag.DeptID" disabled />
+
+
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    Auditee(s)
+
+                                </td>
+                                <td class="col">
+
+                                    @*<input type="text" id="Auditee" name="Auditee" value="@ViewBag.Auditee" style="background-color:#efefe6;height:150px;width:250px;" disabled />*@
+                                    <textarea class="form-control" id="Auditee" name="Auditee" disabled>@ViewBag.Auditee</textarea>
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    Auditor(s)
+
+                                </td>
+                                <td class="col">
+
+                                    @*<input type="text" id="Auditor" name="Auditor" value="@ViewBag.Auditor" style="background-color:#efefe6;height:150px;width:250px;" disabled />*@
+                                    <textarea class="form-control" id="Auditor" name="Auditor" disabled>@ViewBag.Auditor</textarea>
+
+
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.FindingCategory)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="FindingCategory" name="FindingCategory" onchange="GetCategory()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.FindingCategory != null)
+                                        {
+                                            foreach (var item in ViewBag.FindingCategory)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="FindingCategory-message" style="display: none;">FindingCategory field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.FindingCategory)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.CorrectionDate)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="date" id="CorrectionDate" name="CorrectionDate" />
+                                    <span class="field-validation-error"><span id="CorrectionDate-message" style="display: none;">Correction Date field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.CorrectionDate)
+
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    ISO Standard<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select id="ISOstandardID" name="ISOstandardID" class="form-control select-fixed-multiple" multiple data-fouc onchange="GetISOClauses()">
+                                        @if (ViewBag.IsoStdList != null)
+                                        {
+                                            foreach (var item in ViewBag.IsoStdList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="ISOstandardID-message" style="display: none;">ISO standard field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.ISOstandardID)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.ISO_standard_clause)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select id="ISO_standard_clause" name="ISO_standard_clause" class="form-control select-fixed-multiple" multiple="multiple" data-fouc></select>
+                                    <span class="field-validation-error"><span id="ISO_standard_clause-message" style="display: none;">ISO Standard clause field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.ISO_standard_clause)
+
+                                </td>
+                            </tr>
+
+                            <tr class="row" id="caption">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.NCRNo)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="NCRNo" name="NCRNo" />
+                                    <span class="field-validation-error"><span id="NCRNo-message" style="display: none;">NCR Num. field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.NCRNo)
+
+                                </td>
+
+                                @*  <td>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.NCRDesc)<text style="color:red;">*</text>
+            </div>
+        </td>
+        <td>
+            <div class="editor-field">
+                <textarea id="NCRDesc" name="NCRDesc"></textarea>
+                <span class="field-validation-error"><span id="NCRDesc-message" style="display: none;">NCR Description field is required.</span></span>
+                @Html.ValidationMessageFor(model => model.NCRDesc)
+            </div>
+        </td>*@
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.CorrectiveActionDate)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="date" id="CorrectiveActionDate" name="CorrectiveActionDate" onchange="checkDate();" />
+                                    <span class="field-validation-error"><span id="CorrectiveActionDate-message" style="display: none;">Corrective Action Date field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.CorrectiveActionDate)
+
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.Checklist)
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="bootstrap-uploader" data-fouc type="file" name="fileUploader" id="file" onchange="FileFormatValidation(this)" accept=".pdf" style="height: 38px;" />
+
+                                </td>
+                                
+
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.Reviewed_by)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Reviewed_by" name="Reviewed_by">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpLists != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpLists)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="Reviewed_by-message" style="display: none;">Reviewed By field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.Reviewed_by)
+
+                                </td>
+                            </tr>
+
+                            <tr class="row" id="caption1">
+
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.ReportStatus)
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="ReportStatus" name="ReportStatus">
+
+                                        @if (ViewBag.ReportStatus != null)
+                                        {
+                                            foreach (var item in ViewBag.ReportStatus)
+                                            {
+                                                if (item.Text == "Open")
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="ReportStatus-message" style="display: none;">ReportStatus field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.ReportStatus)
+
+                                </td>
+                                
+
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.Followupdate)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="date" id="Followupdate" name="Followupdate" onchange="checkDate2();" />
+                                    <span class="field-validation-error"><span id="Followupdate-message" style="display: none;">Follow up Date field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.Followupdate)
+
+                                </td>
+                            </tr>
+
+                            @*<tr>
+            <td>
+                 <span class="field-validation-error"><span id="PageValidation-message" style="display: none;">Please add atleast one Findings Log.</span></span>
+            </td>
+        </tr>*@
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.DisplayNameFor(model => model.NCRDesc)
+
+                                </td>
+                                <td class="col" colspan="3">
+
+
+                                    @Html.TextAreaFor(model => model.NCRDesc, new { @id = "editor-full", @rows = "4", @cols = "4" })
+
+                                </td>
+                            </tr>
+</table>
+
+
+
+
+                </div>
+
+            </div>
+
+
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                @Html.ActionLink("Back to List", "InternalAuditNumDetails", new { AuditID = ViewBag.AuditID, AuditTransID = ViewBag.AuditTransID, AuditNum = ViewBag.AuditNum }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+
+                <div class="mt-2 mt-sm-0">
+                    <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400 invisible" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAudit()" />
+                </div>
+            </div>
+        </div>
+
+           
+        <div class="card invisible" id="hidden card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Finding Log</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                        <a class="list-icons-item" data-action="remove"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+
+
+
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                        <th>Action</th>
+                        <th>ISO Standard</th>
+                        <th>NCR Num.</th>
+                        <th>NCR Description</th>
+                        <th>ISO Standard Clause</th>
+                        <th>Finding Category</th>
+                        <th>Correction Date</th>
+                        <th>Reviewed By</th>
+                        <th>Report Status</th>
+                        <th>Corrective Action Date</th>
+                        <th>Follow up Date</th>
+                        @* <th>Finding Details</th>*@
+                    </tr>
+                </table>
+            </div>
+        </div>
+                }
+
+
+
+                @section Scripts {
+
+                    <script type="text/javascript">
+
+                             //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+                    // Full featured editor
+                    // ------------------------------
+
+                    // Setup
+                    CKEDITOR.replace('editor-full', {
+                        height: 400,
+                        extraPlugins: 'forms'
+                    });
+
+              function FileFormatValidation(file) {
+                            var ext = file.value.split(".").pop().toLowerCase();
+                            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                                file.value = "";
+                                bootbox.alert({
+                                    title: 'File type',
+                                    message: 'Invalid file format, please upload a doc,pdf,doc,jpg,jpeg,gif,png format.'
+                                });
+                            }
+
+                        }
+
+                        function GetISOClauses() {
+                                var selMulti = $.map($("#ISOstandardID option:selected"), function (el, i) {
+                                    return $(el).val();
+                                });
+                                var sStd = (selMulti.join(","));
+                                jQuery.ajax({
+                                    url: '@Url.Action("FunISOClauseList", "MgmtDocuments")',
+                                    type: 'POST',
+                                    dataType: "json",
+                                    data: { 'ISOStdId': sStd },
+                                    success: function (result) {
+                                        $("#ISO_standard_clause").empty();
+                                        if (result != null && result.length > 0) {
+                                            $.each(result, function (index, item) {
+                                                $("#ISO_standard_clause").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                                $("#ISO_standard_clause").trigger('change');
+                                            });
+                                            return;
+                                        }
+                                        else {
+                                            bootbox.alert({
+                                                title: 'ISOClause List',
+                                                message: 'No Clauses exists.'
+                                            });
+                                            return;
+                                        }
+                                    }
+                                });
+                            }                        
+                        
+            function PageSubmitValidation() {
+                //var validflg = true;
+                var rowscnt = document.getElementById('team-list').rows.length - 1;
+
+                var ssnMessage = "";
+                if (parseInt(rowscnt) <= 0) {
+                    jAlert("Please add atleast One Findings Log");
+                    ssnMessage = $('#PageValidation-message');
+                    ssnMessage.show();
+                    return false;
+                }
+                else {
+                    ssnMessage = $('#PageValidation-message');
+                    ssnMessage.hide();
+                }
+                return true;
+            }
+
+
+
+                        var showClass = 'is-visible';
+                        var hideClass = 'invisible';
+            function Validation() {
+                var validflg = true;
+                var ssnMessage = "";
+                if (document.getElementById("ISOstandardID").value == "") {
+                    ssnMessage = $('#ISOstandardID-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#ISOstandardID-message');
+                    ssnMessage.hide();
+                }
+                if (document.getElementById("NCRNo").value == "") {
+                    ssnMessage = $('#NCRNo-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#NCRNo-message');
+                    ssnMessage.hide();
+                }
+                //if (document.getElementById("NCRDesc").value == "") {
+                //    ssnMessage = $('#NCRDesc-message');
+                //    ssnMessage.show();
+                //    validflg = false;
+                //}
+                //else {
+                //    ssnMessage = $('#NCRDesc-message');
+                //    ssnMessage.hide();
+                //}
+                if (document.getElementById("ISO_standard_clause").value == "") {
+                    ssnMessage = $('#ISO_standard_clause-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#ISO_standard_clause-message');
+                    ssnMessage.hide();
+                }
+
+                if (document.getElementById("FindingCategory").value == "") {
+                    ssnMessage = $('#FindingCategory-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#FindingCategory-message');
+                    ssnMessage.hide();
+                }
+                if (document.getElementById("CorrectionDate").value == "") {
+                    ssnMessage = $('#CorrectionDate-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#CorrectionDate-message');
+                    ssnMessage.hide();
+                }
+                if (document.getElementById("Reviewed_by").value == "") {
+                    ssnMessage = $('#Reviewed_by-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#Reviewed_by-message');
+                    ssnMessage.hide();
+                }
+                if (document.getElementById("CorrectiveActionDate").value == "") {
+                    ssnMessage = $('#CorrectiveActionDate-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#CorrectiveActionDate-message');
+                    ssnMessage.hide();
+                }
+
+                if (document.getElementById("Followupdate").value == "") {
+                    ssnMessage = $('#Followupdate-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#Followupdate-message');
+                    ssnMessage.hide();
+                }
+                //if (document.getElementById("ReportStatus").value == "") {
+                //    ssnMessage = $('#ReportStatus-message');
+                //    ssnMessage.show();
+                //    validflg = false;
+                //}
+                //else {
+                //    ssnMessage = $('#ReportStatus-message');
+                //    ssnMessage.hide();
+                //}
+                return validflg;
+        }
+
+
+        function AddAudit() {
+
+            var Category = document.getElementById("FindingCategory");
+            var CategoryType = Category.options[Category.selectedIndex].text;
+
+              if (Validation() == true) {
+
+                    //jAlert("Please enter NCR Num");
+
+                    
+                    var cnt = document.getElementById("itemcnt").value;
+
+                    document.getElementById("itemcnt").value = cnt;
+                    // Find a <table> element with id="myTable":
+                    var table = document.getElementById("team-list");
+
+
+                    // Create an empty <tr> element and add it to the 1st position of the table:
+                    var row = table.insertRow();
+
+                    // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                    var cell0 = row.insertCell(0);
+                    var cell1 = row.insertCell(1);
+                    var cell2 = row.insertCell(2);
+                    var cell3 = row.insertCell(3);
+                    var cell4 = row.insertCell(4);
+                    var cell5 = row.insertCell(5);
+                    var cell6 = row.insertCell(6);
+                    var cell7 = row.insertCell(7);
+                    var cell8 = row.insertCell(8);
+                    var cell9 = row.insertCell(9);
+                    var cell10 = row.insertCell(10);
+                    //var cell11 = row.insertCell(11);
+
+                    var ISOstandardID = [];
+                    var ISOstandardIDText = $.map($("#ISOstandardID option:selected"), function (el, i) {
+                        return $(el).text();
+                    });
+                    var ISOstandardIDVal = $("#ISOstandardID").val();
+
+                    var ISO_standard_clause = [];
+                    var ISO_standard_clauseText = $.map($("#ISO_standard_clause option:selected"), function (el, i) {
+                        return $(el).text();
+                    });
+                    var ISO_standard_clauseVal = $("#ISO_standard_clause").val();
+
+                    var NCRNo = $('#NCRNo').val();
+                  var NCRDesc = CKEDITOR.instances['editor-full'].getData();
+                  //var NCRDesc = $('#NCRDesc').val();
+                 
+                    var ISO_standard_clause = $('#ISO_standard_clause').val();
+                    var FindingCategory = $('#FindingCategory').val();
+                    var finding = document.getElementById("FindingCategory");
+                    var FindCategory = finding.options[finding.selectedIndex].text;
+                    var CorrectionDate = $('#CorrectionDate').val();
+                    //var Audit_Details = $().CKEditorValFor('#Audit_Details');
+                    //var Audit_Details = $('textarea.editor').val();
+                    //var Audit_Details = CKEDITOR.instances['Audit_Details'].getData()
+
+
+                    var Reviewed_by = [];
+                    // Action_taken_by = $('#Action_taken_by option:selected').text();
+                    var Reviewed_byText = $.map($("#Reviewed_by option:selected"), function (el, i) {
+                        return $(el).text();
+                    });
+                    var Reviewed_byVal = $("#Reviewed_by").val();
+
+                    var ReportStatus = [];
+                    var ReportStatusText = $.map($("#ReportStatus option:selected"), function (el, i) {
+                        return $(el).text();
+                    });
+                    var ReportStatusVal = $("#ReportStatus").val();
+
+                    var CorrectiveActionDate = $('#CorrectiveActionDate').val();
+                    var Followupdate = $('#Followupdate').val();
+
+                    cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                    cell1.innerHTML = "<input type='hidden' id='ISOstandardID" + cnt + "' name='ISOstandardID" + cnt + "' value='" + ISOstandardIDVal + "'>" + ISOstandardIDText;
+                    cell2.innerHTML = "<input type='hidden' id='NCRNo" + cnt + "' name='NCRNo" + cnt + "' value='" + NCRNo + "'>" + NCRNo;
+                    cell3.innerHTML = "<input type='hidden' id='NCRDesc" + cnt + "' name='NCRDesc" + cnt + "' value='" + NCRDesc + "'>" + NCRDesc;
+                    cell4.innerHTML = "<input type='hidden' id='ISO_standard_clause" + cnt + "' name='ISO_standard_clause" + cnt + "' value='" + ISO_standard_clauseVal + "'>" + ISO_standard_clauseText;
+                    cell5.innerHTML = "<input type='hidden' id='FindingCategory" + cnt + "' name='FindingCategory" + cnt + "' value='" + FindingCategory + "'>" + FindCategory;
+                    cell6.innerHTML = "<input type='hidden' id='CorrectionDate" + cnt + "' name='CorrectionDate" + cnt + "' value='" + CorrectionDate + "'>" + CorrectionDate;
+                    cell7.innerHTML = "<input type='hidden' id='Reviewed_by" + cnt + "' name='Reviewed_by" + cnt + "' value='" + Reviewed_byVal + "'>" + Reviewed_byText;
+                    cell8.innerHTML = "<input type='hidden' id='ReportStatus" + cnt + "' name='ReportStatus" + cnt + "' value='" + ReportStatusVal + "'>" + ReportStatusText;
+                    cell9.innerHTML = "<input type='hidden' id='CorrectiveActionDate" + cnt + "' name='CorrectiveActionDate" + cnt + "' value='" + CorrectiveActionDate + "'>" + CorrectiveActionDate;
+                    cell10.innerHTML = "<input type='hidden' id='Followupdate" + cnt + "' name='Followupdate" + cnt + "' value='" + Followupdate + "'>" + Followupdate;
+                    //cell11.innerHTML = "<input type='hidden' id='Audit_Details" + cnt + "' name='Audit_Details" + cnt + "' value='" + Audit_Details + "'>" + Audit_Details;
+
+                    cnt++;
+                 
+                  document.getElementById("itemcnt").value = cnt;
+
+                  document.getElementById("btnCreate").classList.remove(hideClass);
+                  document.getElementById("btnCreate").classList.add(showClass);
+                  document.getElementById("hidden card").classList.remove(hideClass);
+                  document.getElementById("hidden card").classList.add(showClass);
+                    ResetControl();
+                }
+
+            }
+
+
+
+            function ResetControl() {
+                $("#ISOstandardID").val('').trigger('change');
+                $("#FindingCategory").val('').trigger('change');
+                $("#Reviewed_by").val('').trigger('change');
+                $("#ReportStatus").val('').trigger('change');
+                document.getElementById("NCRDesc").value = "";
+                $("#ISO_standard_clause").val('').trigger('change');
+                document.getElementById("NCRNo").value = "";
+
+
+                document.getElementById("CorrectionDate").value = "";
+                document.getElementById("CorrectiveActionDate").value = "";
+                document.getElementById("Followupdate").value = "";
+              
+                //CKEDITOR.instances['Audit_Details'].setData('');
+            }
+
+            function deleteRow(btn) {
+                var row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                var cnt = document.getElementById("itemcnt").value;
+                cnt--;
+
+                document.getElementById("itemcnt").value = cnt;
+                if (cnt == "0") {
+
+                    document.getElementById("btnCreate").classList.add(hideClass);
+                    document.getElementById("btnCreate").classList.remove(showClass);
+                    document.getElementById("hidden card").classList.remove(showClass);
+                    document.getElementById("hidden card").classList.add(hideClass);
+                }
+        }
+
+        function GetCategory() {
+            var Category = document.getElementById("FindingCategory");
+            var CategoryType = Category.options[Category.selectedIndex].text;
+
+               jQuery.ajax({
+                         url: '@Url.Action("FunGetReportStatus", "Audit")',
+                         type: 'POST',
+                         dataType: "json",
+                   data: { 'CategoryType': CategoryType },
+                         success: function (result) {
+                             if (result != null && result.length > 0) {
+
+                                 $('#ReportStatus').children('option').remove();
+
+                                 $.each(result, function (index, item) {
+
+                                     if (item.Text == "Closed") {
+                                         $("#ReportStatus").append("<option value='" + item.Value + "' Selected>" + item.Text + "</option>");
+                                         $("#ReportStatus").trigger('change');
+                                     }
+                                     else {
+                                         $("#ReportStatus").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                         $("#ReportStatus").trigger('change');
+                                     }
+                                 });
+                             }
+                          }
+                     });
+                }
+
+
+    
+
+
+
+
+
+
+
+                        function checkDate() {
+
+
+                            var dt2 = document.getElementById("CorrectiveActionDate").value;
+                            var dt1 = document.getElementById("CorrectionDate").value;
+
+                            if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+
+                                bootbox.alert({
+                                    title: 'Corrective Action Date',
+                                    message: 'Corrective Action date cannot be before Correction date.'
+                                });
+                                $('#CorrectiveActionDate').val("");
+                            }
+                        }
+
+
+                        function checkDate2() {
+
+
+                            var dt2 = document.getElementById("Followupdate").value;
+                            var dt1 = document.getElementById("CorrectiveActionDate").value;
+
+                            if (new Date(dt1).getTime() < new Date(dt2).getTime()) {
+
+                                bootbox.alert({
+                                    title: 'Follow up Date',
+                                    message: 'Follow up date cannot be before Corrective action date.'
+                                });
+                                $('#Followupdate').val("");
+                            }
+                        }
+                    </script>
+                    @Scripts.Render("~/bundles/jqueryval")
+                }

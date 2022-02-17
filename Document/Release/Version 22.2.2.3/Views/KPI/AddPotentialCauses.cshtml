@@ -1,0 +1,587 @@
+﻿@model ISOStd.Models.KPIModels
+@using System.Data;
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.KPIModelsList objList = new ISOStd.Models.KPIModelsList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    DataSet dsMI = new DataSet();
+    int icnt = 0;
+    if (ViewBag.objList != null)
+    {
+        objList = ViewBag.objList;
+        icnt = objList.KPIMList.Count;
+    }
+    if (ViewBag.MIList != null)
+    {
+        dsMI = ViewBag.MIList;
+    }
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("KPIEvaluationList", "KPI", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Key Performance/Process Indicator</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Potential Causes for Failure</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddPotentialCauses", "KPI", FormMethod.Post,
+                                 new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Add Potential Causes for Failure</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <input type="hidden" id="KPI_Id" name="KPI_Id" value="@Model.KPI_Id" />
+            <input type="hidden" id="kpi_ref_no" name="kpi_ref_no" value="@Model.kpi_ref_no" />
+            <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+
+          
+
+          
+              
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>@Html.LabelFor(model => model.established_date)</b>
+                            </td>
+                            <td class="col">
+                                @if (Model.established_date != null && Model.established_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.established_date.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <b>@Html.DisplayNameFor(model => model.kpi_ref_no)</b>
+</td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.kpi_ref_no)
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <b> @Html.DisplayNameFor(model => model.kpi_level)</b>
+</td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.kpi_level)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <b>@Html.DisplayNameFor(model => model.process_monitor)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.process_monitor)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-12">
+                                <b>Proposed By</b>
+</td>                            
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>@Html.DisplayNameFor(model => model.branch)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.branch)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <b>@Html.DisplayNameFor(model => model.group_name)</b>
+</td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.group_name)
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    @if (dsMI != null && dsMI.Tables.Count > 0 && dsMI.Tables[0].Rows.Count > 0)
+                    {
+                        <br />
+                        <h2 class="bg-dark pl-sm-2">Measurable Indicator</h2>
+                        <div class="table-responsive">
+                            <table class="table" id="team-list1">
+                                <thead>
+                                    <tr class="bg-brown">
+                                        <th>Sl No</th>
+                                        <th>MI_No</th>
+                                        <th>Measurable Indicator</th>
+                                        <th>Expected value to be achieved</th>
+                                        @*<th>KPI Type</th>*@
+                                        @*<th>Monitoring Period From Date</th>
+                                        <th>To Date</th>*@
+                                        <th>Monitoring Mechanism</th>
+                                        <th>Frequency of Evaluation</th>
+                                        <th>Risk, if not achieved</th>
+                                     
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0, j = 1; i < dsMI.Tables[0].Rows.Count; i++, j++)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                @j
+                                            </td>
+                                            <td>
+                                                @dsMI.Tables[0].Rows[i]["kpi_ref_no"].ToString()
+                                            </td>
+                                            <td>
+                                                @dsMI.Tables[0].Rows[i]["measurable_indicator"].ToString()
+                                            </td>
+                                            <td>
+                                                @dsMI.Tables[0].Rows[i]["expected_value"].ToString()/@dsMI.Tables[0].Rows[i]["expected_value_unit"].ToString()
+                                            </td>
+                                            @*<td>
+                                    @Obj.GetKPITypeById(dsMI.Tables[0].Rows[i]["kpi_type"].ToString())
+                                </td>*@
+                                            @*<td>
+                                                @if (dsMI.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != null && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_frm_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_frm_date"].ToString()).ToString("dd/MM/yyyy"))
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (dsMI.Tables[0].Rows[i]["monitoring_to_date"].ToString() != null && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_to_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["monitoring_to_date"].ToString()).ToString("dd/MM/yyyy"))
+                                                }
+                                            </td>*@
+                                            <td>
+                                                @*Obj.GetKPIMonitoringMechanismById*@ @(dsMI.Tables[0].Rows[i]["monitoring_mechanism"].ToString())
+                                            </td>
+                                            <td>
+                                                @Obj.GetKPIFrequencyEvaluationById(dsMI.Tables[0].Rows[i]["frequency_eval"].ToString())
+                                            </td>
+                                            <td>
+                                                @dsMI.Tables[0].Rows[i]["risk"].ToString()
+                                            </td>
+                                           
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Potential Causes for Failure to achieve KPI</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.causes_failure)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="causes_failure" name="causes_failure"></textarea>
+                                    <span class="field-validation-error"><span id="causes_failure-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.causes_failure)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.impact)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="impact" name="impact">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Impact != null)
+                                            {
+                                                foreach (var item in ViewBag.Impact)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="impact-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.impact)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.mitigation_measures)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="mitigation_measures" name="mitigation_measures"></textarea>
+                                    <span class="field-validation-error"><span id="mitigation_measures-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.mitigation_measures)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.target_date)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="date" class="form-control" id="target_date" name="target_date" />
+                                        <span class="field-validation-error"><span id="target_date-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.target_date)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                              
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.failure_status)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="failure_status" name="failure_status">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Status != null)
+                                            {
+                                                foreach (var item in ViewBag.Status)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="failure_status-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.failure_status)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.status_updated_date)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="date" class="form-control" id="status_updated_date" name="status_updated_date" />
+                                        <span class="field-validation-error"><span id="status_updated_date-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.status_updated_date)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">                            
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                                </td>                              
+                            </tr>
+                        </table>
+                    </fieldset>
+                  
+                    <div class="card" id="hidden card">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>Potential Causes for Failure</th>
+                                        <th>Impact</th>
+                                        <th>Mitigation Measure(s)</th>
+                                        <th>Target Date to implement the measure</th>
+                                        <th>Status</th>
+                                        <th>Status Updated On</th>
+                                    </tr>
+                                    @if (objList.KPIMList != null && objList.KPIMList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objList.KPIMList.Count; index++)
+                                        {
+                                    <tr>
+                                        <td>
+                                            <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+
+                                        </td>
+
+                                        <td>
+                                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='causes_failure@(index)' name="causes_failure@(index)">@objList.KPIMList[index].causes_failure</textarea>
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-search select2-hidden-accessible" id="impact@(index)" name="impact@(index)">
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.Impact != null)
+                                                {
+                                                    foreach (var item in ViewBag.Impact)
+                                                    {
+                                                        if (item.Value == objList.KPIMList[index].impact)
+                                                        {
+                                                            <option value='@item.Value' selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@item.Value'>@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='mitigation_measures@(index)' name="mitigation_measures@(index)">@objList.KPIMList[index].mitigation_measures</textarea>
+                                        </td>
+                                        <td>
+                                            @if (objList.KPIMList[index].target_date != null && objList.KPIMList[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                            {
+                                                <input class="form-control" type="date" id='target_date@(index)' name='target_date@(index)' value="@objList.KPIMList[index].target_date.ToString("yyyy-MM-dd")" />
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" type="date" id='target_date@(index)' name='target_date@(index)' />
+                                            }
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-search select2-hidden-accessible" id="failure_status@(index)" name="failure_status@(index)">
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.Status != null)
+                                                {
+                                                    foreach (var item in ViewBag.Status)
+                                                    {
+                                                        if (item.Value == objList.KPIMList[index].failure_status)
+                                                        {
+                                                            <option value='@item.Value' selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@item.Value'>@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            @if (objList.KPIMList[index].status_updated_date != null && objList.KPIMList[index].status_updated_date > Convert.ToDateTime("01/01/0001"))
+                                            {
+                                                <input class="form-control" type="date" id='status_updated_date@(index)' name='status_updated_date@(index)' value="@objList.KPIMList[index].status_updated_date.ToString("yyyy-MM-dd")" />
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" type="date" id='status_updated_date@(index)' name='status_updated_date@(index)' />
+                                            }
+                                        </td>
+                                    </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+              
+</div>
+    </div>
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+        @Html.ActionLink("Back to List", "KPIEvaluationList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+    </div>
+</div>
+}
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                     @:     text: '@TempData["alertdata"]',
+                                     @:     type: 'error'
+                                     @: }).show();
+                        }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                       @:text: '@TempData["Successdata"]',
+                       @: type: 'success'
+                       @:}).show();
+            }
+
+        });
+      
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("causes_failure").value == "") {
+                ssnMessage = $('#causes_failure-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#causes_failure-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("impact").value == "") {
+                ssnMessage = $('#impact-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#impact-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("mitigation_measures").value == "") {
+                ssnMessage = $('#mitigation_measures-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#mitigation_measures-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("target_date").value == "") {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("failure_status").value == "") {
+                ssnMessage = $('#failure_status-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#failure_status-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("status_updated_date").value == "") {
+                ssnMessage = $('#status_updated_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#status_updated_date-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddData() {
+
+            if (Validation() == true) {
+
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+
+
+                var causes_failure = $('#causes_failure').val();
+                var mitigation_measures = $('#mitigation_measures').val();
+                var target_date = $('#target_date').val();
+                var status_updated_date = $('#status_updated_date').val();
+
+                var impact = $.map($("#impact option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var impactVal = $("#impact").val();
+
+                var failure_status = $.map($("#failure_status option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var failure_statusVal = $("#failure_status").val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<textarea id='causes_failure" + cnt + "' name='causes_failure" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + causes_failure + "</textarea>";
+                cell2.innerHTML = "<select class='select-fixed-single' id='impact" + cnt + "' name='impact" + cnt + "'><option value='" + impactVal + "' selected>" + impact + "</option>@if (ViewBag.impact != null)
+                {
+                    foreach (var item in ViewBag.impact)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell3.innerHTML = "<textarea id='mitigation_measures" + cnt + "' name='mitigation_measures" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + mitigation_measures + "</textarea>";
+                cell4.innerHTML = "<input class='form-control' type='date' id='target_date" + cnt + "' name='target_date" + cnt + "' value='" + target_date + "' />";
+                cell5.innerHTML = "<select class='select-fixed-single' id='failure_status" + cnt + "' name='failure_status" + cnt + "'><option value='" + failure_statusVal + "' selected>" + failure_status + "</option>@if (ViewBag.Status != null)
+                {
+                    foreach (var item in ViewBag.Status)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell6.innerHTML = "<input class='form-control' type='date' id='status_updated_date" + cnt + "' name='status_updated_date" + cnt + "' value='" + status_updated_date + "' />";
+                cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+                      
+                       //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+
+
+                        document.getElementById("causes_failure").value = "";
+                        document.getElementById("mitigation_measures").value = "";
+                        document.getElementById("target_date").value = "";
+                        document.getElementById("status_updated_date").value = "";
+                        $("#impact").val('').trigger('change');
+                        $("#failure_status").val('').trigger('change');
+
+                    }
+
+        }
+       
+   
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

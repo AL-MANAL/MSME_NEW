@@ -1,0 +1,227 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@{
+    ViewBag.Title = "";
+
+   
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditProcessList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Internal Audit Planning</span>
+                    </a>
+                    <span class="breadcrumb-item active">Audit Status</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("AuditStatusUpdate", "AuditProcess", FormMethod.Post,
+                                                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Audit Status</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="Plan_Id" name="Plan_Id" value="@Model.Plan_Id" />
+                <table class="table table-lg">
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.dept_name)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.dept_name)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.team)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.team)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.location)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.location)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.AuditDate)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @if (Model.AuditDate != null && Model.AuditDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    var audit_date = Model.AuditDate.ToString("dd/MM/yyyy");
+                                    var frm_time = Model.fromtime;
+                                    var to_time = Model.totime;
+                                    var auditdate = audit_date + "  " + frm_time + " - " + to_time;
+                                    @auditdate
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.checklist)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.checklist)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.auditors)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.auditors)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2" >
+                            @Html.DisplayNameFor(model => model.auditee_team)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.auditee_team)
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Audit_Status)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Audit_Status" name="Audit_Status" required onchange="setType()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditStatus != null)
+                                {
+                                    foreach (var item in ViewBag.AuditStatus)
+                                    {
+                                        if (item.Value == Model.Audit_Status)
+                                        {
+                                <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.audit_status_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+
+                            @if (Model.audit_status_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                            <input type="date" id="audit_status_date" name="audit_status_date" value="@Model.audit_status_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                            <input type="date" id="audit_status_date" name="audit_status_date" required class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            }
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.remarks)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks">@Model.remarks</textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "AuditProcessList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        //----zzz
+
+
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @:     }).show();
+           
+                            }
+
+            @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+                                        @:        }).show();
+            
+                            }
+        });
+
+        function setType() {
+            var audit_status = $("#Audit_Status option:selected").text();
+            if (audit_status == "Cancelled" || audit_status == "Postponed") {
+                document.getElementById("remarks").required = true;
+            }
+            else {
+                document.getElementById("remarks").required = false;
+            }
+        }
+
+    </script>
+
+}

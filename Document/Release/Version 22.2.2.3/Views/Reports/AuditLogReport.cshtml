@@ -1,0 +1,289 @@
+﻿@using System.Data;
+@{
+   
+    ViewBag.Title = "Audit Log Report";
+    //Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    DataSet dsAuditLog=new DataSet();
+    string AuditCriteria = "";
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.InternalAuditModels objAudit = new ISOStd.Models.InternalAuditModels();
+    
+    if (ViewBag.dsAuditLogReport != null)
+    {
+        dsAuditLog = ViewBag.dsAuditLogReport;
+    }
+   
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ReportList", "Reports", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Reports</span>
+                    </a>
+                    <span class="breadcrumb-item active">Audit Log Report</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            
+                <div class="header-elements d-none">
+
+                    <div class="breadcrumb justify-content-center">
+                        @if(ViewBag.AuditNum != null)
+                        {
+                        if (obj.GetCurrentUserSession().Rept.Contains("4"))
+                        {
+                            using (Html.BeginForm("AuditLogReport", "Reports", FormMethod.Post, new { id = "form1", name = "form1" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary(true)
+
+                                <div class="breadcrumb-elements-item dropdown p-0">
+                                    <input type="hidden" id="AuditNum" name="AuditNum" value="@ViewBag.AuditNum" />
+                                    <button type="submit" class="dropdown-item" name="command" id="command">
+                                        <i class="icon-printer2"></i> Report
+                                    </button>
+
+                                </div>
+                            }
+                        }
+                        }
+
+
+                        @*<div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+    </div>
+}
+@using (Html.BeginForm("AuditLogReport", "Reports", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<div class="card">
+
+ 	   <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Audit Log Report</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+ 	   <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                     <div class="options d-flex flex-fill">
+
+                <select class="select-fixed-single" data-fouc id="AuditNum" name="AuditNum" required="">
+                       <option value='' hidden>Select Audit No</option>
+                             @if (ViewBag.AuditNum != null)
+                                {
+                                    foreach (var item in ViewBag.AuditNumList)
+                                    {
+                                        if (item.Value == ViewBag.AuditNum)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var item in ViewBag.AuditNumList)
+                                    {                                   
+                                    <option value='@item.Value'>@item.Text</option>                                   
+                                        
+                                }
+                            }
+                </select>
+
+                     </div>
+                    </div>
+                <div class="col-md-9">
+                       <button type="submit" id="Generate" name="command" value="Generate"  class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Generate</button>
+                    </div>
+            </div>          
+            </div>
+    <div class="card-body">
+          @if (dsAuditLog.Tables.Count > 0 && dsAuditLog.Tables[0].Rows.Count > 0)
+          {
+        
+            <div class="card">
+                <table class="table table-lg">
+                  
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            <div id="logo" style="padding-left: 30px;">
+                                <img src="@Url.Content(dsAuditLog.Tables[0].Rows[0]["logo"].ToString())" style="width: 150px;height: 100px;" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4 text-center font-weight-bold font-size-lg">
+                            <span>@dsAuditLog.Tables[0].Rows[0]["CompanyName"].ToString()</span>
+                            <br />
+                            <span>INTERNAL AUDIT LOG‎ REPORT</span>
+                        </td>
+                    </tr>                     
+                </table>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-lg">
+                
+                    <tr>
+                        <td class="font-size-lg">Audit Number
+                           
+                        </td>
+                        <td class="font-size-lg">
+                            @dsAuditLog.Tables[0].Rows[0]["auditnum"].ToString()
+
+                        </td>
+                        <td class="font-size-lg">Audit date
+                         
+                        </td>
+                        <td class="font-size-lg">
+
+                            @if (dsAuditLog.Tables[0].Rows[0]["auditdate"].ToString() != "")
+                            {
+                                @Convert.ToDateTime(dsAuditLog.Tables[0].Rows[0]["auditdate"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="font-size-lg">Audit Location
+                        </td>
+                        <td class="font-size-lg">
+                            @dsAuditLog.Tables[0].Rows[0]["auditlocation"].ToString()
+                        </td>
+                        <td class="font-size-lg">Audit Criteria
+                        </td>
+                        <td class="font-size-lg">
+                            @obj.GetISONameById(dsAuditLog.Tables[0].Rows[0]["auditcriteria"].ToString())
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="font-size-lg">Auditor
+                        </td>
+                        <td class="font-size-lg">
+                            @obj.GetMultiHrEmpNameById(dsAuditLog.Tables[0].Rows[0]["Auditor"].ToString())
+                        </td>
+                        <td class="font-size-lg">Auditee
+                        </td>
+                        <td class="font-size-lg">
+                            @obj.GetMultiHrEmpNameById(dsAuditLog.Tables[0].Rows[0]["Auditee"].ToString())
+                        </td>
+                    </tr>
+                      
+                </table>
+
+            </div>
+            <div class="table-responsive">
+                <table class="table table-lg table-bordered">
+                    <thead>
+                        <tr class="bg-blue font-weight-bold">
+                                <td colspan="5">Audit Details
+                                </td>
+                            </tr>
+                    <tr class="bg-blue font-weight-bold">
+                        <td>Sl No</td>
+                        <td>Department</td>
+                        <td>Activity Details</td>
+                        <td>Findings</td>
+                        <td>Category</td>
+                    </tr>
+                    </thead>
+
+                    @for (int i = 0, j = 1; i < dsAuditLog.Tables[1].Rows.Count; i++, j++)
+                    {
+                      <tbody>
+                        <tr>
+                            <td>@j</td>
+                            <td>@dsAuditLog.Tables[1].Rows[i]["DeptAudited"].ToString()</td>
+                            <td>@Html.Raw(dsAuditLog.Tables[1].Rows[i]["Activity"].ToString())</td>
+                            <td>@Html.Raw(dsAuditLog.Tables[1].Rows[i]["NCRDESC"].ToString())</td>
+                            <td>@obj.GetAuditFindingCategoryNameById(dsAuditLog.Tables[1].Rows[i]["Findingcategory"].ToString())</td>
+
+                        </tr>
+                          </tbody>
+                    }
+                </table>
+              </div>
+              <br />
+               <div class="table-responsive">
+                <table class="table table-lg table-bordered">
+                    <thead>
+                    <tr class="bg-blue font-weight-bold">
+                        <td colspan="3">Prepared By</td>
+                        <td colspan="3">Reviewed By</td>
+                    </tr>
+                    <tr class="bg-blue font-weight-bold">
+                        <th>Name</th>
+                        <th>Position‎‎</th>
+                        <th>Signature‎‎</th>
+                        <th>Name</th>
+                        <th>Position‎‎</th>
+                        <th>Signature‎‎</th>
+                    </tr>
+                        </thead>
+                    @for (int i = 0; i < dsAuditLog.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>@obj.GetEmpHrNameById(dsAuditLog.Tables[0].Rows[i]["preparer"].ToString())</td>
+                            <td>@obj.GetEmpDesignationByHrEmpId(dsAuditLog.Tables[0].Rows[i]["preparer"].ToString())</td>
+                            <td></td>
+                            <td>@obj.GetEmpHrNameById(dsAuditLog.Tables[0].Rows[i]["Approver"].ToString())</td>
+                            <td>@obj.GetEmpDesignationByHrEmpId(dsAuditLog.Tables[0].Rows[i]["Approver"].ToString())</td>
+                            <td></td>
+                        </tr>
+                    }
+                </table>
+            </div>
+
+       
+
+         }
+
+    </div>
+  
+      
+</div>
+    
+}
+
+@section Scripts {
+    <script>
+      
+    </script>
+}

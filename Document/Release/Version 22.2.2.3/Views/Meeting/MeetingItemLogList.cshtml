@@ -1,0 +1,360 @@
+﻿@model IEnumerable<ISOStd.Models.MeetingItemLogModels>
+
+@{
+    ViewBag.Title = "MeetingItemLogList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    int iCnt = 0;
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("MeetingList", "Meeting", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Meeting</span>
+                    </a>
+                    <span class="breadcrumb-item active">Item Log List</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+<input type="hidden" id="meeting_ref" name="meeting_ref" value="@ViewBag.meeting_ref" />
+<input type="hidden" id="Item_no" name="Item_no" value="@ViewBag.Item_no" />
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Meeting Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <div class="mt-2 mt-sm-0">
+            @if (Obj.GetCurrentUserSession().MSchedule.Contains("3"))
+            {
+                @Html.ActionLink("Add New", "AddMeetingItemLog", new { Item_no = ViewBag.Item_no }, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+            }
+            @Html.ActionLink("Back to Details", "MeetingDetails", new { meeting_ref = ViewBag.meeting_ref }, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+        </div>
+
+
+    </div>
+    @*<div id="content">
+        <table id="table1">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.meeting_log_id)
+                </th>
+                <th>
+                    Item Discussed
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.action_completed_by)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.action_taken_on)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LogStatus)
+                </th>
+                <th>Action</th>
+            </tr>*@
+    @if (Model != null && Model.Count() > 0)
+    {
+        foreach (var item in Model)
+        {
+
+            string saction_completed_by = "action_completed_by" + iCnt;
+            string saction_taken_on = "action_taken_on" + iCnt;
+            string smeeting_log_id = "meeting_log_id" + iCnt;
+            string sLogStatus = "LogStatus" + iCnt;
+
+            <div class="card card-body">
+                <div class="media flex-column flex-sm-row">
+
+
+                    <div class="media-body ">
+                        <h6 class="media-title font-weight-semibold">
+                            @Html.DisplayFor(modelItem => item.meeting_log_id) )
+                            <input type="hidden" id="@smeeting_log_id" value="@item.meeting_log_id" />
+
+                            Item Discussed: @Html.DisplayFor(modelItem => item.item_no, new { @class = "mr-2" })
+
+
+                        </h6>
+                        <br />
+
+                        <div class="form-group row">
+                            <label class="col-form-label col-lg-2">  @Html.DisplayNameFor(model => model.action_completed_by)</label>
+                            <div class="col-lg-10">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="@saction_completed_by" name="@saction_completed_by" required="">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpLists != null)
+                                    {
+                                        foreach (var data in ViewBag.EmpLists)
+                                        {
+                                            if (data.Text == item.action_completed_by)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+                        <div class="form-group row">
+                            <label class="col-form-label col-lg-2">   @Html.DisplayNameFor(model => model.action_taken_on)</label>
+                            <div class="col-lg-10">
+
+                                <input class="form-control" type="date" id="@saction_taken_on"
+                                       value="@Convert.ToDateTime(item.action_taken_on).ToString("yyyy-MM-dd")" required />
+                            </div>
+                        </div>
+
+
+
+
+
+                        <div class="form-group row">
+                            <label class="col-form-label col-lg-2">@Html.DisplayNameFor(model => model.LogStatus)</label>
+                            <div class="col-lg-10">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="@sLogStatus" name="@sLogStatus" required="">
+
+                                    @if (ViewBag.LogStatus != null)
+                                    {
+                                        foreach (var data in ViewBag.LogStatus)
+                                        {
+                                            if (data.Text == item.LogStatus)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+
+
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                    @if (Obj.GetCurrentUserSession().MSchedule.Contains("3"))
+                    {
+                        <div class="ml-sm-3 mt-2 mt-sm-0">
+                            <a onclick="UpdateItem('@item.item_no', @item.meeting_log_id, @iCnt)" title="Update Meeting Item Log">
+                                <span class="badge bg-blue" style="cursor:pointer;">Update</span>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+            @*<tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.meeting_log_id)
+                    <input type="hidden" id="@smeeting_log_id" value="@item.meeting_log_id" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.item_no)
+                </td>
+                <td>
+                    <select id="@saction_completed_by" name="@saction_completed_by" required="">
+                        <option value='' hidden>Select</option>
+                        @if (ViewBag.EmpLists != null)
+                        {
+                            foreach (var data in ViewBag.EmpLists)
+                            {
+                                if (data.Text == item.action_completed_by)
+                                {
+                                    <option value='@data.Value' selected>@data.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@data.Value'>@data.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="text" id="@saction_taken_on" onfocus="settype('@saction_taken_on')" style="width: 75%;"
+                           value="@Convert.ToDateTime(item.action_taken_on).ToString("dd/MM/yyyy")" required readonly />
+                </td>
+                <td>
+                    <select id="@sLogStatus" name="@sLogStatus" required="">*@
+            @*<option value='' hidden>Select</option>*@
+            @*@if (ViewBag.LogStatus != null)
+                {
+                    foreach (var data in ViewBag.LogStatus)
+                    {
+                        if (data.Text == item.LogStatus)
+                        {
+                            <option value='@data.Value' selected>@data.Text</option>
+                        }*@
+            @*else
+                {
+                    <option value='@data.Value'>@data.Text</option>
+                }*@
+
+            @*}
+                            }
+                        </select>
+                    </td>
+
+                    <td>
+                        <a onclick="UpdateItem('@item.item_no', @item.meeting_log_id, @iCnt)" title="Update Meeting Item Log">
+                            <img src="@Url.Content("~/images/updateIcon_small.png")" title="Update Log details" />
+                        </a>
+                    </td>
+                </tr>*@
+            iCnt++;
+        }
+    }
+
+
+
+    @*</table>*@
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+                                      //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+
+
+
+
+    });
+    //zzz----
+        function UpdateItem(item_no, Itemlogno, Id) {
+            var action_taken_on = $('#action_taken_on' + Id).val();
+            var action_completed_by = $('#action_completed_by' + Id).val();
+            var sLogStatus=$('#LogStatus' + Id).val();
+            var smeeting_log_id = Itemlogno;
+            var smeeting_ref = $('#meeting_ref').val();
+
+            jQuery.ajax({
+                url: '@Url.Action("MeetingItemLogEdit", "Meeting")',
+                type: 'POST',
+                dataType: "json",
+                data: {'item_no': item_no, 'meeting_ref': smeeting_ref, 'saction_taken_on': action_taken_on, 'saction_completed_by': action_completed_by, 'sLogStatus': sLogStatus, 'smeeting_log_id': smeeting_log_id },
+                success: function (result) {
+                    var params = {
+                        meeting_ref: smeeting_ref,
+                        item_no: $('#Item_no').val()
+                    };// = getQueryStrings();
+                    //// Add new params to the querystring dictionary
+                    queryString = $.param(params);
+
+                    window.location.href =
+                        window.location.protocol + "//" +
+                        window.location.host +
+                        window.location.pathname +
+                       '?' + queryString;
+                }
+            });
+        }
+
+        //function settype(FieldId) {
+        //    $('#' + FieldId).datepicker({
+        //        dateFormat: "dd/mm/yy",
+        //        buttonImageOnly: true,
+        //        buttonImage: '../Images/Calender.png',
+        //        showOn: 'both',
+        //        changeMonth: true,
+        //        changeYear: true,
+        //        minDate: 0
+        //    });
+        //}
+
+    </script>
+}

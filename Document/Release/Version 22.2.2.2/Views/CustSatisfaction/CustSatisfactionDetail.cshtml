@@ -1,0 +1,676 @@
+﻿@model ISOStd.Models.CustSatisfactionModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+    string user = ObjGlobal.GetCurrentUserSession().empid;
+    DataSet objQList = new DataSet();
+    objQList = ViewBag.objQList;
+
+    DataSet objDList = new DataSet();
+    objDList = ViewBag.objDList;
+
+    DataSet objCList = new DataSet();
+    objCList = ViewBag.objCList;
+
+    DataSet objAList = new DataSet();
+    objAList = ViewBag.objAList;
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustSatisfactionList", "CustSatisfaction", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Satisfaction Assessment List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Customer Satisfaction Assessment Detail</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Customer Satisfaction Assessment Detail</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.branch)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.branch)
+                        </p>
+                    </td>
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Department)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Department)
+                        </p>
+                    </td>
+
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Location)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Location)
+                        </p>
+                    </td>
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.cust_name)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.cust_name)
+                        </p>
+                    </td>
+
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.ref_no)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.ref_no)
+                        </p>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-md-12">
+                        Survey Period
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.frm_date)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @if (Model.frm_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.frm_date.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.to_date)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @if (Model.to_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.to_date.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.prod_delivered)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.prod_delivered)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.contact_details)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.contact_details)
+                        </p>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.eval_date)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @if (Model.eval_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.eval_date.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.complaint)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.complaint)
+                        </p>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.repeat_enquiries)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.repeat_enquiries)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.no_enquiries)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.no_enquiries)
+                        </p>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.enquiries_upload)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                       
+                            @if (Model.enquiries_upload != null && Model.enquiries_upload != "" && Model.enquiries_upload.Length > 0)
+                            {
+                                foreach (var docs in Model.enquiries_upload.Trim(',').Split(','))
+                                {
+                                <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        @*@System.IO.Path.GetFileName(docs)*@preview
+                                    </a>
+                                </p>
+                                    <br />
+                                }
+                            }
+                      
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.repeat_orders)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.repeat_orders)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.no_orders)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.no_orders)
+                        </p>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.orders_upload)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+
+                        @if (Model.orders_upload != null && Model.orders_upload != "" && Model.orders_upload.Length > 0)
+                        {
+                            foreach (var docs in Model.orders_upload.Trim(',').Split(','))
+                            {
+                                <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        @*@System.IO.Path.GetFileName(docs)*@preview
+                                    </a>
+                                </p>
+                                <br />
+                            }
+                        }
+
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.survey_form)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.survey_form)
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.csi)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.csi)
+                        </p>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.cust_satisfied)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.cust_satisfied)
+                        </p>
+                    </td>
+                   
+                </tr>
+
+                <tr class="row">
+                   
+                    @if (Model.review_status == "Pending for Review")
+                    {
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+
+                                    @Html.LabelFor(model => model.reviewed_by)
+                                </p>
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+
+                                    Reviewed By
+                                </p>
+                            </div>
+                        </td>
+                    }
+
+                    <td class="col-xs-3 col-md-4">
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.reviewed_by)
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.review_comment)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.review_comment)
+                        </p>
+                    </td>
+                </tr>
+               
+                <tr class="row">               
+                   
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.review_date)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                        <div class="editor-field">
+                            @if (Model.review_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.review_date.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.action_initiated_by)
+                            </p>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-4">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.action_initiated_by)
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+
+
+            @if (objQList != null && objQList.Tables.Count > 0 && objQList.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Performance/reliability of the product</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Sl No</th>
+
+                                <th>Performance/reliability of the product</th>
+                                <th>Remarks</th>
+                                <th>Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < objQList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @ObjGlobal.GetDropdownitemById(objQList.Tables[0].Rows[i]["performance"].ToString())
+                                    </td>
+                                    <td>
+                                        @objQList.Tables[0].Rows[i]["perf_remarks"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (objQList.Tables[0].Rows[i]["perf_upload"].ToString() != null && objQList.Tables[0].Rows[i]["perf_upload"].ToString() != "" && objQList.Tables[0].Rows[i]["perf_upload"].ToString().Length > 0)
+                                        {
+                                            foreach (var docs in objQList.Tables[0].Rows[i]["perf_upload"].ToString().Trim(',').Split(','))
+                                            {
+                                                <p style="margin: 0px;" class="py-1 px-2 rounded">
+                                                    <span class="py-1 px-2 rounded">
+                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                                    </span>
+                                                </p>
+                                            }
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+            <br />
+            @if (objDList != null && objDList.Tables.Count > 0 && objDList.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">On time delivery</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Sl No</th>
+                                <th>On time delivery</th>
+                                <th>Remarks</th>
+                                <th>Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < objDList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @ObjGlobal.GetDropdownitemById(objDList.Tables[0].Rows[i]["delivery"].ToString())
+                                    </td>
+                                    <td>
+                                        @objDList.Tables[0].Rows[i]["delivery_remarks"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (objDList.Tables[0].Rows[i]["delivery_upload"].ToString() != null && objDList.Tables[0].Rows[i]["delivery_upload"].ToString() != "" && objDList.Tables[0].Rows[i]["delivery_upload"].ToString().Length > 0)
+                                        {
+                                            foreach (var docs in objDList.Tables[0].Rows[i]["delivery_upload"].ToString().Trim(',').Split(','))
+                                            {
+                                                <p style="margin: 0px;" class="py-1 px-2 rounded">
+                                                    <span class="py-1 px-2 rounded">
+                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                                    </span>
+                                                </p>
+                                            }
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+            <br />
+            @if (objCList != null && objCList.Tables.Count > 0 && objCList.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Customer complaints</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Sl No</th>
+                                <th>Type</th>
+                                <th>No. of complaints</th>
+                                <th>Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < objCList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @ObjGlobal.GetDropdownitemById(objCList.Tables[0].Rows[i]["complaint_type"].ToString())
+                                    </td>
+                                    <td>
+                                        @objCList.Tables[0].Rows[i]["complaint_no"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (objCList.Tables[0].Rows[i]["complaint_upload"].ToString() != null && objCList.Tables[0].Rows[i]["complaint_upload"].ToString() != "" && objCList.Tables[0].Rows[i]["complaint_upload"].ToString().Length > 0)
+                                        {
+                                            foreach (var docs in objCList.Tables[0].Rows[i]["complaint_upload"].ToString().Trim(',').Split(','))
+                                            {
+                                                <p style="margin: 0px;" class="py-1 px-2 rounded">
+                                                    <span class="py-1 px-2 rounded">
+                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                                    </span>
+                                                </p>
+                                            }
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+            @if (objAList != null && objAList.Tables.Count > 0 && objAList.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Improvement Actions</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>Action to be taken</th>
+                                <th>Personnel Responsible</th>
+                                <th>Target Date</th>
+                                <th>Resources required </th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                                <th>Update date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < objAList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @(objAList.Tables[0].Rows[i]["action_taken"].ToString())
+                                    </td>
+                                    <td>
+                                        @ObjGlobal.GetMultiHrEmpNameById(objAList.Tables[0].Rows[i]["pers_resp"].ToString())
+                                    </td>
+                                    <td>
+                                        @if (objAList.Tables[0].Rows[i]["target_date"].ToString() != "" && objAList.Tables[0].Rows[i]["target_date"].ToString() != null)
+                                        {
+                                            @Convert.ToDateTime(objAList.Tables[0].Rows[i]["target_date"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @(objAList.Tables[0].Rows[i]["resource_req"].ToString())
+                                    </td>
+                                    <td>
+                                        @ObjGlobal.GetDropdownitemById(objAList.Tables[0].Rows[i]["act_status"].ToString())
+                                    </td>
+                                    <td>
+                                        @objAList.Tables[0].Rows[i]["remarks"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (objAList.Tables[0].Rows[i]["update_date"].ToString() != "" && objAList.Tables[0].Rows[i]["update_date"].ToString() != null)
+                                        {
+                                            @Convert.ToDateTime(objAList.Tables[0].Rows[i]["update_date"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+            <br />
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+
+   
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,165 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.RiskRegisterActivityEvaluationModels>
+
+@{
+    ViewBag.Title = "RiskRegisterActivityEvaluationList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Risk Register Activity Evaluation History List </span>
+</div>
+<div class = "ActionLink">
+    @Html.ActionLink("Back to List", "RiskRegisterActivityList", null, null, new { @class = "ActionLink" })
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+<br />
+@using (Html.BeginForm("RiskRegisterActivityEvaluationList", "RiskRegisterActivity", FormMethod.Get))
+{
+    <input type="hidden" id="Risk_Reg_Activity_Id" name="Risk_Reg_Activity_Id" value="@ViewBag.Risk_Reg_Activity_Id" />
+    @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Activity", style = "width: 30%;margin-left: 100px;" }) 
+    
+    <button type="submit" class="btn btn-info">
+      <span class="glyphicon glyphicon-search"></span> Search
+    </button>
+}
+
+@Html.PagedListPager(Model, page => Url.Action("RiskRegisterActivityEvaluationList",
+    new
+    {
+        page,
+        Risk_Reg_Activity_Id=Request.QueryString["Risk_Reg_Activity_Id"],
+        branch_id = Request.QueryString["branch_id"]
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+<div id="content">
+    <table id="table1">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.First().Risk_Reg_Activity_Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Eval_Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().EvalBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Reviewer_QHSE)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().ApprovedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Consequence)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Severity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Probability)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Risk_Rating)
+            </th>
+
+            <th>
+                Desc. Operation Control
+            </th>
+            <th>
+                Due Date
+            </th>
+            <th>
+                Re-Eval. Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Action_TakenBy)
+            </th>
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                string sColorCode = "#fff", Riskrating="";
+                if (item.Risk_Rating.Contains("&"))
+                {
+                    Riskrating = item.Risk_Rating.Split('&')[0];
+                    sColorCode = item.Risk_Rating.Split('&')[1];
+                }                   
+                    
+            <tr>
+                <td>
+                    @Html.ActionLink(item.Risk_Reg_Activity_Id.ToString(), "RiskRegisterActivityEvaluationDetails", new { Reg_Activity_eval_Id = item.Reg_Activity_eval_Id })
+                </td>
+                <td>
+                    @if (item.Eval_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Eval_Date.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EvalBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Reviewer_QHSE)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApprovedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Consequence)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Severity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Probability)
+                </td>
+                <td style="font-weight:bold; background-color:@sColorCode;">
+                    @Riskrating
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Desc_Opt_ctrl)
+                </td>
+                <td>
+                    @if (item.Due_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Due_Date.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td>
+                    @if (item.ReEval_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.ReEval_Date.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Action_TakenBy)
+                </td>               
+            </tr>
+}
+        }
+        else
+        {
+            <tr>
+                <td colspan="16">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">Search for Data</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+</div>

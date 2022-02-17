@@ -1,0 +1,378 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.MgmtExternalDocumentModels>
+
+@{
+    ViewBag.Title = "MgmtExternalDocumentList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MgmtExternalDocumentList", "MgmtExternalDocument", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">External Documents</span>
+                    </a>
+                    <span class="breadcrumb-item active">External Documents History</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">External Documents History</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="MgmtExternalHistoryDocument">
+            <thead>
+
+                <tr>
+                    <th>
+                        Sl No
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().DocRef)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().DocName)
+                    </th>
+
+                    <th class="not-export-column">
+                        @Html.DisplayNameFor(model => model.First().SoftCopy_Path)
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                        <tr>
+                            <td>
+                                @i
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DocRef)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DocName)
+                            </td>
+
+                            <td>
+                                @if (item.SoftCopy_Path != "")
+                                {
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.SoftCopy_Path })' target="_blank" class="text-orange">Preview</a>
+                                }
+                            </td>
+                        </tr>
+
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+
+    <script type="text/javascript">
+              $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+
+
+
+
+
+                var MgmtExternalHistoryDocument = function () {
+
+ var ShowDownld = @(Obj.GetCurrentUserSession().ExternalDoc.Contains("4") ? "true" : "false");
+                //
+                // Setup module components
+                //
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [3]
+                        }, {
+                                'targets': [3],
+                                'visible': ShowDownld
+                            }],
+
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().ExternalDoc.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                    var table = $('#MgmtExternalHistoryDocument').DataTable({
+
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        stateSaveParams: function (settings, data) {
+                            for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                delete data.columns[i].visible;
+                                delete data.columns[i].search;
+                            }
+                        },
+                        scrollY: '350px',
+                        scrollCollapse: true,
+
+
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'External Document History Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'External Document History Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'External Document History Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'External Document History Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'print',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'External Document History Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#MgmtExternalHistoryDocument").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#MgmtExternalHistoryDocument').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#MgmtExternalHistoryDocument").resize();
+
+                    });
+
+                    $('#MgmtExternalHistoryDocument').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#MgmtExternalHistoryDocument").resize();
+
+                    });
+
+                    $('#MgmtExternalHistoryDocument').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#MgmtExternalHistoryDocument").resize();
+
+                    });
+
+
+                    $('#MgmtExternalHistoryDocument').on('responsive-display.dt', function () {
+
+                        $("#MgmtExternalHistoryDocument").resize();
+
+                    });
+
+
+                    $('#MgmtExternalHistoryDocument').on('responsive-resize.dt', function () {
+
+                        $("#MgmtExternalHistoryDocument").resize();
+
+                    });
+                };
+
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                MgmtExternalHistoryDocument.init();
+            });
+
+
+    </script>
+
+}

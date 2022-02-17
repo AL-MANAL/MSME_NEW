@@ -1,0 +1,133 @@
+﻿@model ISOStd.Models.EmergencyPlanNRecordModels
+@{
+    Layout = null;
+    ISOStd.Models.EmergencyPlanNRecordModelsList objEmergencyList = new ISOStd.Models.EmergencyPlanNRecordModelsList();
+    int icnt = 0;
+    if (ViewBag.objEmergency != null)
+    {
+        objEmergencyList = ViewBag.objEmergency;
+        icnt = objEmergencyList.lstEmergencyPlanNRecord.Count;
+    }
+}
+
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Emergency Evacuation Plan Info</h4>
+    </div>
+
+
+    <div class="card-body">
+        <p>
+            Division:<code>@Html.DisplayFor(model => model.branch)  </code>
+        </p>
+        <p>
+            Department:<code>
+                @Html.DisplayFor(model => model.Department)
+            </code>
+            Location:<code>@Html.DisplayFor(model => model.Location)  </code>
+        </p>
+        <p>
+            Plan Prepared By:<code>
+                @Html.DisplayFor(model => model.emp_id)
+            </code>
+            Plan Period From:
+            @if (Model.Plan_From != null && Model.Plan_From > Convert.ToDateTime("01/01/0001"))
+            {
+                <code>
+                    @Model.Plan_From.ToString("dd/MM/yyyy")
+                </code>
+            }
+
+        </p>
+        <p>
+            Plan Period To:
+            @if (Model.Plan_To != null && Model.Plan_To > Convert.ToDateTime("01/01/0001"))
+            {
+                <code>
+                    @Model.Plan_To.ToString("dd/MM/yyyy")
+                </code>
+            }
+            Emergency Type:<code>@Html.DisplayFor(model => model.Emergency_Type)  </code>
+        </p>
+        <p>
+            Planned Date and Timing:
+            @if (Model.Plan_Date_Time != null && Model.Plan_Date_Time > Convert.ToDateTime("01/01/0001"))
+            {
+                <code>
+                    @Model.Plan_Date_Time.ToString("dd/MM/yyyy HH:mm")
+                </code>
+            }
+
+            In Charge:<code>@Html.DisplayFor(model => model.Incharge)  </code>
+        </p>
+        <p>
+            Location where drill to be conducted?:<code>
+                @Html.DisplayFor(model => model.Drill_Location)
+            </code>
+            Need of Reporting to any regulatory authorities:<code>@Html.DisplayFor(model => model.Need_Reporting)  </code>
+        </p>
+        <p>
+            Status:<code>
+                @Html.DisplayFor(model => model.Plan_Status)
+            </code>
+            Emergency Drill Performance?:<code>@Html.DisplayFor(model => model.Performance)  </code>
+        </p>
+        <p>
+            Report No:<code>
+                @Html.DisplayFor(model => model.ReportNo)
+            </code>
+            Remarks:<code>@Html.DisplayFor(model => model.Remarks)  </code>
+        </p>
+        <p>
+            Plan Reviewed By:<code>
+                @Html.DisplayFor(model => model.ReviewedBy)
+            </code>
+            Plan Approved By:<code> @Html.DisplayFor(model => model.ApprovedBy)  </code>
+        </p>
+        <p>
+            Observation:<b>
+                @Html.Raw(HttpUtility.HtmlDecode(Model.Observation))
+            </b>
+            No of Employee Attended:<code> @Html.DisplayFor(model => model.No_Emp)  </code>
+        </p>
+
+        @if (@objEmergencyList.lstEmergencyPlanNRecord != null && @objEmergencyList.lstEmergencyPlanNRecord.Count > 0)
+        {
+            <div class="w-100 bg-primary"><h5>Accident Details</h5></div>
+
+            <table class="table-xs table-bordered table-striped">
+                <thead class="bg-blue">
+                    <tr>
+
+
+
+                    <tr>
+                        <th>Corrective Action</th>
+                        <th>Target Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int index = 0; index < objEmergencyList.lstEmergencyPlanNRecord.Count; index++)
+                    {
+                        <tr>
+                            <td>
+                                @objEmergencyList.lstEmergencyPlanNRecord[index].Corrrective_action
+
+                            </td>
+                            <td>
+                                @if (objEmergencyList.lstEmergencyPlanNRecord[index].Target_date.ToString() != "" && objEmergencyList.lstEmergencyPlanNRecord[index].Target_date.ToString() != null)
+                                {
+                                    @Convert.ToDateTime(objEmergencyList.lstEmergencyPlanNRecord[index].Target_date.ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+
+    </div>
+</div>

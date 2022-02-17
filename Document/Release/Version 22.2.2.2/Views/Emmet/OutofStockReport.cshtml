@@ -1,0 +1,218 @@
+﻿@using System.Data;
+@{
+    //Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "Stock Report";
+    
+    DataSet dsStock=new DataSet();
+
+    if (ViewBag.dsStock != null)
+    {
+        dsStock = ViewBag.dsStock;
+    }
+
+    string fromdateValue = DateTime.Now.AddMonths(-1).ToString("dd/MM/yyy"), toDateValue = DateTime.Now.ToString("dd/MM/yyy");
+    if (ViewBag.fromdateValue != null)
+    {
+        fromdateValue = ViewBag.fromdateValue;
+    }
+
+    if (ViewBag.toDateValue != null)
+    {
+        toDateValue = ViewBag.toDateValue;
+    }  
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor"> Out of Stock Report</span>
+</div>
+
+ <div style="float:right;padding:20px">
+      <span style="margin-left: 20px"> <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer; " id="downloadLink" /></span>
+ </div>
+   @* <fieldset>
+        <legend></legend>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        From
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         <input type="text" id="FromDate" name="FromDate" value="@fromdateValue" required readonly/><input type="hidden" id="FromDateval" name="FromDateval" value="@fromdateValue" />
+                        <span class="field-validation-error"><span id="FromDate-message" style="display: none;">Please select From date</span></span>
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        To
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ToDate" name="ToDate" value="@toDateValue" required readonly/><input type="hidden" id="toDateValue" name="toDateValue" value="@toDateValue" />
+                        <span class="field-validation-error"><span id="ToDate-message" style="display: none;">Please select To date</span></span>
+                    </div>
+                </td>
+            </tr>
+            </table>     
+        
+    </fieldset> *@
+   @* <div style="width: 100%;">
+         <button type="button" onclick="getData()">Generate</button>
+    </div>*@
+
+				 
+    <div id="divPrint" style="width:100%">
+        
+      
+
+        <table id="table1">
+            <thead>
+            <tr style="font-weight: bold;">
+                 <th style="width:50px;background-color: #4cc4dd;  color: white;  text-align: center;font-size:14px">Sl No</th>
+                 <th style="width:200px;background-color: #4cc4dd; color: white;  text-align: center;font-size:14px">Product name</th>
+                 <th style="width:200px;background-color: #4cc4dd; color: white;  text-align: center;font-size:14px">Days out of Stock</th>
+                 <th style="width:200px;background-color: #4cc4dd;  color: white;  text-align: center;font-size:14px">Last purchase date</th>
+                 <th style="width:200px;background-color: #4cc4dd;  color: white;  text-align: center;font-size:14px">qty</th>
+                 
+            </tr>
+          </thead>
+           <tbody class="tbody"></tbody>
+        </table>
+
+    </div>
+    
+    
+
+ 
+@section Scripts {
+    <script>
+        $(function () {
+
+            $('#FromDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            $('#ToDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            var FromDate = $('#FromDate').datepicker().val();
+            var ToDate = $('#ToDate').datepicker().val();
+            $.ajax({
+                url: '@Url.Action("GetOutOfStockReport", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'FromDate': FromDate, 'ToDate': ToDate },
+                success: function (result) {
+                    var data = JSON.parse(result);
+                    var html = '';
+                    $.each(data, function (key, item) {
+                        $.each(item, function (key, item) {
+                            var i = 1;
+                            html += '<tr>';
+                            html += '<td style="width:50px">' + i + '</td>';
+                            html += '<td style="width:200px">' + item.product_name + '</td>';
+                            html += '<td style="width:200px">' + item.nodays + '</td>';
+                            html += '<td style="width:200px">' + item.po_date + '</td>';
+                            html += '<td style="width:200px">' + item.last_qty + '</td>';
+                            html += '</tr>';
+                            i++;
+                        });
+                    });
+                    $('.tbody').html(html);
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        });
+
+        function getData() {
+            var FromDate = $('#FromDate').datepicker().val();
+            var ToDate = $('#ToDate').datepicker().val();
+            $.ajax({
+                url: '@Url.Action("GetOutOfStockReport", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'FromDate': FromDate, 'ToDate': ToDate},
+                success: function (result) {
+                    var data = JSON.parse(result);
+                    var html = '';
+                    $.each(data, function (key, item) {
+                        $.each(item, function (key, item) {
+                            var i = 1;
+                            html += '<tr>';
+                            html += '<td style="width:50px">' + i + '</td>';
+                            html += '<td style="width:200px">' + item.product_name + '</td>';
+                            html += '<td style="width:200px">' + item.nodays + '</td>';
+                            html += '<td style="width:200px">' + item.po_date + '</td>';
+                            html += '<td style="width:200px">' + item.last_qty + '</td>';
+                            html += '</tr>';
+                            i++;
+                        });
+                    });
+                    $('.tbody').html(html);
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'UsageReport.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,284 @@
+﻿@using System.Data
+
+@{
+    ViewBag.Title = "TrainingsDetailsToPDF";
+    DataSet dsDelivery = new DataSet();
+
+    ISOStd.Models.TrainingsModels objTraining = new ISOStd.Models.TrainingsModels();
+    if (ViewBag.objTraining != null)
+    {
+        objTraining = ViewBag.objTraining;
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+@*<fieldset class="border p-2">
+    <legend class="font-weight-semibold text-center font-size-lg">Training Request</legend>*@
+
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+    <table class="table table-lg">
+        <tr class="row">
+            <td colspan="4">
+                <h3>Report Details</h3>
+            </td>
+        </tr>
+        @*<tr>
+                <td colspan="4">
+                    <br />
+                    <div class="editor-label">
+                        <label for="Discrepancy_Details" style="background-color: #4cc4dd; width: 100%; color: white;">Training Details</label>
+                    </div>
+                </td>
+            </tr>*@
+        <tr>
+            <td>
+                <div class="display-label">
+                    Training Number
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.report_no
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Training Topic
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Training_Topic
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Topic Content
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.TopicContent
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Training Start Date
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Training_Start_Date.ToString("dd/MM/yyyy HH:mm:ss")
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Training End Date
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Expected_Date_Completion.ToString("dd/MM/yyyy HH:mm:ss")
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Training Total Duration
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (ViewBag.days != 0)
+                    {
+                        @ViewBag.days <lable>Days :</lable> @ViewBag.minutes <lable> Hrs :</lable>@ViewBag.seconds <lable> Min </lable>
+                    }
+                    else
+                    {
+                        @ViewBag.minutes <lable> Hrs :</lable>@ViewBag.seconds <lable> Min </lable>
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Training Requested By
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Training_Requested_By
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Approved By
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.ApprovedBy
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Category
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Category
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Source Of Training
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Sourceof_Training
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Service Provider
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Service_provider
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Department
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.DeptId
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Number of attendees
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Attendees
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Reason For Training
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Reasonfor_Training
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Venue
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Venue
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Actual Training Start Date
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (objTraining.Training_Actual_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objTraining.Training_Actual_Date
+                    }
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    Actual Training Completion Date
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (objTraining.Training_Actual_Completion_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objTraining.Training_Actual_Completion_Date
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Internal Trainer Name
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Trainer_Name
+                </div>
+            </td>
+            <td>
+                <div class="display-label">
+                    External Trainer Name
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @objTraining.Ext_Trainer_Name
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="display-label">
+                    Training Effective Evaluation Plan Date
+                </div>
+            </td>
+            <td>
+                <div class="display-field">
+                    @if (objTraining.Training_Effect_Eval_Plan_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objTraining.Training_Effect_Eval_Plan_Date.ToString("dd/MM/yyyy")
+                    }
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+@*</fieldset>*@

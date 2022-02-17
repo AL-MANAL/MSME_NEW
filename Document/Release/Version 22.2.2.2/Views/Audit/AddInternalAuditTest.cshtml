@@ -1,0 +1,181 @@
+﻿
+@model ISOStd.Models.InternalAuditModels
+@{ 
+    ViewBag.Title = "Adding Internal Audit";
+}
+
+@using (Html.BeginForm("AddInternalAuditTest","Audit",FormMethod.Post,new { id="form1", name="form1"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <table>
+<tr>
+    <td colspan="4">Audit Details</td>
+</tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model=>model.AuditNum)
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.AuditNum, new { HtmlAttributes = new { @required="Required"} })
+            </td>
+            <td>
+                @Html.LabelFor(model=>model.AuditDate)
+            </td>
+            <td>
+
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.AuditCriteria)
+            </td>
+            <td>
+                <select id="AuditCriteria" name="AuditCriteria" required="required" multiple style="height: 100px; width: 180px;">
+                    @if(ViewBag.IsoStdList!=null)
+                    {
+                        foreach(var item in ViewBag.IsoStdList)
+                        {
+                            <option value="@item.value">@item.text</option>
+                        }
+                    }
+                </select>
+            </td>
+            <td>
+                @Html.LabelFor(model => model.AuditLocation)
+            </td>
+            <td>
+                <select id="AuditLocation" name="AuditLocation" required="required" style="width: 180px;">
+                    <option value="" hidden>Select</option>
+                   @if(ViewBag.AuditLocation!=null)
+                   {
+                       @foreach(var item in ViewBag.AuditLocation)
+                       {
+                           <option value="@item.value">@item.text</option>
+                       }
+                   }
+                </select>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+
+        <tr>
+            <td colspan="4"> Plan Detail</td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model=>model.DeptName)
+            </td>
+            <td>
+                <select id="DeptName" name="DeptName">
+                    <option value="" hidden>Select</option> 
+                    @if (ViewBag.DeptList != null)
+                    {
+                        foreach (var item in ViewBag.DeptList)
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                </select>
+            </td>
+            <td>
+                @Html.LabelFor(model => model.AuditTime)
+            </td>
+            <td>
+                <div>
+                <label>Hr</label>@Html.DropDownList("AuditFromTimeInHour", new SelectList(ViewBag.AuditTimeInHour, "AuditFromTimeInHour"), new { @style = "width: 40px;" })
+                Min: @Html.DropDownList("AuditFromTimeInMin", new SelectList(ViewBag.AuditTimeInMin, "AuditFromTimeInMin"), new { @style = "width: 40px;" })
+                @Html.ValidationMessageFor(model => model.AuditTime)
+                </div>
+
+                <div>
+                    <label>Hr</label>@Html.DropDownList("AuditFromTimeInHour", new SelectList(ViewBag.AuditTimeInHour, "AuditFromTimeInHour"), new { @style = "width: 40px;" })
+                    Min: @Html.DropDownList("AuditFromTimeInMin", new SelectList(ViewBag.AuditTimeInMin, "AuditFromTimeInMin"), new { @style = "width: 40px;" })
+                    @Html.ValidationMessageFor(model => model.AuditTime)
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Auditor)
+            </td>
+            <td>
+                @Html.ListBox("Auditor", (MultiSelectList)ViewBag.EmpLists, new { @style = "height: 100px; width: 180px;" })
+                <span class="field-validation-error"><span id="Auditor-message" style="display: none;">Auditor field is required.</span></span>
+                @Html.ValidationMessageFor(model => model.Auditor)
+            </td>
+            <td>
+                @Html.LabelFor(model => model.Auditee)
+            </td>
+            <td>
+                @Html.ListBox("Auditee", (MultiSelectList)ViewBag.EmpLists, new { @style = "height: 100px; width: 180px;" })
+                <span class="field-validation-error"><span id="Auditee-message" style="display: none;">Auditee field is required.</span></span>
+                @Html.ValidationMessageFor(model => model.Auditee)
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Audit_Planned_Date)
+            </td>
+            <td>
+
+            </td>
+            <td>
+                @Html.LabelFor(model => model.DateScheduled)
+            </td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Audit_Prepared_by)
+            </td>
+            <td>
+                <select id="Audit_Prepared_by" name="Audit_Prepared_by">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.EmpLists != null)
+                    {
+                        foreach (var item in ViewBag.EmpLists)
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                </select>
+
+            </td>
+            <td>
+                @Html.LabelFor(model => model.AuditStatus)
+            </td>
+            <td>
+                <select id="AuditStatus" name="AuditStatus">
+                    @if (ViewBag.AuditStatus != null)
+                    {
+                        foreach (var item in ViewBag.AuditStatus)
+                        {
+                            <option value='@item'>@item</option>
+                        }
+                    }
+                </select>
+
+            </td>
+        </tr>
+    </table>
+
+    <div>
+       
+        @Html.ActionLink("Back to List", "InternalAuditList", "Audit",null,new {@class="ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" id="btnCreate" style="display:none;" value="Create" onclick="ProgressIconFunction('#form1')" />
+        <input type="button" value="Add" onclick="AddAudit()" />
+    </div>
+
+
+
+}
+
+

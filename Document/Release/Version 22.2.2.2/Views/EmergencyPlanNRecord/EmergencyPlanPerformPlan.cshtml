@@ -1,0 +1,357 @@
+﻿@model ISOStd.Models.EmergencyPlanNRecordModels
+
+@{
+    ViewBag.Title = "";
+    
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("EmergencyPlanNRecordList", "EmergencyPlanNRecord", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Emergency Evacuation Plan</span>
+                    </a>
+                    <span class="breadcrumb-item active">Perform Plan</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+           
+        </div>
+    </div>
+}
+
+
+
+
+@using (Html.BeginForm("EmergencyPlanPerformPlan", "EmergencyPlanNRecord", FormMethod.Post,
+                                                                                 new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Perform Plan</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="Emergency_Plan_Id" name="Emergency_Plan_Id" value="@Model.Emergency_Plan_Id" />
+                <input type="hidden" id="id_perform" name="id_perform" value="@Model.id_perform" />
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <thead></thead>
+                  <tr class="row">
+                      <td class="col-xs-12 col-md-12">Emergency Evacuation Plan Details</td>
+                  </tr>
+<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Department)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Department)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Location)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.emp_id)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.emp_id)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Plan_From)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Plan_From > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.Plan_From.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Plan_To)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Plan_To > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.Plan_To.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Emergency_Type)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Emergency_Type)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Plan_Date_Time)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Plan_Date_Time > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.Plan_Date_Time.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Incharge)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Incharge)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Drill_Location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Drill_Location)
+                            </p>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Need_Reporting)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Need_Reporting)
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ReportNo)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ReportNo)
+                            </p>
+                        </td>
+
+                    </tr>
+
+                </table>
+
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.action_details)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="action_details" name="action_details" required>@Model.action_details</textarea>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.perf_observation)
+                        </td>
+                        <td class="col">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="perf_observation" name="perf_observation">@Model.perf_observation</textarea>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.perf_remarks)
+                        </td>
+                        <td class="col">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="perf_remarks" name="perf_remarks">@Model.perf_remarks</textarea>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.perf_location)
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="perf_location" name="perf_location" value="@Model.perf_location"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.drill_date)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+                            @if (Model.drill_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input class="form-control" type="date" id="drill_date" name="drill_date" value="@Model.drill_date.ToString("yyyy-MM-dd")"
+                                       required="required" />
+                            }
+                            else
+                            {
+                                <input type="date" id="drill_date" name="drill_date" required="required" />
+                            }
+                            <p>
+                                Hr: <select class="select-fixed-single" data-fouc name="PlanTimeInHour" id="PlanTimeInHour">
+                                    @if (ViewBag.PlanTimeInHour != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInHour)
+                                        {
+                                            if (Convert.ToInt16(Model.drill_date.ToString("HH")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                Min:
+                                <select class="select-fixed-single" data-fouc name="PlanTimeInMin" id="PlanTimeInMin">
+                                    @if (ViewBag.PlanTimeInMin != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInMin)
+                                        {
+                                            if (Convert.ToInt16(Model.drill_date.ToString("mm")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </p>
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.alarm_raised_by)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="alarm_raised_by" name="alarm_raised_by" value="@Model.alarm_raised_by" required/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.assembly_point)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <input type="text" class="form-control" id="assembly_point" name="assembly_point" value="@Model.assembly_point" required />
+                        </td>
+                    </tr>
+                   
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "EmergencyPlanNRecordList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+                    //----zzz
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+    //zzz----
+
+                   
+
+    </script>
+
+}

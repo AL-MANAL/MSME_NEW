@@ -1,0 +1,338 @@
+﻿@model ISOStd.Models.RiskRegisterActivityModels
+
+@{
+    ViewBag.Title = "AddRiskRegisterActivity";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("RiskRegisterActivityList", "RiskRegisterActivity", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Risk Register Activity List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Risk Register Activity</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddRiskRegisterActivity", "RiskRegisterActivity", FormMethod.Post,
+                        new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Risk Register Activity</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.branch)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" required>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Location)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.DeptId)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-fixed-multiple" data-fouc id="DeptId" name="DeptId" multiple="multiple" required>
+
+                                        @if (ViewBag.Department != null)
+                                        {
+                                            foreach (var item in ViewBag.Department)
+                                            {
+                                                if (Array.IndexOf(Model.DeptId.ToString().Split(','), item.Value) >= 0)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                </div>
+                            </td>
+                            @*  <td>
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Activity_No)
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.Activity_No)
+                                    </div>
+                                </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Activity)<text style="color:red;"> *</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.Activity, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Activity_Category)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Activity_Category" name="Activity_Category">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Activity_Category != null)
+                                        {
+                                            foreach (var item in ViewBag.Activity_Category)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Risk_Type)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Risk_Type" name="Risk_Type" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Risk_Type != null)
+                                        {
+                                            foreach (var item in ViewBag.Risk_Type)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.Risk_Type)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Activity_Status)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Activity_Status" name="Activity_Status">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Activity_Status != null)
+                                        {
+                                            foreach (var item in ViewBag.Activity_Status)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+
+                                </div>
+                            </td>
+                        </tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "RiskRegisterActivityList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+
+        </div>
+    </div>
+}
+
+@section Scripts {
+
+    <script>
+
+
+           //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+
+           function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#DeptId").children('option').remove();
+                        $("#DeptId").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#DeptId").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#DeptId").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

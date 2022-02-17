@@ -1,0 +1,542 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "IncidentReportPDF";
+
+    ISOStd.Models.EmpPerformanceEvalModels objModel = new ISOStd.Models.EmpPerformanceEvalModels();
+    if (ViewBag.EmpEVal != null)
+    {
+        objModel = ViewBag.EmpEVal;
+    }
+
+    ISOStd.Models.EmpPerformanceElementsModelsList objEmpPerformanceEvalList = new ISOStd.Models.EmpPerformanceElementsModelsList();
+
+    ISOStd.Models.EmpPerformanceElementsModels objElementMdl = new ISOStd.Models.EmpPerformanceElementsModels();
+    int iSrno = 0;
+    double TotalScore = 0;
+    var SectionId = "";
+    if (ViewBag.PerformanceElement != null)
+    {
+        objEmpPerformanceEvalList = ViewBag.PerformanceElement;
+    }
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    //ISOStd.Models.EmpPerformanceElementsModels ObjElement = new ISOStd.Models.EmpPerformanceElementsModels();
+    string user = Obj.GetCurrentUserSession().empid;
+
+    System.Data.DataSet ObjMaxRate = new System.Data.DataSet();
+    System.Data.DataSet dsList = new System.Data.DataSet();
+    System.Data.DataSet dsData = new System.Data.DataSet();
+
+    if (ViewBag.MaxRate != null)
+    {
+        ObjMaxRate = ViewBag.MaxRate;
+    }
+    if (ViewBag.dsList != null)
+    {
+        dsList = ViewBag.dsList;
+    }
+    if (ViewBag.dsData != null)
+    {
+        dsData = ViewBag.dsData;
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    int sObjMaxRate = 0;
+
+
+    int Sq_No = 0; int sWeightage = 0; double s = 0.0;
+    int tot_q = objEmpPerformanceEvalList.lstEmpPerformanceElements.Count;
+
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always
+    }
+</STYLE>
+
+@*<div class="bp-header__main">
+        <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+    </div>*@
+
+@*@Html.Partial("_ReportHeader", dsCompany)*@
+<div style="background-color:white">
+
+    <div>      
+         
+            <table class="table table-lg table-bordered">
+                <tr class="row">
+                    <td>
+                        
+                        Employee Name
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.emp_id
+                        
+                    </td>
+                    <td>
+
+                        
+                        Evaluation Date
+                        
+                    </td>
+                    <td>
+                        
+                            @if (objModel.Evaluation_DoneOn != null && objModel.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(objModel.Evaluation_DoneOn.ToString("dd/MM/yyyy"))
+                            }
+                        
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td>
+                        
+                        Evaluation From
+                        
+                    </td>
+                    <td>
+                        
+                            @if (objModel.Evaluated_From != null && objModel.Evaluated_From > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(objModel.Evaluated_From.ToString("dd/MM/yyyy"))
+                            }
+                        
+                    </td>
+                    <td>
+
+                        
+                        Evaluation To
+                        
+                    </td>
+                    <td>
+                        
+                            @if (objModel.Evaluated_To != null && objModel.Evaluated_To > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(objModel.Evaluated_To.ToString("dd/MM/yyyy"))
+                            }
+                        
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td>
+                        
+                        Evaluation Done By
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.Eval_DoneBy
+                        
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td>
+                        
+                        Improvement area
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.Weakness
+                        
+                    </td>
+                    <td>
+                        
+                        Strength
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.Strengths
+                        
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td>
+                        
+                        Need of trainings
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.training_need
+                        
+                    </td>
+                    <td>
+                        
+                        If employee performance is not adequate, actions to be taken
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.Actions_Taken
+                        
+                    </td>
+                </tr>
+               
+                <tr class="row">
+                    <td>
+                        
+                        Remarks
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.remarks
+                        
+                    </td>
+                    <td>
+                        
+                        Recommendation
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.recommendation
+                        
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td>
+                        
+                        Notified to
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.notified_to
+                        
+                    </td>
+
+                </tr>
+                <tr class="row">
+
+                    <td>
+                        
+                        Evaluation Period
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.eval_period
+                        
+                    </td>
+                    <td>
+                        
+                        Category
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.eval_category
+                        
+                    </td>
+                </tr>
+                <tr class="row">
+
+                    <td>
+                        
+                        Logged By
+
+
+                        
+                    </td>
+                    <td>
+                        
+                            @Obj.GetEmpHrNameById(objModel.LoggedBy)
+                        
+                    </td>
+                    <td>
+                        
+                        Evaluation Status
+                        
+                    </td>
+                    <td>
+                        
+                            @objModel.eval_status
+                        
+                    </td>
+
+                </tr>
+                @if (objModel.Comment_JrMgr != "")
+                {
+                    <tr class="row">
+                        <td class="col-md-12">
+                            HR Update
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td>
+                            
+                                Comment
+                            
+                        </td>
+                        <td>
+                            
+                                @objModel.Comment_JrMgr
+                            
+                        </td>
+                        <td>
+                            
+                                Date
+                            
+                        </td>
+                        <td>
+                            
+                                @if (objModel.JrMgr_Comment_Date != null && objModel.JrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(objModel.JrMgr_Comment_Date.ToString())
+                                }
+                            
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td>
+                            
+                                Top Management
+                            
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            
+                                @Obj.GetEmpHrNameById(objModel.top_mgmt)
+                            
+                        </td>
+                    </tr>
+                }
+                @if (objModel.Comment_SrMgr != "")
+                {
+                    <tr class="row">
+                        <td class="col-md-12">
+                            Top Management Update
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td>                          
+                                Comment                          
+                        </td>
+                        <td>
+                            
+                                @objModel.Comment_SrMgr
+                            
+                        </td>
+                        <td>
+                            
+                                Date
+                            
+                        </td>
+                        <td>
+                            
+                                @if (objModel.SrMgr_Comment_Date != null && objModel.SrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(objModel.SrMgr_Comment_Date.ToString())
+                                }
+                            
+                        </td>
+
+                    </tr>
+                }
+
+            </table>
+    </div>    
+    
+    @if (dsList != null && dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+            {
+        <br />
+                <h2 class="bg-dark pl-sm-2">Training Detail</h2>
+                <div class="table-responsive">
+                    <table class="table table-lg table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sl No</th>
+                                <th>Training Topic</th>
+                                <th>Criticality</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+
+                                        @Obj.GetTrainingTopicById(dsList.Tables[0].Rows[i]["training_topic"].ToString())
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsList.Tables[0].Rows[i]["criticality"].ToString())
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+    }
+
+    @if (objModel.eval_status != "Pending for Manger update")
+            {
+                if (ViewBag.PerformanceElement != null)
+                {
+            <br />
+                    <h2 class="bg-dark pl-sm-2">Employee Performance</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                            <thead>
+                                <tr class="bg-brown">
+
+                                    <th>Sr. No.</th>
+                                    <th>Element</th>
+                                    <th>Rating</th>
+                                    <th>Weightage</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+
+
+
+                                @foreach (var item in objEmpPerformanceEvalList.lstEmpPerformanceElements)
+                                {
+                                    Sq_No = Sq_No + 1;
+                                    sWeightage = sWeightage + Convert.ToInt32(item.SQ_Weightage);
+                                    <tr>
+                                        <td>
+                                            @*@iSrno*@
+                                            @Sq_No
+                                        </td>
+                                        <td>
+                                            @item.SQId
+                                        </td>
+                                        <td>
+                                            @item.SQ_OptionsId
+                                        </td>
+                                        <td>
+                                            @item.SQ_Weightage
+                                        </td>
+                                    </tr>
+                                }
+                                @{
+                                    s = (Convert.ToInt32(objModel.Weightage)) * tot_q;
+                                    TotalScore = (14 / s) * 100;
+                                }
+                                <tr>
+                                    <td>
+                                        Actual Score:
+                                    </td>
+                                    <td colspan="3">
+
+                                        @TotalScore %
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                                    }
+
+                                    if (dsData != null && dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                                    {
+                                        <br />
+                                        <h2 class="bg-dark pl-sm-2">No of Questions</h2>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                               
+                                                    <tr class="bg-brown">
+                                                        <th>Sl No</th>
+                                                        <th>Rating</th>
+                                                        <th>No of Questions</th>
+
+                                                    </tr>
+                                               
+                                                <tbody>
+                                                    @for (int i = 0, j = 1; i < dsData.Tables[0].Rows.Count; i++, j++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @j
+                                                            </td>
+                                                            <td>
+                                                                @objElementMdl.GetRatingNameById(dsData.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                                                            </td>
+                                                            <td>
+                                                                @(dsData.Tables[0].Rows[i]["tot_quest"].ToString())
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                </tbody>
+                                            </table>
+
+
+
+                                        </div>
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        if (ViewBag.PerformanceElement != null)
+                                        {
+                                            <br />
+                                                <h2 class="bg-dark pl-sm-2">Employee Performance</h2>
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                                                        <thead>
+                                                            <tr class="bg-brown">
+
+                                                                <th>Sr. No.</th>
+                                                                <th>Element</th>
+                                                                <th>Rating</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+
+
+                                                            @foreach (var item in objEmpPerformanceEvalList.lstEmpPerformanceElements)
+                                                            {
+                                                                Sq_No = Sq_No + 1;
+
+                                                                <tr>
+                                                                    <td>
+                                                                        @*@iSrno*@
+                                                                        @Sq_No
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.SQId
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.SQ_OptionsId
+                                                                    </td>
+
+                                                                </tr>
+                                                            }
+                                                          
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                                    }
+
+
+                                                                }
+
+  
+
+  
+
+</div>

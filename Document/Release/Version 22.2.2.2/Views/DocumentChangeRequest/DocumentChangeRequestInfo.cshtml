@@ -1,0 +1,96 @@
+﻿@model ISOStd.Models.DocumentChangeRequestModels
+@using System.Data
+@{
+    Layout = null;
+    DataSet dsCommentDetails = ViewBag.CommentDetails;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Document Revise Request Info</h4>
+    </div>
+
+    <div class="card-body">
+        <p>
+            Document Ref:<code>@Html.DisplayFor(model => model.DocRef)</code>
+            Document Name:<code>@Html.DisplayFor(model => model.DocName)</code>
+            Issue No:<code>@Html.DisplayFor(model => model.IssueNo)</code>
+            Rev No:<code>@Html.DisplayFor(model => model.RevNo)</code>
+            Doc Date:
+            @if (Model.DocDate != null && Model.DocDate > Convert.ToDateTime("01/01/0001"))
+            {
+                <code> @Model.DocDate.ToString("dd/MM/yyyy")</code>
+            }
+            Requested By:<code>@Html.DisplayFor(model => model.RequestedBy)</code>
+            Requested Date:
+            @if (Model.ChangeRequestDate != null && Model.ChangeRequestDate > Convert.ToDateTime("01/01/0001"))
+            {
+                <code>@Model.ChangeRequestDate.ToString("dd/MM/yyyy")</code>
+            }
+
+            Approver:<code>@Html.DisplayFor(model => model.ApprovedBy)</code>
+            Approval Status:<code>@Html.DisplayFor(model => model.ApproveStatus)</code>
+            Approved Date:
+            @if (Model.ApprovedDate != null && Model.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+            {
+                <code>@Model.ApprovedDate.ToString("dd/MM/yyyy")</code>
+            }
+            Change Status:<code>@Html.DisplayFor(model => model.ChangeStatus)</code>
+            Upload:<code>@Html.DisplayFor(model => model.upload)</code>
+        </p>
+
+
+        @*<p>
+            <b>Changes to be done:</b> @Html.Raw(HttpUtility.HtmlDecode(Model.Changes))
+        </p>*@
+
+
+        @if (dsCommentDetails != null && dsCommentDetails.Tables.Count > 0 && dsCommentDetails.Tables[0].Rows.Count > 0)
+        {
+          
+        <div class="w-100 bg-primary"><h5>Approver Details</h5></div> 
+               
+        <table class="table-responsive-sm table-bordered table-striped">
+            <thead class="bg-blue">
+                <tr>
+                    <th>Approver Name</th>
+                    <th>Approval Status</th>
+                    <th>Comments</th>
+                    <th>Approved/Rejected Date</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsCommentDetails.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @obj.GetEmpHrNameById(dsCommentDetails.Tables[0].Rows[i]["Approver"].ToString())
+                        </td>
+                        <td>
+                            @dsCommentDetails.Tables[0].Rows[i]["ApproveStatus"].ToString()
+                        </td>
+                        <td>
+                            @dsCommentDetails.Tables[0].Rows[i]["Comments"].ToString()
+                        </td>
+                        <td>
+                            @if (dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString() != null && Convert.ToDateTime(dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Convert.ToDateTime(dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+            </table>
+           
+        }
+
+    </div>
+</div>
+
+
+

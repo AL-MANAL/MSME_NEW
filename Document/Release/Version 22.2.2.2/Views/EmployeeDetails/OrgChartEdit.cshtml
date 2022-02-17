@@ -1,0 +1,56 @@
+﻿@model ISOStd.Models.EmployeeMasterModels
+@{
+    ViewBag.Title = "OrgChart";
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Organization Chart Edit</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+<br />
+<div>
+    @using (Html.BeginForm("OrgChartEdit", "EmployeeDetails", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+     <div>
+         <input type="hidden" id="chartId" name="chartId" value="@Model.chartId" />
+         <table style="width:60%;margin-left:20%;margin-right:20%;">
+             <tr>
+                 <td style="width:20px;">Chart Name<text style="color:red;">*</text></td>
+                 <td>
+                     <input type="text" id="ChartName" name="ChartName" value="@Model.ChartName" required />
+                 </td>
+                 <td style="width:20px;">Upload Chart</td>
+                 <td style="width:20px;">
+                     <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" accept=".pdf" style="height: 38px;" />
+                     @if (Model.DocUploadPath != "")
+                     {
+                         <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.DocUploadPath })' target="_blank">Preview</a>
+                     }
+                 </td>
+             </tr>
+             <tr>
+                 <td colspan="4" style="width:50px;min-width:50px; max-width:50px;">
+
+                     <center> <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')" /></center>
+                     @Html.ActionLink("Back to List", "OrgChart", null, new { @class = "ActionLink", onclick = "ProgressIconFunction('#form1')" })
+                 </td>
+                
+             </tr>
+             
+
+         </table>
+   </div>
+       
+    }
+    </div>
